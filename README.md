@@ -1,4 +1,5 @@
-# client
+# client: Radius.io - Gather | Mingle | Connect
+Social audio conferencing with an interactive map that allows you to talk with people within your radius.
 
 ## Project setup
 ```
@@ -24,6 +25,3 @@ npm run test:e2e
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
