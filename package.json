@@ -15,12 +15,14 @@
     "core-js": "^3.6.5",
     "rtcmulticonnection": "^3.7.0",
     "socket.io-client": "^3.1.2",
-    "vue": "^2.6.11"
+    "vue": "^2.6.11",
+    "vuex": "^3.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-e2e-nightwatch": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-vuex": "^4.5.11",
     "@vue/cli-service": "~4.5.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "babel-eslint": "^10.1.0",

@@ -21,10 +21,14 @@ export default {
     audio: {
       type: Boolean,
       default: true
+    },
+    listenOnly: {
+      type: Boolean,
+      default: false
     }
   },
   mounted() {
-    this.openOrJoin(this.roomId)
+    // this.openOrJoin(this.roomId)
   },
   watch: {
     room(val) {
@@ -44,7 +48,7 @@ export default {
       }
 
       this.connection.mediaConstraints = {
-        audio: this.audio,
+        audio: this.audio && !this.listenOnly,
         video: this.video
       }
 
