@@ -6,3 +6,16 @@ $body-color: #111;
 @import './_cvariables.scss';
 @import 'node_modules/bootstrap/scss/bootstrap.scss';
 @import 'node_modules/bootstrap-vue/src/index.scss';
+
+// Bootstrap overwrites
+
+.dropdown-toggle:focus{
+  box-shadow: none !important;
+  border: none;
+  outline: none;
+}
+
+// Custom helper classes
+.hoverable:hover {
+  filter: saturate(1.2);
+}
