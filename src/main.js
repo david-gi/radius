@@ -3,12 +3,13 @@ import App from './App.vue'
 import {BootstrapVue, IconsPlugin} from 'bootstrap-vue'
 import './assets/app.scss'
 import store from './store'
-import helpers from './plugins/helpers'
+import helpers from './mixins/helpers.js'
 
 Vue.config.productionTip = false
+
+Vue.mixin(helpers)
 Vue.use(IconsPlugin)
 Vue.use(BootstrapVue)
-Vue.use(helpers)
 
 new Vue({
   store,
