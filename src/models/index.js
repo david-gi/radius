@@ -1,5 +1,7 @@
 export class User {
-  id = null
+  name = ''
+  scratchpad = ''
+  imgUrl = null
   constructor(name, scratchpad, imgUrl) {
     this.name = name
     this.scratchpad = scratchpad
@@ -8,8 +10,12 @@ export class User {
 }
 
 export class Gathering {
-  id = null
+  name = ''
+  description = ''
+  imgUrl = null
+  maxParticipants = 25
   circles = []
+  password = null
   constructor(name, description, imgUrl, maxSize = 25, password) {
     this.name = name
     this.description = description
@@ -20,7 +26,8 @@ export class Gathering {
 }
 
 export class Circle {
-  id = null
+  name = ''
+  allowChildren = true
   admins = []
   participants = []
   circles = []

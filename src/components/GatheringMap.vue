@@ -2,10 +2,13 @@
   <Background>
     <div style="opacity:.95" @click="goToRoot">
       <div id="Map" />
-      <div v-for="con in connections" :key="con.name">
-        <WebRtcConnection :room="con.name" :listen-only="con.listenOnly" />
+      <div v-if="false && connections">
+        <div v-for="con in connections" :key="con.name">
+          <WebRtcConnection :room="con.name" :listen-only="con.listenOnly" />
+        </div>
       </div>
     </div>
+    <CreateCircleModal @updated="refreshChart" />
   </Background>
 </template>
 
@@ -14,12 +17,14 @@ import {User, Gathering, Circle} from '../models/index'
 import CirclePack from 'circlepack-chart'
 import Background from '@/components/Background.vue'
 import WebRtcConnection from '@/components/WebRtcConnection.vue'
+import CreateCircleModal from '@/components/modals/CreateCircleModal.vue'
 
 export default {
   name: 'GatheringMap',
   components: {
     Background,
-    WebRtcConnection
+    WebRtcConnection,
+    CreateCircleModal
   },
   data() {
     return {
@@ -49,8 +54,8 @@ export default {
       .data(this.nodes)
       .padding(80)
       .excludeRoot(true)
-      .width(window.innerWidth)
-      .height(window.innerHeight)
+      .width(window.width)
+      .height(window.height)
       .color(this.setColor)
       .label(this.setLabel)
       //.tooltipTitle(this.setTooltip)
@@ -60,11 +65,15 @@ export default {
   },
 
   methods: {
+    refreshChart() {
+      this.map.data(this.nodes)
+    },
     isCircle(node) {
       return Number(node.value) === 3
     },
     goToRoot() {
       this.map.zoomReset()
+      this.connections = null
       this.$store.commit('SET_CURRENT_CIRCLE', null)
     },
     setColor(node) {
@@ -103,42 +112,38 @@ export default {
         : `<p>${participant.scratchpad}</p>`
     },
     nodeClick(node) {
-      this.isCircle(node)
-        ? this.circleClick(node)
-        : this.showUserCard(node.name)
+      this.isCircle(node) ? this.circleClick(node) : this.showUserCard(node)
     },
-
+    showUserCard(node) {
+      alert(node.name)
+    },
     circleClick(node) {
       if (!this.currentCircle) {
         this.joinCircle(node)
         return
       }
-      const isCurrentCircle = this.$store.state.currentCircle.id === node.name
+      this.createCircle()
+      const isCurrentCircle = this.$store.state.currentCircle.name === node.name
       const canCreateCircle =
         this.$store.state.currentCircle.allowChildren ||
         this.$store.getters.isAdmin
-      isCurrentCircle && canCreateCircle
+      isCurrentCircle //&& canCreateCircle
         ? this.createCircle()
         : this.joinCircle(node)
     },
     createCircle() {
-      const circle = new Circle()
-      this.$store.dispatch('addCircle', circle)
+      this.$bvModal.show('create-circle-modal')
     },
     joinCircle(node) {
-      if (
-        this.currentCircle &&
-        this.currentCircle.children &&
-        this.currentCircle.children.find(c => c.id === node.name)
-      ) {
+      this.$store.commit('SET_CURRENT_CIRCLE', node)
+      this.connections = [{name: node.name}]
+      if (this.$store.getters.currentParent) {
         this.connections.push({
-          name: node.name,
+          name: this.$store.getters.currentParent.name,
           listenOnly: true
         })
       }
-      this.connections = [{name: node.name}]
       this.map.zoomToNode(node)
-      this.$store.commit('SET_CURRENT_CIRCLE', node)
     },
     makeParticipantAdmin(id) {
       this.$store.dispatch('addToAdmins', id)
@@ -146,3 +151,32 @@ export default {
   }
 }
 </script>
+<style>
+ /* circlepack overwrite classes */
+.circlepack-viz circle {
+  stroke-width: .2rem !important;
+  stroke: #4A4453;
+}
+.circlepack-viz circle:hover {
+  stroke: #006EFE;
+}
+.circlepack-viz .label-container {
+  margin-top: -120px !important;
+}
+.circlepack-viz .path-label {
+  font-size: 1.3rem;
+}
+.chart-tooltip, .circlepack-tooltip {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+}
+.circlepack-tooltip .tooltip-title {
+  font-size: 1.5rem;
+  margin: 0;
+  width: fit-content;
+  padding: 12px !important;
+  background: #1b191fcc;
+  border-radius: 8px !important;
+}
+</style>

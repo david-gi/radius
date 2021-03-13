@@ -69,9 +69,32 @@ export default new Vuex.Store({
       dispatch('fetchGathering', res)
     },
 
-    async addCircle({state, dispatch}, payload) {
+    async addCircle({state, commit, dispatch}, payload) {
       await new Promise(r => r(payload)) // firebase call
-      dispatch('fetchGathering', state.gathering.id)
+      //dispatch('fetchGathering', state.gathering.id)
+      const gathering = state.gathering
+
+      // local recursive function
+      function addNewCircle(circles) {
+        return circles.map(circle => {
+          if (state.currentCircle && circle.name === state.currentCircle.name) {
+            if (!circle.circles) {
+              circle.circles = []
+            }
+            circle.circles.push(payload)
+          } else if (circle.circles && circle.circles.length) {
+            circle.circles = addNewCircle(circle.circles)
+          }
+          return circle
+        })
+      }
+      if (!state.currentCircle) {
+        gathering.circles.push(payload)
+      } else {
+        gathering.circles = addNewCircle(state.gathering.circles)
+      }
+
+      commit('SET_GATHERING', gathering)
     },
 
     async addToAdmins({state, dispatch}, id) {
@@ -95,8 +118,25 @@ export default new Vuex.Store({
 
   getters: {
     isAdmin: state => {
-      if (!state.user) return false
-      return state.user.currentCircle.admins.find(a => a.id === state.user.id)
+      if (!state.user || state.user.currentCircle) return false
+      return state.currentCircle.admins.find(a => a.id === state.user.id)
+    },
+    currentParent: state => {
+      if (!state.currentCircle) {
+        return
+      }
+      // local recursive function
+      function findParentNode(circles, parentCircle) {
+        return circles.find(circle => {
+          if (circle.name === state.currentCircle.name) {
+            return parentCircle
+          }
+          if (circle.circles) {
+            return findParentNode(circle.circles, circle)
+          }
+        })
+      }
+      return findParentNode(state.gathering.circles)
     },
     gatheringNodes: state => {
       if (!state.gathering) return {}

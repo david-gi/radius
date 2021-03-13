@@ -1,34 +1,46 @@
 <template>
-  <b-navbar variant=" " class="fixed-top zindex-fixed bg-primary m-0 p-0">
+  <b-navbar
+    variant=" "
+    class="fixed-top shadow-lg zindex-fixed bg-primary m-0 p-0"
+  >
     <b-navbar-nav>
       <b-nav-item-dropdown no-caret menu-class="border-primary ml-2 ">
         <!-- Using 'button-content' slot -->
         <template #button-content>
           <img
-            alt="radius.io - Gather | Mingle | Connect"
-            title="radius.io - Gather | Mingle | Connect"
+            alt="Radius.io"
+            title="Radius.io - Gather | Mingle | Connect"
             src="../assets/logo.png"
             class="rounded-circle hoverable"
             width="60"
           />
+          <strong class="text-white ml-2">Radius.io</strong>
         </template>
         <b-dropdown-item href="#">
           {{ room }}
         </b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
-    <b-navbar-nav>
-      <b-nav-item :href="`#${$store.state.gathering.name}`">
-        <strong class="text-white">
+    <b-navbar-nav class="mt-n1 ml-n2">
+      <b-nav-item
+        v-if="$store.state.gathering"
+        :href="`#${$store.state.gathering.name}`"
+      >
+        <b-icon-arrow-right-short scale="1.5" variant="white" />
+        <strong
+          v-if="$store.state.gathering"
+          class="text-white ml-1 text-nowrap"
+        >
           {{ $store.state.gathering.name }}
         </strong>
       </b-nav-item>
       <b-nav-item
-        v-show="room"
+        v-if="room"
         :href="`#${$store.state.gathering.name}/${room}`"
-        class="border-left border-white"
+        class="ml-n2"
       >
-        <strong class="text-white">
+        <b-icon-arrow-right-short scale="1.5" variant="white" />
+        <strong class="text-white ml-1 text-nowrap">
           {{ room }}
         </strong>
       </b-nav-item>

@@ -11,7 +11,7 @@ $gray-900: #3a3b45 !default;
 $black: #4A4453 !default;
 
 $blue: #006EFE !default;
-$indigo: #6610f2 !default;
+$indigo: #4845df !default;
 $purple: #6945DF !default;
 $pink: #df456e !default;
 $red: #df4545 !default;
@@ -19,15 +19,15 @@ $orange: #deb245 !default;
 $yellow: #f6c23e !default;
 $green: #BBDF45 !default;
 $teal: #45DFB6 !default;
-$cyan: #36b9cc !default;
+$cyan: #45a1df !default;
 
 $primary:	$pink;
 $secondary:	$purple;
 $success:	$green;
-$info:	$cyan;
+$info:	$blue;
 $warning:	$orange;
-$danger:	$red;
-$light:	$gray-100;
+$danger: darken($black, 20%);
+$light:	fade-out($secondary, 0.4);
 $dark:	$gray-800;
 $theme-colors:
   (
@@ -40,3 +40,19 @@ $theme-colors:
       "light": $light,
       "dark": $dark
   );
+
+$spacer: 1rem !default;
+$spacers: (
+  0: 0,
+  1: $spacer / 4,
+  2: $spacer / 2,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+) !default;
+
+$input-bg: lighten($primary, 5%) !default;
+$input-color: $white !default;
+$input-border-color: darken($red, 2%) !default;
+$input-focus-border-color: saturate(darken($primary, 8%), 30%) !default;
+$input-placeholder-color: fade-out($white, 0.3) !default;

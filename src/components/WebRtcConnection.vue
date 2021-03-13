@@ -4,7 +4,6 @@
 
 <script>
 import RTCMultiConnection from 'rtcmulticonnection'
-
 export default {
   name: 'WebRtcRoom',
   data() {
@@ -28,13 +27,7 @@ export default {
     }
   },
   mounted() {
-    // this.openOrJoin(this.roomId)
-  },
-  watch: {
-    room(val) {
-      this.leave()
-      this.openOrJoin(val)
-    }
+    this.openOrJoin(this.roomId)
   },
   methods: {
     openOrJoin(roomId) {
@@ -68,19 +61,46 @@ export default {
         }
       ]
 
+      // this.connection.onstream = function(event) {
+      //   var width =
+      //     parseInt(this.connection.audiosContainer.clientWidth / 2) - 20
+      //   var mediaElement = this.getHTMLMediaElement(event.mediaElement, {
+      //     title: event.userid,
+      //     buttons: ['full-screen'],
+      //     width: width,
+      //     showOnMouseEnter: false
+      //   })
+
+      //   this.connection.audiosContainer.appendChild(mediaElement)
+
+      //   setTimeout(function() {
+      //     mediaElement.media.play()
+      //   }, 5000)
+
+      //   mediaElement.id = event.streamid
+      // }
+
+      this.connection.onstreamended = function(event) {
+        var mediaElement = document.getElementById(event.streamid)
+        if (mediaElement) {
+          mediaElement.parentNode.removeChild(mediaElement)
+        }
+      }
+
       this.connection.openOrJoin(roomId)
     },
     leave() {
       this.connection.leave()
     }
   },
-  destroyed() {
+  beforeDestroy() {
     this.leave()
   }
 }
 </script>
 <style>
 audio {
-  display: none;
+  margin-top: 82px;
+  /* display: none; */
 }
 </style>
