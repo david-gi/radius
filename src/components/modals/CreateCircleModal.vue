@@ -27,8 +27,8 @@
           name="allow-input"
           button-variant="secondary"
           button
-          :value="false"
-          :unchecked-value="true"
+          :value="true"
+          :unchecked-value="false"
         >
           <span v-if="circle.allowChildren">Participants can make circles</span>
           <span v-else>Only admins can make circles</span>

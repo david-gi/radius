@@ -122,12 +122,14 @@ export default {
         this.joinCircle(node)
         return
       }
-      this.createCircle()
+
       const isCurrentCircle = this.$store.state.currentCircle.name === node.name
+
       const canCreateCircle =
         this.$store.state.currentCircle.allowChildren ||
         this.$store.getters.isAdmin
-      isCurrentCircle //&& canCreateCircle
+
+      isCurrentCircle && canCreateCircle
         ? this.createCircle()
         : this.joinCircle(node)
     },
@@ -135,7 +137,7 @@ export default {
       this.$bvModal.show('create-circle-modal')
     },
     joinCircle(node) {
-      this.$store.commit('SET_CURRENT_CIRCLE', node)
+      this.$store.commit('SET_CURRENT_CIRCLE', node.name)
       this.connections = [{name: node.name}]
       if (this.$store.getters.currentParent) {
         this.connections.push({
@@ -153,6 +155,9 @@ export default {
 </script>
 <style>
  /* circlepack overwrite classes */
+ g {
+  clip-path: none !important;
+  }
 .circlepack-viz circle {
   stroke-width: .2rem !important;
   stroke: #4A4453;
@@ -165,6 +170,11 @@ export default {
 }
 .circlepack-viz .path-label {
   font-size: 1.3rem;
+}
+@media screen and (max-width: 600px) {
+  .circlepack-viz .path-label {
+    font-size: 1rem !important;
+  }
 }
 .chart-tooltip, .circlepack-tooltip {
   padding: 0 !important;

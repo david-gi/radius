@@ -1,20 +1,20 @@
 <template>
   <b-navbar
     variant=" "
-    class="fixed-top shadow-lg zindex-fixed bg-primary m-0 p-0"
+    class="fixed-top zindex-fixed m-0 p-0"
   >
     <b-navbar-nav>
-      <b-nav-item-dropdown no-caret menu-class="border-primary ml-2 ">
+      <b-nav-item-dropdown no-caret menu-class="border-primary ml-2">
         <!-- Using 'button-content' slot -->
         <template #button-content>
           <img
             alt="Radius.io"
-            title="Radius.io - Gather | Mingle | Connect"
+            title="Radius.io"
             src="../assets/logo.png"
             class="rounded-circle hoverable"
             width="60"
           />
-          <strong class="text-white ml-2">Radius.io</strong>
+          <strong class="text-white h5 ml-2 pl-1">Radius<small>.io</small></strong>
         </template>
         <b-dropdown-item href="#">
           {{ room }}

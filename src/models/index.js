@@ -31,8 +31,8 @@ export class Circle {
   admins = []
   participants = []
   circles = []
-  constructor(name, allowChildren = true) {
+  constructor(name, _allowChildren = true) {
     this.name = name
-    this.allowChildren = allowChildren
+    this.allowChildren = _allowChildren
   }
 }

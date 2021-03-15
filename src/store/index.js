@@ -15,7 +15,32 @@ export default new Vuex.Store({
 
   // auto-generate basic mutations
   mutations: {
-    ...H.basicMutations(['loading', 'user', 'gathering', 'currentCircle'])
+    SET_CURRENT_CIRCLE(state, name) {
+      if (!name || !state.gathering) {
+        state.currentCircle = null
+        return
+      }
+      // local recursive function
+      function findCurrentCircle(circles) {
+        let findCircle = circle => circle.name === name
+        let foundCircle = circles.find(findCircle)
+        if (foundCircle) {
+          return foundCircle
+        } else {
+          let foundNested
+          while (!foundNested) {
+            circles.every(circle => {
+              if (circle.circles) {
+                foundNested = findCurrentCircle(circle.circles)
+              }
+            })
+          }
+          return foundNested
+        }
+      }
+      state.currentCircle = findCurrentCircle(state.gathering.circles)
+    },
+    ...H.basicMutations(['loading', 'user', 'gathering'])
   },
 
   actions: {
@@ -30,15 +55,16 @@ export default new Vuex.Store({
           null
         )
         gathering.id = id
-        const parentCircle = new Circle('Meet and Greet')
-        parentCircle.admins = [
-          new User(
-            'Derek',
-            "I'm not human anymore",
-            'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1'
-          )
-        ]
+        const parentCircle = new Circle('Meet and Greet', false)
+        const userA = new User(
+          'Derek',
+          "I'm not human anymore",
+          'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1'
+        )
+        commit('SET_USER', userA)
+        parentCircle.admins = [userA]
         parentCircle.participants = [
+          userA,
           new User(
             'Sara',
             "I'm not human either",
@@ -57,7 +83,7 @@ export default new Vuex.Store({
         gathering.circles = [
           parentCircle,
           new Circle('Discussion'),
-          new Circle('Questions')
+          new Circle('Questions', false)
         ]
         r(gathering)
       }) // firebase call
@@ -72,6 +98,8 @@ export default new Vuex.Store({
     async addCircle({state, commit, dispatch}, payload) {
       await new Promise(r => r(payload)) // firebase call
       //dispatch('fetchGathering', state.gathering.id)
+
+      // Testing, remove
       const gathering = state.gathering
 
       // local recursive function
@@ -95,6 +123,7 @@ export default new Vuex.Store({
       }
 
       commit('SET_GATHERING', gathering)
+      commit('SET_CURRENT_CIRCLE', payload.name)
     },
 
     async addToAdmins({state, dispatch}, id) {
@@ -118,12 +147,12 @@ export default new Vuex.Store({
 
   getters: {
     isAdmin: state => {
-      if (!state.user || state.user.currentCircle) return false
+      if (!state.user || !state.currentCircle) return false
       return state.currentCircle.admins.find(a => a.id === state.user.id)
     },
     currentParent: state => {
       if (!state.currentCircle) {
-        return
+        return null
       }
       // local recursive function
       function findParentNode(circles, parentCircle) {
