@@ -18,5 +18,5 @@ $body-color: #111;
 // Custom helper classes
 
 .hoverable:hover {
-  filter: saturate(1.2);
+  opacity: .9;
 }
