@@ -68,7 +68,7 @@ export default {
         .height(window.height)
         .color(this.setColor)
         .label(this.setLabel)
-        //.tooltipTitle(this.setTooltip)
+        .tooltipTitle(this.setTooltip)
         .tooltipContent(this.setTooltipContent)
         //.onHover()
         .onClick(this.nodeClick)(mapEl)
@@ -78,7 +78,7 @@ export default {
       this.map.data(this.nodes)
     },
     isCircle(node) {
-      return node.value === '3'
+      return node && node.value > 2
     },
     goToRoot() {
       this.map.zoomReset()
@@ -96,33 +96,38 @@ export default {
     setLabel(node) {
       return node.name
     },
+    getAttendee(node) {
+      if (!this.$store.state.currentCircle) {
+        return null
+      }
+      return this.$store.state.currentCircle.attendees.find(
+        a => a.name === node.name
+      )
+    },
     setTooltip(node) {
-      const attendee =
-        this.$store.state.currentCircle &&
-        this.$store.state.currentCircle.attendees.find(p => p.id === node.name)
+      const attendee = this.getAttendee(node)
       return !attendee || this.isCircle(node)
         ? `<h5>${node.name}</h5>`
-        : `<strong>${attendee.name}</strong>`
+        : ''
     },
     setTooltipContent(node) {
-      let attendee
-      if (
-        this.$store.state.currentCircle &&
-        this.$store.state.currentCircle.attendees
-      ) {
-        attendee = this.$store.state.currentCircle.attendees.find(
-          p => p.name === node.name
-        )
-      }
+      const attendee = this.getAttendee(node)
       return !attendee || this.isCircle(node)
         ? ''
-        : `<p>${attendee.scratchpad}</p>`
+        : `
+        <img src="${attendee.avatar}" width="100%" class="rounded" />
+        <div class="text">
+          <h5>${attendee.name}</h5>
+          <p>${attendee.scratchpad}</p>
+        </div>
+        `
     },
     nodeClick(node) {
       this.isCircle(node) ? this.circleClick(node) : this.showUserCard(node)
     },
     showUserCard(node) {
-      alert(node.name)
+      console.log(node.name)
+      return
     },
     circleClick(node) {
       this.map.zoomToNode(node)
@@ -178,6 +183,7 @@ g {
 }
 .circlepack-viz .path-label {
   font-size: 1.3rem;
+  white-space: normal;
 }
 @media screen and (max-width: 600px) {
   .circlepack-viz .path-label {
@@ -186,16 +192,23 @@ g {
 }
 .chart-tooltip,
 .circlepack-tooltip {
-  padding: 0 !important;
+  font-size: 1rem;
+  margin-top: 3px;
+  width: max-content;
+  height: fit-content;
+  max-height: 60%;
+  padding: 24px !important;
+  background: #1f191ecc;
   border-radius: 8px !important;
-  background: transparent !important;
 }
 .circlepack-tooltip .tooltip-title {
   font-size: 1.5rem;
+  width: max-content;
   margin: 0;
-  width: fit-content;
-  padding: 12px !important;
-  background: #1b191fcc;
-  border-radius: 8px !important;
+}
+.chart-tooltip .text {
+  padding-top: 8px;
+  height: auto !important;
+  white-space: normal;
 }
 </style>

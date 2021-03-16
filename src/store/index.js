@@ -31,9 +31,8 @@ export default new Vuex.Store({
         const userA = new User(
           'Derek',
           'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1',
-          "I'm not human anymore"
+          "I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore"
         )
-        commit('SET_USER', userA)
         gathering.admins = [userA]
         parentCircle.attendees = [
           userA,
@@ -85,6 +84,28 @@ export default new Vuex.Store({
         }
       }
       return findCircle(state.gathering.circles)
+    },
+
+    lookupAttendee({state}, name) {
+      if (!name || !state.gathering) {
+        return null
+      }
+      // local recursive function
+      function findAttendee(circles) {
+        let foundAttendee = circles.find(circle =>
+          circle.attendees.find(a => a.name === name)
+        )
+        if (foundAttendee) {
+          return foundAttendee
+        } else {
+          return circles.find(circle => {
+            if (circle.circles) {
+              return findAttendee(circle.circles)
+            }
+          })
+        }
+      }
+      return findAttendee(state.gathering.circles)
     },
 
     async addCircle({state, commit, dispatch}, payload) {
