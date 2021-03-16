@@ -1,11 +1,11 @@
 export class User {
   name = ''
   scratchpad = ''
-  imgUrl = null
-  constructor(name, scratchpad, imgUrl) {
+  avatar = null
+  constructor(name, avatar, scratchpad) {
     this.name = name
+    this.avatar = avatar
     this.scratchpad = scratchpad
-    this.imgUrl = imgUrl
   }
 }
 
@@ -13,24 +13,22 @@ export class Gathering {
   id = null
   name = ''
   description = ''
-  imgUrl = null
-  maxParticipants = 25
+  size = 25
   admins = []
   circles = []
   password = null
-  constructor(name, description, imgUrl, maxSize = 25, password) {
-    this.name = name
-    this.description = description
-    this.imgUrl = imgUrl
-    this.maxParticipants = maxSize
-    this.password = password
+  constructor(_name, _description, _size = 25, _password) {
+    this.name = _name
+    this.description = _description
+    this.size = _size
+    this.password = _password
   }
 }
 
 export class Circle {
   name = ''
   allowChildren = true
-  participants = []
+  attendees = []
   circles = []
   constructor(name, _allowChildren = true) {
     this.name = name

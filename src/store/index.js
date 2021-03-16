@@ -25,37 +25,30 @@ export default new Vuex.Store({
   actions: {
     async fetchGathering({commit}, id) {
       const res = await new Promise(r => {
-        const gathering = new Gathering(
-          'The Party',
-          'A party!',
-          //'https://wallpaperaccess.com/full/274198.jpg',
-          'https://png.pngtree.com/thumb_back/fw800/back_our/20190621/ourmid/pngtree-taobao-promotion-creative-banner-poster-background-image_181003.jpg',
-          25,
-          null
-        )
+        const gathering = new Gathering('Party', 'A party!', 25, null)
         gathering.id = id
         const parentCircle = new Circle('Meet and Greet', false)
         const userA = new User(
           'Derek',
-          "I'm not human anymore",
-          'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1'
+          'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1',
+          "I'm not human anymore"
         )
         commit('SET_USER', userA)
         gathering.admins = [userA]
-        parentCircle.participants = [
+        parentCircle.attendees = [
           userA,
           new User(
             'Sara',
-            "I'm not human either",
-            'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1'
+            'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1',
+            "I'm not human either"
           )
         ]
         const nestedCircle = new Circle('Philosophy')
-        nestedCircle.participants = [
+        nestedCircle.attendees = [
           new User(
             'Leah',
-            "I'm not human at all",
-            'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1'
+            'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1',
+            "I'm not human at all"
           )
         ]
         parentCircle.circles = [nestedCircle]
@@ -167,7 +160,7 @@ export default new Vuex.Store({
       return findParentNode(state.gathering.circles)
     },
     gatheringNodes: state => {
-      if (!state.gathering) return {}
+      if (!state.gathering) return null
       const nodes = {name: state.gathering.name}
 
       // local recursive function
@@ -182,15 +175,15 @@ export default new Vuex.Store({
             const circleChildren = addChildrenNodes(circle.circles)
             node.children = circleChildren
           }
-          circle.participants.forEach(participant => {
-            if (this.gathering.admins.find(a => a.name === participant.name)) {
+          circle.attendees.forEach(attendee => {
+            if (state.gathering.admins.find(a => a.name === attendee.name)) {
               node.children.push({
-                name: participant.name,
+                name: attendee.name,
                 value: 2
               })
             } else {
               node.children.push({
-                name: participant.name,
+                name: attendee.name,
                 value: 1
               })
             }

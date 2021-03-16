@@ -42,22 +42,19 @@
           trim
         />
       </b-form-group>
-      <b-form-group
-        label-for="max-participants-input"
-        class="pt-2 mr-1 text-white"
-      >
+      <b-form-group label-for="size-input" class="pt-2 mr-1 text-white">
+        <span>Max attendees: {{gathering.size}}</span>
         <b-form-input
-          id="max-participants-input"
-          type="number"
-          v-model="gathering.maxParticipants"
+          id="size-input"
+          type="range"
+          v-model="gathering.size"
           min="2"
-          max="25"
-          trim
+          max="50"
         />
       </b-form-group>
       <b-form-group label-for="circles-input" class="pt-2 mr-1 text-white">
         <b-form-tags
-          placeholder="List starter circles..."
+          placeholder="List starter circle names..."
           input-id="circles-input"
           v-model="circles"
           tag-class="bg-primary"

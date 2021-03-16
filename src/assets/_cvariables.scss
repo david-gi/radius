@@ -54,5 +54,14 @@ $spacers: (
 $input-bg: $secondary !default;
 $input-color: $white !default;
 $input-border-color: transparent !default;
-$input-focus-border-color: $secondary !default;
+$input-focus-border-color: transparent !default;
+$input-focus-bg: saturate($secondary, 15%) !default;
 $input-placeholder-color: $light !default;
+
+$custom-range-track-height:         .5rem !default;
+$custom-range-track-bg:             $secondary !default;
+
+$custom-range-thumb-width:                   1.1rem !default;
+$custom-range-thumb-bg:                      $info !default;
+$custom-range-thumb-active-bg:               saturate($primary, 10%) !default;
+$custom-range-thumb-border:                  2px solid $light !default;

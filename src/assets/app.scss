@@ -17,15 +17,18 @@ $body-color: #111;
 
 .invalid-feedback {
   color: $white;
-  margin: 0;
-  padding-right: $spacer * 2.5;
+  margin: 0 0 0 -$spacer;
+  padding-bottom: $spacer * .3;
+  padding-right: $spacer * 0.5;
   text-align: right;
-  position: absolute;
 }
 .invalid-feedback::before {
   content: '*';
 }
 
+.b-form-tag-content {
+  font-size: 1.3em;
+}
 .b-form-tags-input, .b-form-tags-input::placeholder, .b-form-tags small {
   color: $input-placeholder-color !important;
 }

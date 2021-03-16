@@ -1,5 +1,5 @@
 <template>
-  <BaseModal
+  <BaseModal v-if="false"
     :modal-id="modalId"
     :noClose="false"
     @on-reset="resetModal"
@@ -31,7 +31,7 @@
           :value="true"
           :unchecked-value="false"
         >
-          <span v-if="circle.allowChildren">Participants can add circles</span>
+          <span v-if="circle.allowChildren">Attendees can add circles</span>
           <span v-else>Only admins can add circles</span>
         </b-form-checkbox>
       </b-form-group>
@@ -56,9 +56,10 @@ export default {
   mounted() {},
   computed: {
     nameFeedback() {
+      this.checkFormValidity()
       return this.circle && !this.circle.name
         ? 'Name is required'
-        : 'Name is already taken'
+        : 'Name already used by another circle'
     }
   },
   methods: {

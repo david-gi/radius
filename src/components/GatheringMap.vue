@@ -9,30 +9,27 @@
       </div>
     </div>
     <CreateCircleModal @updated="refreshChart" />
+    <CreateUserModal v-if="!$store.loading && !$store.user" />
   </div>
 </template>
 
 <script>
-import {User, Gathering, Circle} from '../models/index'
 import CirclePack from 'circlepack-chart'
 import WebRtcConnection from '@/components/WebRtcConnection.vue'
 import CreateCircleModal from '@/components/modals/CreateCircleModal.vue'
+import CreateUserModal from '@/components/modals/CreateUserModal.vue'
 
 export default {
   name: 'GatheringMap',
   components: {
     WebRtcConnection,
-    CreateCircleModal
+    CreateCircleModal,
+    CreateUserModal
   },
   data() {
     return {
       map: new CirclePack(),
-      connections: [],
-      backgroundStyle: `
-          background-image: url(${this.$store.state.gathering.imgUrl});
-          background-size: cover;
-          background-position: fixed;
-        `
+      connections: []
     }
   },
 
@@ -60,6 +57,7 @@ export default {
 
   methods: {
     initMap() {
+      this.$store.commit('SET_LOADING', true)
       // Setup map
       const mapEl = document.getElementById('Map')
       this.map
@@ -74,12 +72,13 @@ export default {
         .tooltipContent(this.setTooltipContent)
         //.onHover()
         .onClick(this.nodeClick)(mapEl)
+      this.$store.commit('SET_LOADING', false)
     },
     refreshChart() {
       this.map.data(this.nodes)
     },
     isCircle(node) {
-      return Number(node.value) === 3
+      return node.value === '3'
     },
     goToRoot() {
       this.map.zoomReset()
@@ -98,28 +97,26 @@ export default {
       return node.name
     },
     setTooltip(node) {
-      const participant =
+      const attendee =
         this.$store.state.currentCircle &&
-        this.$store.state.currentCircle.participants.find(
-          p => p.id === node.name
-        )
-      return !participant || this.isCircle(node)
+        this.$store.state.currentCircle.attendees.find(p => p.id === node.name)
+      return !attendee || this.isCircle(node)
         ? `<h5>${node.name}</h5>`
-        : `<strong>${participant.name}</strong>`
+        : `<strong>${attendee.name}</strong>`
     },
     setTooltipContent(node) {
-      let participant
+      let attendee
       if (
         this.$store.state.currentCircle &&
-        this.$store.state.currentCircle.participants
+        this.$store.state.currentCircle.attendees
       ) {
-        participant = this.$store.state.currentCircle.participants.find(
+        attendee = this.$store.state.currentCircle.attendees.find(
           p => p.name === node.name
         )
       }
-      return !participant || this.isCircle(node)
+      return !attendee || this.isCircle(node)
         ? ''
-        : `<p>${participant.scratchpad}</p>`
+        : `<p>${attendee.scratchpad}</p>`
     },
     nodeClick(node) {
       this.isCircle(node) ? this.circleClick(node) : this.showUserCard(node)
@@ -128,6 +125,7 @@ export default {
       alert(node.name)
     },
     circleClick(node) {
+      this.map.zoomToNode(node)
       if (!this.currentCircle) {
         this.joinCircle(node)
         return
@@ -156,9 +154,8 @@ export default {
           listenOnly: true
         })
       }
-      this.map.zoomToNode(node)
     },
-    makeParticipantAdmin(id) {
+    makeAttendeeAdmin(id) {
       this.$store.dispatch('addToAdmins', id)
     }
   }
