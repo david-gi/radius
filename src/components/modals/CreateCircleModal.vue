@@ -1,11 +1,12 @@
 <template>
   <BaseModal
     :modal-id="modalId"
+    :noClose="false"
     @on-reset="resetModal"
     @on-submit="handleSubmit"
   >
     <form ref="form" @submit.stop.prevent="handleSubmit">
-      <h3>Start a Circle</h3>
+      <h3 class="mt-n2">Add a Circle</h3>
       <b-form-group
         label-for="name-input"
         class="pt-2 mr-1 text-white"
@@ -21,7 +22,7 @@
           required
         />
       </b-form-group>
-      <b-form-group label-for="allow-input">
+      <b-form-group v-if="$store.getters.isAdmin" label-for="allow-input">
         <b-form-checkbox
           v-model="circle.allowChildren"
           name="allow-input"
@@ -30,8 +31,8 @@
           :value="true"
           :unchecked-value="false"
         >
-          <span v-if="circle.allowChildren">Participants can make circles</span>
-          <span v-else>Only admins can make circles</span>
+          <span v-if="circle.allowChildren">Participants can add circles</span>
+          <span v-else>Only admins can add circles</span>
         </b-form-checkbox>
       </b-form-group>
     </form>
@@ -43,7 +44,7 @@ import {Circle} from '../../models/index'
 import BaseModal from './BaseModal.vue'
 
 export default {
-  name: 'Landing',
+  name: 'CreateCircleModal',
   components: {BaseModal},
   data() {
     return {
@@ -61,22 +62,22 @@ export default {
     }
   },
   methods: {
-    checkFormValidity() {
+    async checkFormValidity() {
       const valid = this.$refs.form.checkValidity()
-      const unique =
-        (!this.$store.state.currentCircle ||
-        !this.$store.state.currentCircle.circles) ||
-        !this.$store.state.currentCircle.circles.find(
-          c => c.name === this.circle.name
-        )
+      const unique = !(await this.$store.dispatch(
+        'lookupCircle',
+        this.circle.name
+      ))
+
       this.formState = valid && unique
       return valid && unique
     },
     resetModal() {
       this.circle = new Circle()
+      this.formState = null
     },
     async handleSubmit() {
-      if (!this.checkFormValidity()) {
+      if ((await this.checkFormValidity()) === false) {
         return
       }
 

@@ -10,10 +10,12 @@ export class User {
 }
 
 export class Gathering {
+  id = null
   name = ''
   description = ''
   imgUrl = null
   maxParticipants = 25
+  admins = []
   circles = []
   password = null
   constructor(name, description, imgUrl, maxSize = 25, password) {
@@ -28,7 +30,6 @@ export class Gathering {
 export class Circle {
   name = ''
   allowChildren = true
-  admins = []
   participants = []
   circles = []
   constructor(name, _allowChildren = true) {

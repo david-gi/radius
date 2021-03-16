@@ -1,29 +1,31 @@
 <template>
-  <b-navbar
-    variant=" "
-    class="fixed-top zindex-fixed m-0 p-0"
-  >
+  <b-navbar variant=" " class="fixed-top zindex-fixed m-0 p-0">
     <b-navbar-nav>
-      <b-nav-item-dropdown no-caret menu-class="border-primary ml-2">
+      <b-nav-item-dropdown
+        :disabled="!$store.state.gathering"
+        no-caret
+        class="user-select-none"
+        menu-class="border-primary ml-2 user-select-none"
+      >
         <!-- Using 'button-content' slot -->
         <template #button-content>
           <img
             alt="Radius.io"
             title="Radius.io"
             src="../assets/logo.png"
-            class="rounded-circle hoverable"
+            class="rounded-circle shadow-lg hoverable"
             width="60"
           />
-          <strong class="text-white h5 ml-2 pl-1">Radius<small>.io</small></strong>
+          <strong class="text-white h5 pl-2"> Radius<small>.io</small></strong>
         </template>
-        <b-dropdown-item href="#">
-          {{ room }}
+        <b-dropdown-item @click="leave">
+          Leave
         </b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
     <b-navbar-nav class="mt-n1 ml-n2">
       <b-nav-item
-        v-if="$store.state.gathering"
+        v-if="$store.state.gathering && $store.state.gathering.name"
         :href="`#${$store.state.gathering.name}`"
       >
         <b-icon-arrow-right-short scale="1.5" variant="white" />
@@ -56,6 +58,12 @@ export default {
       return this.$store.state.currentCircle
         ? this.$store.state.currentCircle.name
         : null
+    }
+  },
+  methods: {
+    leave() {
+      this.$store.commit('SET_GATHERING', null)
+      window.location = '/'
     }
   }
 }

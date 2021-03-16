@@ -1,23 +1,25 @@
 <template>
   <div v-if="loaded" class="p-0 m-0 mw-100">
-    <div class="text-center">
-      <Landing v-if="noGathering" />
-      <GatheringMap v-else />
-    </div>
+    <Background>
+      <CreateGatheringModal v-if="noGatheringId" />
+      <GatheringMap v-if="!noGathering" />
+    </Background>
     <TheHeader />
   </div>
 </template>
 
 <script>
 import TheHeader from '@/components/TheHeader.vue'
-import Landing from '@/components/Landing.vue'
+import Background from '@/components/Background.vue'
+import CreateGatheringModal from '@/components/modals/CreateGatheringModal.vue'
 import GatheringMap from '@/components/GatheringMap.vue'
 
 export default {
   name: 'App',
   components: {
     TheHeader,
-    Landing,
+    Background,
+    CreateGatheringModal,
     GatheringMap
   },
   computed: {
@@ -26,6 +28,12 @@ export default {
     },
     noGathering() {
       return !this.$store.state.gathering
+    },
+    noGatheringId() {
+      return (
+        !this.$store.state.gathering ||
+        (this.$store.state.gathering && !this.$store.state.gathering.id)
+      )
     }
   },
   mounted() {
@@ -36,6 +44,13 @@ export default {
         .then(() => this.$store.commit('SET_LOADING', false))
     } else {
       this.$store.commit('SET_LOADING', false)
+    }
+  },
+  watch: {
+    noGathering() {
+      if (this.$store.state.gathering.name) {
+        window.location.hash = this.$store.state.gathering.name.replace(' ', '')
+      }
     }
   }
 }

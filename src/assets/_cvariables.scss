@@ -27,7 +27,7 @@ $success:	$green;
 $info:	$blue;
 $warning:	$orange;
 $danger: darken($black, 20%);
-$light:	fade-out($secondary, 0.4);
+$light:	lighten($secondary, 35%);
 $dark:	$gray-800;
 $theme-colors:
   (
@@ -51,8 +51,8 @@ $spacers: (
   5: $spacer * 3,
 ) !default;
 
-$input-bg: lighten($primary, 5%) !default;
+$input-bg: $secondary !default;
 $input-color: $white !default;
-$input-border-color: darken($red, 2%) !default;
-$input-focus-border-color: saturate(darken($primary, 8%), 30%) !default;
-$input-placeholder-color: fade-out($white, 0.3) !default;
+$input-border-color: transparent !default;
+$input-focus-border-color: $secondary !default;
+$input-placeholder-color: $light !default;

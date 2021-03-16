@@ -86,14 +86,14 @@ export default {
 
 @keyframes animate {
   0% {
-    transform: translateY(0);
+    transform: perspective(500px) translate3d(0, -100px, 0);
     opacity: 0;
   }
   80% {
     opacity: 0.8;
   }
   100% {
-    transform: translateY(-1200px);
+    transform: perspective(500px) translate3d(0, -1200px, 200px);
     opacity: 0;
   }
 }

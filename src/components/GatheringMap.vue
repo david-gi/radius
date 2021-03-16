@@ -1,5 +1,5 @@
 <template>
-  <Background>
+  <div>
     <div style="opacity:.95" @click="goToRoot">
       <div id="Map" />
       <div v-if="false && connections">
@@ -9,20 +9,18 @@
       </div>
     </div>
     <CreateCircleModal @updated="refreshChart" />
-  </Background>
+  </div>
 </template>
 
 <script>
 import {User, Gathering, Circle} from '../models/index'
 import CirclePack from 'circlepack-chart'
-import Background from '@/components/Background.vue'
 import WebRtcConnection from '@/components/WebRtcConnection.vue'
 import CreateCircleModal from '@/components/modals/CreateCircleModal.vue'
 
 export default {
   name: 'GatheringMap',
   components: {
-    Background,
     WebRtcConnection,
     CreateCircleModal
   },
@@ -47,24 +45,36 @@ export default {
     }
   },
 
+  watch: {
+    '$store.state.gathering': {
+      deep: true,
+      handler() {
+        this.refreshChart()
+      }
+    }
+  },
+
   mounted() {
-    // Setup map
-    const mapEl = document.getElementById('Map')
-    this.map
-      .data(this.nodes)
-      .padding(80)
-      .excludeRoot(true)
-      .width(window.width)
-      .height(window.height)
-      .color(this.setColor)
-      .label(this.setLabel)
-      //.tooltipTitle(this.setTooltip)
-      .tooltipContent(this.setTooltipContent)
-      //.onHover()
-      .onClick(this.nodeClick)(mapEl)
+    this.initMap()
   },
 
   methods: {
+    initMap() {
+      // Setup map
+      const mapEl = document.getElementById('Map')
+      this.map
+        .data(this.nodes)
+        .padding(80)
+        .excludeRoot(true)
+        .width(window.width)
+        .height(window.height)
+        .color(this.setColor)
+        .label(this.setLabel)
+        //.tooltipTitle(this.setTooltip)
+        .tooltipContent(this.setTooltipContent)
+        //.onHover()
+        .onClick(this.nodeClick)(mapEl)
+    },
     refreshChart() {
       this.map.data(this.nodes)
     },
@@ -81,7 +91,7 @@ export default {
         case 3:
           return '#6945DF'
         default:
-          return '#df456e' //'#006EFE'
+          return '#df456e'
       }
     },
     setLabel(node) {
@@ -136,8 +146,9 @@ export default {
     createCircle() {
       this.$bvModal.show('create-circle-modal')
     },
-    joinCircle(node) {
-      this.$store.commit('SET_CURRENT_CIRCLE', node.name)
+    async joinCircle(node) {
+      const circle = await this.$store.dispatch('lookupCircle', node.name)
+      this.$store.commit('SET_CURRENT_CIRCLE', circle)
       this.connections = [{name: node.name}]
       if (this.$store.getters.currentParent) {
         this.connections.push({
@@ -154,16 +165,16 @@ export default {
 }
 </script>
 <style>
- /* circlepack overwrite classes */
- g {
+/* circlepack overwrite classes */
+g {
   clip-path: none !important;
-  }
+}
 .circlepack-viz circle {
-  stroke-width: .2rem !important;
-  stroke: #4A4453;
+  stroke-width: 0.2rem !important;
+  stroke: #4a4453;
 }
 .circlepack-viz circle:hover {
-  stroke: #006EFE;
+  stroke: #006efe;
 }
 .circlepack-viz .label-container {
   margin-top: -120px !important;
@@ -176,7 +187,8 @@ export default {
     font-size: 1rem !important;
   }
 }
-.chart-tooltip, .circlepack-tooltip {
+.chart-tooltip,
+.circlepack-tooltip {
   padding: 0 !important;
   border-radius: 8px !important;
   background: transparent !important;

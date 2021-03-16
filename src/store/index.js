@@ -8,39 +8,18 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     loading: true,
-    user: null,
+    user: new User(
+      'Derek',
+      "I'm not human anymore",
+      'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1'
+    ),
     gathering: null,
     currentCircle: null
   },
 
   // auto-generate basic mutations
   mutations: {
-    SET_CURRENT_CIRCLE(state, name) {
-      if (!name || !state.gathering) {
-        state.currentCircle = null
-        return
-      }
-      // local recursive function
-      function findCurrentCircle(circles) {
-        let findCircle = circle => circle.name === name
-        let foundCircle = circles.find(findCircle)
-        if (foundCircle) {
-          return foundCircle
-        } else {
-          let foundNested
-          while (!foundNested) {
-            circles.every(circle => {
-              if (circle.circles) {
-                foundNested = findCurrentCircle(circle.circles)
-              }
-            })
-          }
-          return foundNested
-        }
-      }
-      state.currentCircle = findCurrentCircle(state.gathering.circles)
-    },
-    ...H.basicMutations(['loading', 'user', 'gathering'])
+    ...H.basicMutations(['loading', 'user', 'gathering', 'currentCircle'])
   },
 
   actions: {
@@ -62,7 +41,7 @@ export default new Vuex.Store({
           'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1'
         )
         commit('SET_USER', userA)
-        parentCircle.admins = [userA]
+        gathering.admins = [userA]
         parentCircle.participants = [
           userA,
           new User(
@@ -90,9 +69,29 @@ export default new Vuex.Store({
       commit('SET_GATHERING', res)
     },
 
-    async createGathering({dispatch}, payload) {
+    async createGathering({commit}, payload) {
       const res = await new Promise(r => r(payload)) // firebase call
-      dispatch('fetchGathering', res)
+      commit('SET_GATHERING', res)
+    },
+
+    lookupCircle({state}, name) {
+      if (!name || !state.gathering) {
+        return null
+      }
+      // local recursive function
+      function findCircle(circles) {
+        let foundCircle = circles.find(circle => circle.name === name)
+        if (foundCircle) {
+          return foundCircle
+        } else {
+          return circles.find(circle => {
+            if (circle.circles) {
+              return findCircle(circle.circles)
+            }
+          })
+        }
+      }
+      return findCircle(state.gathering.circles)
     },
 
     async addCircle({state, commit, dispatch}, payload) {
@@ -123,11 +122,11 @@ export default new Vuex.Store({
       }
 
       commit('SET_GATHERING', gathering)
-      commit('SET_CURRENT_CIRCLE', payload.name)
+      commit('SET_CURRENT_CIRCLE', payload)
     },
 
-    async addToAdmins({state, dispatch}, id) {
-      await new Promise(r => r(id)) // firebase call
+    async addToAdmins({state, dispatch}, payload) {
+      await new Promise(r => r(payload)) // firebase call
       dispatch('fetchGathering', state.gathering.id)
     },
 
@@ -148,7 +147,7 @@ export default new Vuex.Store({
   getters: {
     isAdmin: state => {
       if (!state.user || !state.currentCircle) return false
-      return state.currentCircle.admins.find(a => a.id === state.user.id)
+      return !!state.gathering.admins.find(a => a.id === state.user.id)
     },
     currentParent: state => {
       if (!state.currentCircle) {
@@ -183,17 +182,18 @@ export default new Vuex.Store({
             const circleChildren = addChildrenNodes(circle.circles)
             node.children = circleChildren
           }
-          circle.admins.forEach(admin => {
-            node.children.push({
-              name: admin.name,
-              value: 2
-            })
-          })
           circle.participants.forEach(participant => {
-            node.children.push({
-              name: participant.name,
-              value: 1
-            })
+            if (this.gathering.admins.find(a => a.name === participant.name)) {
+              node.children.push({
+                name: participant.name,
+                value: 2
+              })
+            } else {
+              node.children.push({
+                name: participant.name,
+                value: 1
+              })
+            }
           })
           return node
         })

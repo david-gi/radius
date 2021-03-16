@@ -15,8 +15,26 @@ $body-color: #111;
   outline: none;
 }
 
+.invalid-feedback {
+  color: $white;
+  margin: 0;
+  padding-right: $spacer * 2.5;
+  text-align: right;
+  position: absolute;
+}
+.invalid-feedback::before {
+  content: '*';
+}
+
+.b-form-tags-input, .b-form-tags-input::placeholder, .b-form-tags small {
+  color: $input-placeholder-color !important;
+}
+.b-from-tags-field {
+  width: 100%;
+}
+
 // Custom helper classes
 
-.hoverable:hover {
+.hoverable:hover, .faded {
   opacity: .9;
 }

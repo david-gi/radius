@@ -5,13 +5,20 @@
     header-bg-variant="primary"
     footer-bg-variant="primary"
     ok-variant="info"
-    cancel-variant=" text-white"
-    cancel-title="cancel"
+    cancel-variant=" text-white mr-3"
     body-bg-variant="primary"
     body-text-variant="white"
-    content-class="p-2 bg-info"
-    footer-class="border-0 pt-0 mt-0"
+    body-class="px-4 pt-4 pb-0"
+    content-class="p-2 bg-primary"
+    footer-class="border-0 mt-0 pr-4 pb-4 pt-0"
     centered
+    :visible="noClose"
+    :ok-title="noClose ? 'Ready to go!' : 'Add'"
+    :cancel-title="noClose ? '' : 'cancel'"
+    :cancel-disabled="noClose"
+    :no-close-on-esc="noClose"
+    :no-close-on-backdrop="noClose"
+    :hide-backdrop="noClose"
     @show="resetModal"
     @hidden="resetModal"
     @ok="handleOk"
@@ -23,7 +30,7 @@
 <script>
 export default {
   name: 'BaseModal',
-  props: { modalId: String},
+  props: { modalId: String, noClose: Boolean},
   methods: {
     resetModal() {
       this.$emit('on-reset')
