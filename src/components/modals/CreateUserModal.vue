@@ -6,8 +6,10 @@
     @on-submit="handleSubmit"
   >
     <form ref="userform" @submit.stop.prevent="handleSubmit">
-      <h3 class="mt-n2">Join Gathering</h3>
-      <div class="h5">
+      <h3 class="mt-n2">
+        Fill out your Name Tag
+      </h3>
+      <div v-if="$store.state.gathering" class="h5">
         <strong>{{ $store.state.gathering.name }}</strong>
         <i class="ml-1">{{ $store.state.gathering.description }}</i>
       </div>
@@ -25,6 +27,7 @@
           trim
           required
           autofocus
+          @keyup="() => (formState = $refs.userform.checkValidity())"
         />
       </b-form-group>
       <b-form-group label-for="avatar-input" class="pt-2 mr-1 text-white">
@@ -74,11 +77,10 @@ export default {
   methods: {
     async checkFormValidity() {
       const valid = this.$refs.userform.checkValidity()
-      const existing = await this.$store.dispatch(
-        'lookupAttendee',
-        this.user.name
-      )
-      this.j(existing)
+      const existing =
+        this.user &&
+        this.$store.gathering &&
+        (await this.$store.dispatch('lookupAttendee', this.user.name))
 
       this.formState = valid && !existing
       return valid && !existing

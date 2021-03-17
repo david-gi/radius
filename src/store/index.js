@@ -8,11 +8,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     loading: true,
-    user: new User(
-      'Derek',
-      "I'm not human anymore",
-      'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1'
-    ),
+    user: null,
     gathering: null,
     currentCircle: null
   },
@@ -25,7 +21,7 @@ export default new Vuex.Store({
   actions: {
     async fetchGathering({commit}, id) {
       const res = await new Promise(r => {
-        const gathering = new Gathering('Party', 'A party!', 25, null)
+        const gathering = new Gathering('Party', 'It is a party!', 25, null)
         gathering.id = id
         const parentCircle = new Circle('Meet and Greet', false)
         const userA = new User(

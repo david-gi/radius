@@ -9,7 +9,6 @@
       </div>
     </div>
     <CreateCircleModal @updated="refreshChart" />
-    <CreateUserModal v-if="!$store.loading && !$store.user" />
   </div>
 </template>
 
@@ -17,14 +16,12 @@
 import CirclePack from 'circlepack-chart'
 import WebRtcConnection from '@/components/WebRtcConnection.vue'
 import CreateCircleModal from '@/components/modals/CreateCircleModal.vue'
-import CreateUserModal from '@/components/modals/CreateUserModal.vue'
 
 export default {
   name: 'GatheringMap',
   components: {
     WebRtcConnection,
-    CreateCircleModal,
-    CreateUserModal
+    CreateCircleModal
   },
   data() {
     return {
@@ -106,9 +103,7 @@ export default {
     },
     setTooltip(node) {
       const attendee = this.getAttendee(node)
-      return !attendee || this.isCircle(node)
-        ? `<h5>${node.name}</h5>`
-        : ''
+      return !attendee || this.isCircle(node) ? `<h5>${node.name}</h5>` : ''
     },
     setTooltipContent(node) {
       const attendee = this.getAttendee(node)

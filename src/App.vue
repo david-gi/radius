@@ -1,8 +1,9 @@
 <template>
   <div v-if="loaded" class="p-0 m-0 mw-100">
     <Background>
-      <CreateGatheringModal v-if="noGatheringId" />
-      <GatheringMap v-if="!noGathering" />
+      <CreateUserModal v-if="!hasUser" />
+      <CreateGatheringModal v-if="noGatheringId && hasUser" />
+      <GatheringMap v-if="hasGathering && hasUser" />
     </Background>
     <TheHeader />
   </div>
@@ -11,6 +12,7 @@
 <script>
 import TheHeader from '@/components/TheHeader.vue'
 import Background from '@/components/Background.vue'
+import CreateUserModal from '@/components/modals/CreateUserModal.vue'
 import CreateGatheringModal from '@/components/modals/CreateGatheringModal.vue'
 import GatheringMap from '@/components/GatheringMap.vue'
 
@@ -19,15 +21,21 @@ export default {
   components: {
     TheHeader,
     Background,
+    CreateUserModal,
     CreateGatheringModal,
     GatheringMap
+  },
+  data() {
+    return {
+      hasUser: this.$store.state.user
+    }
   },
   computed: {
     loaded() {
       return !this.$store.state.loading
     },
-    noGathering() {
-      return !this.$store.state.gathering
+    hasGathering() {
+      return this.$store.state.gathering
     },
     noGatheringId() {
       return (
@@ -39,9 +47,9 @@ export default {
   mounted() {
     if (window.location.hash) {
       const id = window.location.hash.substring(1)
-      this.$store
-        .dispatch('fetchGathering', id)
-        .then(() => this.$store.commit('SET_LOADING', false))
+      this.$store.dispatch('fetchGathering', id).then(() => {
+        this.$store.commit('SET_LOADING', false)
+      })
     } else {
       this.$store.commit('SET_LOADING', false)
     }
@@ -51,6 +59,9 @@ export default {
       if (this.$store.state.gathering.name) {
         window.location.hash = this.$store.state.gathering.name.replace(' ', '')
       }
+    },
+    '$store.state.user': function() {
+      this.hasUser = this.$store.state.user
     }
   }
 }
