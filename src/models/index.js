@@ -1,6 +1,6 @@
 export class User {
-  name = ''
-  scratchpad = ''
+  name = null
+  scratchpad = null
   avatar = null
   constructor(name, avatar, scratchpad) {
     this.name = name

@@ -5,7 +5,7 @@
     @on-reset="resetModal"
     @on-submit="handleSubmit"
   >
-    <form ref="form" @submit.stop.prevent="handleSubmit">
+    <form ref="userform" @submit.stop.prevent="handleSubmit">
       <h3 class="mt-n2">Join Gathering</h3>
       <div class="h5">
         <strong>{{ $store.state.gathering.name }}</strong>
@@ -14,7 +14,7 @@
       <b-form-group
         label-for="name-input"
         class="pt-2 mr-1 text-white"
-        invalid-feedback="Name required"
+        :invalid-feedback="nameFeedback"
         :state="formState"
       >
         <b-form-input
@@ -24,6 +24,7 @@
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
           trim
           required
+          autofocus
         />
       </b-form-group>
       <b-form-group label-for="avatar-input" class="pt-2 mr-1 text-white">
@@ -63,11 +64,24 @@ export default {
       formState: null
     }
   },
+  computed: {
+    nameFeedback() {
+      return this.user && this.user.name
+        ? 'Name already taken'
+        : 'Name required'
+    }
+  },
   methods: {
-    checkFormValidity() {
-      const valid = this.$refs.form.checkValidity()
-      this.formState = valid
-      return valid
+    async checkFormValidity() {
+      const valid = this.$refs.userform.checkValidity()
+      const existing = await this.$store.dispatch(
+        'lookupAttendee',
+        this.user.name
+      )
+      this.j(existing)
+
+      this.formState = valid && !existing
+      return valid && !existing
     },
     resetModal() {
       this.user = new User()
@@ -75,7 +89,7 @@ export default {
     },
 
     async handleSubmit() {
-      if (!this.checkFormValidity()) {
+      if ((await this.checkFormValidity()) === false) {
         return
       }
 

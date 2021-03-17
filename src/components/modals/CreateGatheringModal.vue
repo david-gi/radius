@@ -5,7 +5,7 @@
     @on-reset="resetModal"
     @on-submit="handleSubmit"
   >
-    <form ref="form" @submit.stop.prevent="handleSubmit">
+    <form ref="gatheringform" @submit.stop.prevent="handleSubmit">
       <h3 class="mt-n2">
         Start a Gathering
       </h3>
@@ -22,6 +22,7 @@
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
           trim
           required
+          autofocus
         />
       </b-form-group>
       <b-form-group label-for="description-input" class="pt-2 mr-1 text-white">
@@ -94,7 +95,7 @@ export default {
       })
     },
     checkFormValidity() {
-      const valid = this.$refs.form.checkValidity()
+      const valid = this.$refs.gatheringform.checkValidity()
       this.formState = valid
       return valid
     },

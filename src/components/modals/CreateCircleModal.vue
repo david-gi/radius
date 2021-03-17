@@ -5,7 +5,7 @@
     @on-reset="resetModal"
     @on-submit="handleSubmit"
   >
-    <form ref="form" @submit.stop.prevent="handleSubmit">
+    <form ref="circleform" @submit.stop.prevent="handleSubmit">
       <h3 class="mt-n2">Add a Circle</h3>
       <b-form-group
         label-for="name-input"
@@ -20,6 +20,7 @@
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
           trim
           required
+          autofocus
         />
       </b-form-group>
       <b-form-group v-if="$store.getters.isAdmin" label-for="allow-input">
@@ -64,7 +65,7 @@ export default {
   },
   methods: {
     async checkFormValidity() {
-      const valid = this.$refs.form.checkValidity()
+      const valid = this.$refs.circleform.checkValidity()
       const unique = !(await this.$store.dispatch(
         'lookupCircle',
         this.circle.name

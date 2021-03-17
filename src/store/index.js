@@ -66,46 +66,29 @@ export default new Vuex.Store({
       commit('SET_GATHERING', res)
     },
 
-    lookupCircle({state}, name) {
-      if (!name || !state.gathering) {
-        return null
+    async lookupCircle({state}, name) {
+      if (!name || !state.gathering) return null
+      const findFunc = arr => {
+        return arr.find(circle => circle.name === name)
       }
-      // local recursive function
-      function findCircle(circles) {
-        let foundCircle = circles.find(circle => circle.name === name)
-        if (foundCircle) {
-          return foundCircle
-        } else {
-          return circles.find(circle => {
-            if (circle.circles) {
-              return findCircle(circle.circles)
-            }
-          })
-        }
-      }
-      return findCircle(state.gathering.circles)
+      return H.recurseCircles(state.gathering.circles, findFunc)
     },
 
-    lookupAttendee({state}, name) {
-      if (!name || !state.gathering) {
-        return null
-      }
-      // local recursive function
-      function findAttendee(circles) {
-        let foundAttendee = circles.find(circle =>
-          circle.attendees.find(a => a.name === name)
-        )
-        if (foundAttendee) {
-          return foundAttendee
-        } else {
-          return circles.find(circle => {
-            if (circle.circles) {
-              return findAttendee(circle.circles)
+    async lookupAttendee({state}, name) {
+      if (!name || !state.gathering) return null
+      const findFunc = arr => {
+        let result = null
+        arr.forEach(circle => {
+          if (!result) {
+            const found = circle.attendees.find(a => a.name === name)
+            if (found) {
+              result = found
             }
-          })
-        }
+          }
+        })
+        return result
       }
-      return findAttendee(state.gathering.circles)
+      return H.recurseCircles(state.gathering.circles, findFunc)
     },
 
     async addCircle({state, commit, dispatch}, payload) {

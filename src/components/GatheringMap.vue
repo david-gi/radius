@@ -130,18 +130,14 @@ export default {
       return
     },
     circleClick(node) {
-      this.map.zoomToNode(node)
       if (!this.currentCircle) {
         this.joinCircle(node)
         return
       }
-
       const isCurrentCircle = this.$store.state.currentCircle.name === node.name
-
       const canCreateCircle =
         this.$store.state.currentCircle.allowChildren ||
         this.$store.getters.isAdmin
-
       isCurrentCircle && canCreateCircle
         ? this.createCircle()
         : this.joinCircle(node)
@@ -159,6 +155,7 @@ export default {
           listenOnly: true
         })
       }
+      this.map.zoomToNode(node)
     },
     makeAttendeeAdmin(id) {
       this.$store.dispatch('addToAdmins', id)
