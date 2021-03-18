@@ -29,7 +29,7 @@
         <b-form-input
           id="description-input"
           v-model="gathering.description"
-          placeholder="Enter a description (optional)"
+          placeholder="Enter a tagline (optional)"
           :formatter="v => (v.length > 120 ? v.substring(0, 120) : v)"
           trim
         />
@@ -43,8 +43,12 @@
           trim
         />
       </b-form-group>
-      <b-form-group label-for="size-input" class="pt-2 mr-1 text-white">
-        <span>Max attendees: {{gathering.size}}</span>
+      <b-form-group
+        v-if="false"
+        label-for="size-input"
+        class="pt-2 mr-1 text-white"
+      >
+        <span>Max attendees: {{ gathering.size }}</span>
         <b-form-input
           id="size-input"
           type="range"
@@ -55,7 +59,7 @@
       </b-form-group>
       <b-form-group label-for="circles-input" class="pt-2 mr-1 text-white">
         <b-form-tags
-          placeholder="List starter circle names..."
+          placeholder="Add main circles..."
           input-id="circles-input"
           v-model="circles"
           tag-class="bg-primary"

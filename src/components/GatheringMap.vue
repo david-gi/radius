@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="opacity:.95" @click="goToRoot">
+    <div style="opacity:.95">
       <div id="Map" />
       <div v-if="false && connections">
         <div v-for="con in connections" :key="con.name">
@@ -14,6 +14,7 @@
 
 <script>
 import CirclePack from 'circlepack-chart'
+import circleChartHelpers from '../mixins/circleChartHelpers'
 import WebRtcConnection from '@/components/WebRtcConnection.vue'
 import CreateCircleModal from '@/components/modals/CreateCircleModal.vue'
 
@@ -23,6 +24,7 @@ export default {
     WebRtcConnection,
     CreateCircleModal
   },
+  mixins: [circleChartHelpers],
   data() {
     return {
       map: new CirclePack(),
@@ -53,71 +55,11 @@ export default {
   },
 
   methods: {
-    initMap() {
-      this.$store.commit('SET_LOADING', true)
-      // Setup map
-      const mapEl = document.getElementById('Map')
-      this.map
-        .data(this.nodes)
-        .padding(80)
-        .excludeRoot(true)
-        .width(window.width)
-        .height(window.height)
-        .color(this.setColor)
-        .label(this.setLabel)
-        .tooltipTitle(this.setTooltip)
-        .tooltipContent(this.setTooltipContent)
-        //.onHover()
-        .onClick(this.nodeClick)(mapEl)
-      this.$store.commit('SET_LOADING', false)
-    },
-    refreshChart() {
-      this.map.data(this.nodes)
-    },
-    isCircle(node) {
-      return node && node.value > 2
-    },
-    goToRoot() {
-      this.map.zoomReset()
-      this.connections = null
-      this.$store.commit('SET_CURRENT_CIRCLE', null)
-    },
-    setColor(node) {
-      switch (node.value) {
-        case 3:
-          return '#6945DF'
-        default:
-          return '#df456e'
-      }
-    },
-    setLabel(node) {
-      return node.name
-    },
-    getAttendee(node) {
-      if (!this.$store.state.currentCircle) {
-        return null
-      }
-      return this.$store.state.currentCircle.attendees.find(
-        a => a.name === node.name
-      )
-    },
-    setTooltip(node) {
-      const attendee = this.getAttendee(node)
-      return !attendee || this.isCircle(node) ? `<h5>${node.name}</h5>` : ''
-    },
-    setTooltipContent(node) {
-      const attendee = this.getAttendee(node)
-      return !attendee || this.isCircle(node)
-        ? ''
-        : `
-        <img src="${attendee.avatar}" width="100%" class="rounded" />
-        <div class="text">
-          <h5>${attendee.name}</h5>
-          <p>${attendee.scratchpad}</p>
-        </div>
-        `
-    },
     nodeClick(node) {
+      if (!node) {
+        this.goToRoot()
+        return
+      }
       this.isCircle(node) ? this.circleClick(node) : this.showUserCard(node)
     },
     showUserCard(node) {
@@ -130,10 +72,9 @@ export default {
         return
       }
       const isCurrentCircle = this.$store.state.currentCircle.name === node.name
-      const canCreateCircle =
-        this.$store.state.currentCircle.allowChildren ||
-        this.$store.getters.isAdmin
-      isCurrentCircle && canCreateCircle
+      const canCreateCircle = this.$store.state.currentCircle.allowChildren
+      const isAdmin = this.$store.getters.isAdmin
+      isCurrentCircle && (isAdmin || canCreateCircle)
         ? this.createCircle()
         : this.joinCircle(node)
     },
@@ -142,6 +83,16 @@ export default {
     },
     async joinCircle(node) {
       const circle = await this.$store.dispatch('lookupCircle', node.name)
+
+      // eslint-disable-next-line no-constant-condition
+      if (circle.attendees.length >= this.$store.state.circleSize) {
+        this.$store.dispatch(
+          'displayMessage',
+          'Sorry, this circle is full (25 max).'
+        )
+        return
+      }
+
       this.$store.commit('SET_CURRENT_CIRCLE', circle)
       this.connections = [{name: node.name}]
       if (this.$store.getters.currentParent) {

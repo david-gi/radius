@@ -5,12 +5,14 @@
       <CreateGatheringModal v-if="noGatheringId && hasUser" />
       <GatheringMap v-if="hasGathering && hasUser" />
     </Background>
+    <MessageBox />
     <TheHeader />
   </div>
 </template>
 
 <script>
 import TheHeader from '@/components/TheHeader.vue'
+import MessageBox from '@/components/MessageBox.vue'
 import Background from '@/components/Background.vue'
 import CreateUserModal from '@/components/modals/CreateUserModal.vue'
 import CreateGatheringModal from '@/components/modals/CreateGatheringModal.vue'
@@ -20,6 +22,7 @@ export default {
   name: 'App',
   components: {
     TheHeader,
+    MessageBox,
     Background,
     CreateUserModal,
     CreateGatheringModal,

@@ -8,6 +8,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     loading: true,
+    message: null,
+    circleSize: 25,
     user: null,
     gathering: null,
     currentCircle: null
@@ -15,10 +17,24 @@ export default new Vuex.Store({
 
   // auto-generate basic mutations
   mutations: {
-    ...H.basicMutations(['loading', 'user', 'gathering', 'currentCircle'])
+    ...H.basicMutations([
+      'loading',
+      'message',
+      'circleSize',
+      'user',
+      'gathering',
+      'currentCircle'
+    ])
   },
 
   actions: {
+    async displayMessage({commit}, msg) {
+      commit('SET_MESSAGE', msg)
+      setTimeout(() => {
+        commit('SET_MESSAGE', null)
+      }, 5000)
+    },
+
     async fetchGathering({commit}, id) {
       const res = await new Promise(r => {
         const gathering = new Gathering('Party', 'It is a party!', 25, null)

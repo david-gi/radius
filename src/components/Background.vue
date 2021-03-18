@@ -79,7 +79,7 @@ export default {
   position: absolute;
   display: block;
   list-style: none;
-  animation: animate 35s linear infinite;
+  animation: animate 50s linear infinite;
   bottom: -150px;
   border-radius: 100%;
 }

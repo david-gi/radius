@@ -1,5 +1,5 @@
 <template>
-  <BaseModal v-if="false"
+  <BaseModal
     :modal-id="modalId"
     :noClose="false"
     @on-reset="resetModal"
@@ -21,6 +21,7 @@
           trim
           required
           autofocus
+          @keyup="() => (formState = $refs.circleform.checkValidity())"
         />
       </b-form-group>
       <b-form-group v-if="$store.getters.isAdmin" label-for="allow-input">
@@ -57,7 +58,6 @@ export default {
   mounted() {},
   computed: {
     nameFeedback() {
-      this.checkFormValidity()
       return this.circle && !this.circle.name
         ? 'Name is required'
         : 'Name already used by another circle'
