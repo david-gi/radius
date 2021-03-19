@@ -7,7 +7,7 @@
   >
     <form ref="gatheringform" @submit.stop.prevent="handleSubmit">
       <h3 class="mt-n2">
-        Start a Gathering
+        Gathering details
       </h3>
       <b-form-group
         label-for="name-input"

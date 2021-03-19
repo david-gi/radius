@@ -2,7 +2,7 @@
   <b-alert
     v-show="msg"
     show
-    variant="primary"
+    variant="secondary"
     fade
     class="position-fixed fixed-bottom m-0 rounded-0 text-center"
     style="z-index: 2000;"

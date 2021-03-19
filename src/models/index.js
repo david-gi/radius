@@ -1,35 +1,39 @@
 export class User {
   name = ''
   scratchpad = ''
-  avatar = ''
-  constructor(name, avatar, scratchpad) {
-    this.name = name
-    this.avatar = avatar
-    this.scratchpad = scratchpad
+  img = ''
+  constructor(_name, _img, _scratchpad) {
+    this.name = _name
+    this.img = _img
+    this.scratchpad = _scratchpad
   }
 }
 
 export class Gathering {
   id = null
   name = ''
-  description = ''
+  tagline = ''
   size = 25
-  admins = []
-  circles = []
   password = null
-  constructor(_name, _description, _size = 25, _password) {
+  admins = null
+  circles = null
+  constructor(_id, _name, _description, _size = 25, _password, _admins, _circles) {
+    this.id = _id
     this.name = _name
     this.description = _description
     this.size = _size
     this.password = _password
+    this.admins = _admins
+    this.circles = _circles
   }
 }
 
 export class Circle {
+  id = null
   name = ''
   allowChildren = true
-  attendees = []
-  circles = []
+  attendees = null
+  circles = null
   constructor(name, _allowChildren = true) {
     this.name = name
     this.allowChildren = _allowChildren

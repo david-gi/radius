@@ -86,10 +86,9 @@ export default {
 
       // eslint-disable-next-line no-constant-condition
       if (circle.attendees.length >= this.$store.state.circleSize) {
-        this.$store.dispatch(
-          'displayMessage',
-          'Sorry, this circle is full (25 max).'
-        )
+        this.$store.dispatch('displayMessage', {
+          msg: 'Sorry, this circle is full (25 max).'
+        })
         return
       }
 

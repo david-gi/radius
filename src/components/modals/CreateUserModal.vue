@@ -6,13 +6,18 @@
     @on-submit="handleSubmit"
   >
     <form ref="userform" @submit.stop.prevent="handleSubmit">
+      <div class="h2 bg-info rounded mx-n5 mt-n2 mb-4 px-5 py-4 shadow-md">
+        <strong v-if="!$store.state.gathering">Start a Gathering</strong>
+        <div v-else>
+          <strong>Join {{ $store.state.gathering.name }}</strong>
+          <p class="h5 lh-sm mt-2 ">
+            {{ $store.state.gathering.description }}
+          </p>
+        </div>
+      </div>
       <h3 class="mt-n2">
         Fill out your Name Tag
       </h3>
-      <div v-if="$store.state.gathering" class="h5">
-        <strong>{{ $store.state.gathering.name }}</strong>
-        <i class="ml-1">{{ $store.state.gathering.description }}</i>
-      </div>
       <b-form-group
         label-for="name-input"
         class="pt-2 mr-1 text-white"
@@ -35,13 +40,13 @@
           id="avatar-input"
           type="url"
           v-model="user.avatar"
-          placeholder="Avatar URL (optional)"
+          placeholder="Picture link (optional)"
           :formatter="v => (v.length > 300 ? v.substring(0, 300) : v)"
           trim
         />
       </b-form-group>
       <b-form-group label-for="scratchpad-input" class="pt-2 mr-1 text-white">
-        <b-form-input
+        <b-form-textarea
           id="scratchpad-input"
           v-model="user.scratchpad"
           placeholder="Share your details (optional)"

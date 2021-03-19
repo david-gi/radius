@@ -56,15 +56,23 @@ export default {
     } else {
       this.$store.commit('SET_LOADING', false)
     }
+    window.addEventListener('hashchange', this.handeHashChange)
+  },
+  beforeDestroy() {
+    window.removeEventListener('hashchange', this.handeHashChange)
   },
   watch: {
-    noGathering() {
-      if (this.$store.state.gathering.name) {
-        window.location.hash = this.$store.state.gathering.name.replace(' ', '')
-      }
+    '$store.state.route': function(v) {
+      window.location.hash = v
     },
     '$store.state.user': function() {
       this.hasUser = this.$store.state.user
+    }
+  },
+  methods: {
+    handeHashChange() {
+      if (!window.location.hash) return
+      this.$store.dispatch('fetchGathering', window.location.hash.substring(1))
     }
   }
 }

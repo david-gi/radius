@@ -2,11 +2,27 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import {User, Gathering, Circle} from '../models/index'
 import H from './storeHelpers'
+import firebase from 'firebase'
 
 Vue.use(Vuex)
 
+//firebase init
+const db = firebase
+  .initializeApp({
+    apiKey: 'AIzaSyCq93DMyAPeJZWVTWA1sF-WZlBB2QXiXsk',
+    authDomain: 'gather-ring-app.firebaseapp.com',
+    databaseURL: 'https://gather-ring-app-default-rtdb.firebaseio.com',
+    projectId: 'gather-ring-app',
+    storageBucket: 'gather-ring-app.appspot.com',
+    messagingSenderId: '825033355241',
+    appId: '1:825033355241:web:2c914888d9ccbf3484a578',
+    measurementId: 'G-B5PDNHE640'
+  })
+  .database()
+
 export default new Vuex.Store({
   state: {
+    route: null,
     loading: true,
     message: null,
     circleSize: 25,
@@ -18,6 +34,7 @@ export default new Vuex.Store({
   // auto-generate basic mutations
   mutations: {
     ...H.basicMutations([
+      'route',
       'loading',
       'message',
       'circleSize',
@@ -28,54 +45,46 @@ export default new Vuex.Store({
   },
 
   actions: {
-    async displayMessage({commit}, msg) {
-      commit('SET_MESSAGE', msg)
+    async displayMessage({commit}, payload) {
+      commit('SET_MESSAGE', payload.msg)
       setTimeout(() => {
         commit('SET_MESSAGE', null)
-      }, 5000)
+      }, payload.time || 5000)
     },
 
-    async fetchGathering({commit}, id) {
-      const res = await new Promise(r => {
-        const gathering = new Gathering('Party', 'It is a party!', 25, null)
-        gathering.id = id
-        const parentCircle = new Circle('Meet and Greet', false)
-        const userA = new User(
-          'Derek',
-          'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1',
-          "I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore, I'm not human anymore"
+    async fetchGathering({commit, dispatch}, id) {
+      const gatheringRef = db.ref('gatherings/' + id)
+      const handler = snapshot => {
+        const val = snapshot.val()
+        if (!val) {
+          dispatch('displayMessage', {
+            msg: 'Gathering was not found.',
+            time: 8000
+          })
+          commit('SET_ROUTE', '')
+          return
+        }
+        const gathering = new Gathering(
+          id,
+          val.name,
+          val.tagline,
+          val.size,
+          val.password,
+          Object.keys(val.admins),
+          H.arrayizeCircles(val.circles)
         )
-        gathering.admins = [userA]
-        parentCircle.attendees = [
-          userA,
-          new User(
-            'Sara',
-            'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1',
-            "I'm not human either"
-          )
-        ]
-        const nestedCircle = new Circle('Philosophy')
-        nestedCircle.attendees = [
-          new User(
-            'Leah',
-            'https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fwww.strawberrytongue.com%2Fwp-content%2Fuploads%2F2014%2F03%2FSleep%2BParty%2BPeople%2B%2Bpress%2Bpic2.jpg&f=1&nofb=1',
-            "I'm not human at all"
-          )
-        ]
-        parentCircle.circles = [nestedCircle]
-        gathering.circles = [
-          parentCircle,
-          new Circle('Discussion'),
-          new Circle('Questions', false)
-        ]
-        r(gathering)
-      }) // firebase call
-      commit('SET_GATHERING', res)
+        commit('SET_GATHERING', gathering)
+        commit('SET_ROUTE', gathering.id)
+      }
+      gatheringRef.get().then(handler)
+      gatheringRef.on('value', handler)
     },
 
     async createGathering({commit}, payload) {
-      const res = await new Promise(r => r(payload)) // firebase call
-      commit('SET_GATHERING', res)
+      const newRef = db.ref('gatherings').push()
+      const id = newRef.key
+      newRef.set(payload)
+      commit('SET_ROUTE', id)
     },
 
     async lookupCircle({state}, name) {
@@ -83,7 +92,7 @@ export default new Vuex.Store({
       const findFunc = arr => {
         return arr.find(circle => circle.name === name)
       }
-      return H.recurseCircles(state.gathering.circles, findFunc)
+      return H.recurseFindCircles(state.gathering.circles, findFunc)
     },
 
     async lookupAttendee({state}, name) {
@@ -100,56 +109,39 @@ export default new Vuex.Store({
         })
         return result
       }
-      return H.recurseCircles(state.gathering.circles, findFunc)
+      return H.recurseFindCircles(state.gathering.circles, findFunc)
     },
 
-    async addCircle({state, commit, dispatch}, payload) {
-      await new Promise(r => r(payload)) // firebase call
-      //dispatch('fetchGathering', state.gathering.id)
-
-      // Testing, remove
-      const gathering = state.gathering
-
-      // local recursive function
-      function addNewCircle(circles) {
-        return circles.map(circle => {
-          if (state.currentCircle && circle.name === state.currentCircle.name) {
-            if (!circle.circles) {
-              circle.circles = []
-            }
-            circle.circles.push(payload)
-          } else if (circle.circles && circle.circles.length) {
-            circle.circles = addNewCircle(circle.circles)
-          }
-          return circle
-        })
-      }
-      if (!state.currentCircle) {
-        gathering.circles.push(payload)
-      } else {
-        gathering.circles = addNewCircle(state.gathering.circles)
-      }
-
-      commit('SET_GATHERING', gathering)
+    async addCircle({state, commit}, payload) {
+      const circlePath = state.gathering.id + state.currentCircle.path
+      const newRef = db.ref(`gatherings/${circlePath}`).push()
+      newRef.set(payload)
+      payload.id = newRef.key
       commit('SET_CURRENT_CIRCLE', payload)
     },
 
-    async addToAdmins({state, dispatch}, payload) {
-      await new Promise(r => r(payload)) // firebase call
-      dispatch('fetchGathering', state.gathering.id)
+    async addToAdmins({state}, name) {
+      const adminsRef = db.ref(
+        `gatherings/${state.gathering.id}/admins/${name}`
+      )
+      adminsRef.set(true)
     },
 
-    async joinCircle({state}) {
-      await new Promise(r => r(state.currentRoom.id, state.user.id)) // firebase call
+    async joinCircle({state, commit}) {
+      const circlePath = state.gathering.id + state.currentCircle.path
+      const attendeeRef = db.ref(`gatherings/${circlePath}/attendees`).push()
+      attendeeRef.set(state.user)
+      const u = state.user
+      u.id = attendeeRef.key
+      commit('SET_USER', u)
     },
 
     async leaveCircle({state}) {
-      await new Promise(r => r(state.currentRoom.id, state.user.id)) // firebase call
-    },
-
-    async removeCircle({state, dispatch}, id) {
-      await new Promise(r => r(id)) // firebase call
-      dispatch('fetchGathering', state.gathering.id)
+      const circlePath = state.gathering.id + state.currentCircle.path
+      const attendeeRef = db.ref(
+        `gatherings/${circlePath}/attendees/${state.user.id}`
+      )
+      attendeeRef.remove()
     }
   },
 
@@ -192,7 +184,7 @@ export default new Vuex.Store({
             node.children = circleChildren
           }
           circle.attendees.forEach(attendee => {
-            if (state.gathering.admins.find(a => a.name === attendee.name)) {
+            if (state.gathering.admins.find(name => name === attendee.name)) {
               node.children.push({
                 name: attendee.name,
                 value: 2
