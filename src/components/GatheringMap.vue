@@ -14,7 +14,7 @@
 
 <script>
 import CirclePack from 'circlepack-chart'
-import circleChartHelpers from '../mixins/circleChartHelpers'
+import gatheringMapHelpers from '../mixins/gatheringMapHelpers'
 import WebRtcConnection from '@/components/WebRtcConnection.vue'
 import CreateCircleModal from '@/components/modals/CreateCircleModal.vue'
 
@@ -24,7 +24,7 @@ export default {
     WebRtcConnection,
     CreateCircleModal
   },
-  mixins: [circleChartHelpers],
+  mixins: [gatheringMapHelpers],
   data() {
     return {
       map: new CirclePack(),
@@ -79,15 +79,28 @@ export default {
         : this.joinCircle(node)
     },
     createCircle() {
+      if (
+        this.$store.state.currentCircle &&
+        this.$store.state.currentCircle.parentPath &&
+        this.$store.state.currentCircle.parentPath.split('/').length > 10
+      ) {
+        this.$store.dispatch('displayMessage', {
+          msg: 'Max circle depth reached (5 max).'
+        })
+        return
+      }
       this.$bvModal.show('create-circle-modal')
     },
     async joinCircle(node) {
       const circle = await this.$store.dispatch('lookupCircle', node.name)
 
       // eslint-disable-next-line no-constant-condition
-      if (circle.attendees.length >= this.$store.state.circleSize) {
+      if (
+        !!circle.attendees &&
+        circle.attendees.length >= this.$store.state.circleSize
+      ) {
         this.$store.dispatch('displayMessage', {
-          msg: 'Sorry, this circle is full (25 max).'
+          msg: 'This circle is full (25 max).'
         })
         return
       }
@@ -115,10 +128,10 @@ g {
 }
 .circlepack-viz circle {
   stroke-width: 0.2rem !important;
-  stroke: #4a4453;
+  stroke: #1a1e14;
 }
 .circlepack-viz circle:hover {
-  stroke: #006efe;
+  stroke: #ceea1e;
 }
 .circlepack-viz .label-container {
   margin-top: -120px !important;

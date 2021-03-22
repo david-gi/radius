@@ -1,5 +1,3 @@
-import {_} from 'core-js'
-
 export default {
   log: x => console.error('>>>' + JSON.stringify(x)),
 
@@ -22,11 +20,14 @@ export default {
   },
 
   arrayizeCircles: circles => {
-    function recurse(_circles) {
-      const _circleArr = Object.values(_circles)
+    function recurse(_circles, path) {
+      const isObj = typeof _circles === 'object'
+      const _circleArr = isObj ? Object.values(_circles) : _circles
       let results = _circleArr.map((c, i) => {
+        const id = isObj ? Object.keys(_circles)[i] : c.id
         return {
-          id: Object.keys(_circles)[i],
+          id,
+          parentPath: path + `/circles/${id}`,
           ...c
         }
       })
@@ -36,19 +37,19 @@ export default {
           nested.attendees = Object.values(c.attendees)
         }
         if (nested.circles) {
-          nested.circles = recurse(c.circles)
+          nested.circles = recurse(c.circles, c.parentPath)
         }
         return nested
       })
     }
-    return recurse(circles)
+    return recurse(circles, '')
   },
 
   recurseFindCircles: (circles, findFunc) => {
     function recurse(_circles, _findFunc, path) {
       let result = _findFunc(_circles)
       if (result) {
-        result.path = path + `/circles/${result.id}`
+        // result.parentPath = path + `/circles/${result.id}`
         return result
       } else {
         result = null
@@ -58,7 +59,6 @@ export default {
             const nested = recurse(circle.circles, _findFunc, path)
             if (nested) {
               result = nested
-              result.path = path
             }
           }
         })

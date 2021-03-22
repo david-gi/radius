@@ -6,12 +6,12 @@
     @on-submit="handleSubmit"
   >
     <form ref="userform" @submit.stop.prevent="handleSubmit">
-      <div class="h2 bg-info rounded mx-n5 mt-n2 mb-4 px-5 py-4 shadow-md">
+      <div class="h2 bg-secondary rounded mx-n5 mt-n2 mb-4 px-5 py-4 shadow-md">
         <strong v-if="!$store.state.gathering">Start a Gathering</strong>
         <div v-else>
           <strong>Join {{ $store.state.gathering.name }}</strong>
           <p class="h5 lh-sm mt-2 ">
-            {{ $store.state.gathering.description }}
+            <small>{{ $store.state.gathering.description }}</small>
           </p>
         </div>
       </div>
@@ -54,6 +54,17 @@
           trim
         />
       </b-form-group>
+      <b-form-group
+        v-if="$store.state.gathering"
+        label-for="password-input"
+        class="pt-2 mr-1 text-white"
+      >
+        <b-form-input
+          type="password"
+          v-model="password"
+          placeholder="Enter gathering password"
+        />
+      </b-form-group>
     </form>
   </BaseModal>
 </template>
@@ -69,7 +80,8 @@ export default {
     return {
       modalId: 'create-user-modal',
       user: new User(),
-      formState: null
+      formState: null,
+      password: null
     }
   },
   computed: {
@@ -86,9 +98,11 @@ export default {
         this.user &&
         this.$store.gathering &&
         (await this.$store.dispatch('lookupAttendee', this.user.name))
-
       this.formState = valid && !existing
       return valid && !existing
+    },
+    async validatePassword() {
+      return this.$store.dispatch('checkPassword', this.password)
     },
     resetModal() {
       this.user = new User()
@@ -96,12 +110,16 @@ export default {
     },
 
     async handleSubmit() {
-      if ((await this.checkFormValidity()) === false) {
+      const fromValid = !(await this.checkFormValidity())
+      const passValid = await this.validatePassword()
+      if (fromValid || passValid) {
         return
       }
 
       await this.$store.commit('SET_USER', this.clone(this.user))
-      this.$bvModal.hide(this.modalId)
+      this.$nextTick(() => {
+        this.$bvModal.hide(this.modalId)
+      })
     }
   }
 }

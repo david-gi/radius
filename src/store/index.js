@@ -28,6 +28,7 @@ export default new Vuex.Store({
     circleSize: 25,
     user: null,
     gathering: null,
+    password: '',
     currentCircle: null
   },
 
@@ -40,6 +41,7 @@ export default new Vuex.Store({
       'circleSize',
       'user',
       'gathering',
+      'password',
       'currentCircle'
     ])
   },
@@ -76,14 +78,38 @@ export default new Vuex.Store({
         commit('SET_GATHERING', gathering)
         commit('SET_ROUTE', gathering.id)
       }
-      gatheringRef.get().then(handler)
-      gatheringRef.on('value', handler)
+      gatheringRef.get().then(val => {
+        handler(val)
+        gatheringRef.on('value', handler)
+      })
+    },
+
+    async checkPassword({commit, dispatch, state}, password) {
+      commit('SET_PASSWORD', password)
+      // const gatheringRef = db.ref('gatherings/' + state.gathering.id)
+      const valid = Math.random() > 0.5 ? false : true
+      if (false || !valid) {
+        //TODO:
+        dispatch('displayMessage', 'Wrong password!')
+      }
+      return valid
     },
 
     async createGathering({commit}, payload) {
       const newRef = db.ref('gatherings').push()
       const id = newRef.key
-      newRef.set(payload)
+      const gathering = {
+        name: payload.name,
+        description: payload.description,
+        size: payload.size,
+        password: payload.password,
+        admins: payload.admins
+      }
+      newRef.set(gathering)
+      payload.circles.forEach(c => {
+        const newCirclesRef = db.ref(`gatherings/${id}/circles`).push()
+        newCirclesRef.set(c)
+      })
       commit('SET_ROUTE', id)
     },
 
@@ -113,8 +139,9 @@ export default new Vuex.Store({
     },
 
     async addCircle({state, commit}, payload) {
-      const circlePath = state.gathering.id + state.currentCircle.path
-      const newRef = db.ref(`gatherings/${circlePath}`).push()
+      const fullPath =
+        state.gathering.id + state.currentCircle.parentPath + '/circles/'
+      const newRef = db.ref(`gatherings/${fullPath}`).push()
       newRef.set(payload)
       payload.id = newRef.key
       commit('SET_CURRENT_CIRCLE', payload)
@@ -128,7 +155,7 @@ export default new Vuex.Store({
     },
 
     async joinCircle({state, commit}) {
-      const circlePath = state.gathering.id + state.currentCircle.path
+      const circlePath = state.gathering.id + state.currentCircle.parentPath
       const attendeeRef = db.ref(`gatherings/${circlePath}/attendees`).push()
       attendeeRef.set(state.user)
       const u = state.user
@@ -137,7 +164,7 @@ export default new Vuex.Store({
     },
 
     async leaveCircle({state}) {
-      const circlePath = state.gathering.id + state.currentCircle.path
+      const circlePath = state.gathering.id + state.currentCircle.parentPath
       const attendeeRef = db.ref(
         `gatherings/${circlePath}/attendees/${state.user.id}`
       )
@@ -147,8 +174,10 @@ export default new Vuex.Store({
 
   getters: {
     isAdmin: state => {
-      if (!state.user || !state.currentCircle) return false
-      return !!state.gathering.admins.find(a => a.id === state.user.id)
+      if (!state.user || !state.currentCircle || !state.gathering.admins) {
+        return false
+      }
+      return !!state.gathering.admins.find(a => a.name === state.user.name)
     },
     currentParent: state => {
       if (!state.currentCircle) {
@@ -183,19 +212,22 @@ export default new Vuex.Store({
             const circleChildren = addChildrenNodes(circle.circles)
             node.children = circleChildren
           }
-          circle.attendees.forEach(attendee => {
-            if (state.gathering.admins.find(name => name === attendee.name)) {
-              node.children.push({
-                name: attendee.name,
-                value: 2
-              })
-            } else {
-              node.children.push({
-                name: attendee.name,
-                value: 1
-              })
-            }
-          })
+          if (circle.attendees && typeof circle.attendees !== 'undefined') {
+            circle.attendees.forEach(attendee => {
+              if (state.gathering.admins.find(name => name === attendee.name)) {
+                node.children.push({
+                  name: attendee.name,
+                  value: 2
+                })
+              } else {
+                node.children.push({
+                  name: attendee.name,
+                  value: 1
+                })
+              }
+            })
+          }
+          if (node.children.length < 1) delete node.children
           return node
         })
       }

@@ -33,16 +33,19 @@ export default {
     setColor(node) {
       switch (node.value) {
         case 3:
-          return '#6945DF'
+          return 'var(--indigo)'
         default:
-          return '#df456e'
+          return 'var(--blue)'
       }
     },
     setLabel(node) {
       return node.name
     },
     getAttendee(node) {
-      if (!this.$store.state.currentCircle) {
+      if (
+        !this.$store.state.currentCircle ||
+        !this.$store.state.currentCircle.attendees
+      ) {
         return null
       }
       return this.$store.state.currentCircle.attendees.find(

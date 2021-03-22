@@ -30,7 +30,7 @@
           id="description-input"
           v-model="gathering.description"
           placeholder="Enter a tagline (optional)"
-          :formatter="v => (v.length > 120 ? v.substring(0, 120) : v)"
+          :formatter="v => (v.length > 300 ? v.substring(0, 300) : v)"
           trim
         />
       </b-form-group>
@@ -115,7 +115,8 @@ export default {
       }
 
       this.convertCircleTags()
-      this.gathering.admins = [this.$store.state.user]
+      this.gathering.admins = []
+      this.gathering.admins[`${this.$store.state.user.name}`] = true
       await this.$store
         .dispatch('createGathering', this.clone(this.gathering))
         .then(() => {

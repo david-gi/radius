@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loaded" class="p-0 m-0 mw-100">
+  <div v-if="loaded" class="p-0 m-0">
     <Background>
       <CreateUserModal v-if="!hasUser" />
       <CreateGatheringModal v-if="noGatheringId && hasUser" />
