@@ -10,13 +10,13 @@
         <!-- Using 'button-content' slot -->
         <template #button-content>
           <img
-            alt="Radius.io"
-            title="Radius.io"
+            alt="Mingle.io"
+            title="Mingle.io"
             src="../assets/logo.png"
-            class="rounded-circle shadow-lg hoverable"
-            width="60"
+            class="hoverable"
+            width="55"
           />
-          <strong class="text-white h5 pl-2"> Radius<small>.io</small></strong>
+          <strong class="text-white h5 pl-2"> Mingle<small>.io</small></strong>
         </template>
         <b-dropdown-item @click="leave">
           Leave

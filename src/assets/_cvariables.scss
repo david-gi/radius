@@ -6,29 +6,29 @@ $gray-400: #d1d3e2 !default;
 $gray-500: #b7b9cc !default;
 $gray-600: #858796 !default;
 $gray-700: #6e707e !default;
-$gray-800: #5a5c69 !default;
+$gray-800: #4a4453 !default;
 $gray-900: #3a3b45 !default;
-$black: #4A4453 !default;
+$black: darken(desaturate(#a5fe00, 80%), 40%) !default;
 
-$blue: #006EFE !default;
-$indigo: #4845df !default;
-$purple: #6945DF !default;
+$blue: #3E69E0 !default;
+$indigo: #502bcc !default;
+$purple: #543EE0 !default;
 $pink: #df456e !default;
 $red: #df4545 !default;
-$orange: #deb245 !default;
-$yellow: #f6c23e !default;
-$green: #BBDF45 !default;
+$orange: #EAB41E !default;
+$yellow: #FFCA00 !default;
+$green: #CEEA1E !default;
 $teal: #45DFB6 !default;
 $cyan: #45a1df !default;
 
-$primary:	$pink;
-$secondary:	$purple;
+$primary: $indigo;
+$secondary:	$blue;
 $success:	$green;
-$info:	$blue;
+$info:	$green;
 $warning:	$orange;
-$danger: darken($black, 20%);
+$danger: $black;
 $light:	lighten($secondary, 35%);
-$dark:	$gray-800;
+$dark:	$black;
 $theme-colors:
   (
       "primary": $primary,

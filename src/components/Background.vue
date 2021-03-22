@@ -22,18 +22,7 @@ export default {
   },
   methods: {
     genCircle() {
-      const color = [
-        'df456e',
-        'df456e',
-        'df456e',
-        'df456e',
-        'df456e',
-        'df456e',
-        '6945DF',
-        '6945DF',
-        '6945DF',
-        '6945DF'
-      ][(Math.random() * 10).toFixed(0)]
+      const color = Math.random() > 0.5 ? 'var(--indigo)' : 'var(--blue)'
       this.pushBias = this.pushBias > window.innerWidth / 2 ? 0 : this.pushBias
       const startBias = Math.random() < 0.2
       const left = (Math.random() * 98 + this.pushBias).toFixed(0)
@@ -42,7 +31,7 @@ export default {
       const delay = (Math.random() * 30).toFixed(0)
       const duration = 60 - Math.random() * 6 - (size / 4).toFixed(0)
       return `
-        background: #${color};
+        background: ${color};
         left: ${left}%;
         width: ${size}px;
         height: ${size}px;
@@ -60,7 +49,7 @@ export default {
 }
 
 .region {
-  background: #4a4453;
+  background-color: var(--gray-dark);
   width: 100%;
   height: 100vh;
 }
@@ -75,11 +64,10 @@ export default {
 }
 
 .dots li {
-  background: #df456eaa;
   position: absolute;
   display: block;
   list-style: none;
-  animation: animate 50s linear infinite;
+  animation: animate 60s linear infinite;
   bottom: -150px;
   border-radius: 100%;
 }
