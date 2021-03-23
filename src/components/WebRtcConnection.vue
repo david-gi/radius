@@ -6,11 +6,6 @@
 import RTCMultiConnection from 'rtcmulticonnection'
 export default {
   name: 'WebRtcRoom',
-  data() {
-    return {
-      connection: new RTCMultiConnection()
-    }
-  },
   props: {
     room: String,
     video: {
@@ -26,8 +21,13 @@ export default {
       default: false
     }
   },
+  data() {
+    return {
+      connection: new RTCMultiConnection()
+    }
+  },
   mounted() {
-    this.openOrJoin(this.roomId)
+    this.openOrJoin('Mingle_io_' + this.room)
   },
   methods: {
     openOrJoin(roomId) {

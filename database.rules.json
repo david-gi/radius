@@ -1,8 +1,9 @@
 {
   "rules": {
-    "*": {
-    	".read": true,
-    	".write": true
+    ".read": true,
+    ".write": true,
+    "security": {
+      ".read": false
     },
     "gatherings": {
       "$gathering_id": {
@@ -14,11 +15,7 @@
           ".validate": 
             "!newData .exists() || (newData.isString() &&  newData.val().length < 300)" 
         },
-        "password": {
-          ".validate": 
-            "!newData.exists() || (newData.isString() && newData.val().length < 40)"
-        },
-        "size": { 
+        "maxSize": { 
           ".validate":
           	"newData.isNumber() &&  newData.val() >= 1 && newData.val() <= 100"
         }

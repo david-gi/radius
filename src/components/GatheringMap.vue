@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div style="opacity:.95">
+  <div :class="{joined: currentCircle}">
+    <div style="opacity:.95;">
       <div id="Map" />
       <div v-if="false && connections">
         <div v-for="con in connections" :key="con.name">
@@ -56,6 +56,7 @@ export default {
 
   async beforeDestroy() {
     await this.$store.dispatch('leaveCircle')
+    await this.$store.dispatch('leaveGathering')
   },
 
   methods: {
@@ -76,20 +77,16 @@ export default {
         return
       }
       const isCurrentCircle = this.$store.state.currentCircle.name === node.name
-      const canCreateCircle = this.$store.state.currentCircle.allowChildren
-      const isAdmin = this.$store.getters.isAdmin
-      isCurrentCircle && (isAdmin || canCreateCircle)
-        ? this.createCircle()
-        : this.joinCircle(node)
+      isCurrentCircle ? this.createCircle() : this.joinCircle(node)
     },
     createCircle() {
       if (
         this.$store.state.currentCircle &&
         this.$store.state.currentCircle.parentPath &&
-        this.$store.state.currentCircle.parentPath.split('/').length > 10
+        this.$store.state.currentCircle.parentPath.split('/').length > 6
       ) {
         this.$store.dispatch('displayMessage', {
-          msg: 'Max circle depth reached (5 max).'
+          msg: 'Max circle depth reached (3 max).'
         })
         return
       }
@@ -119,15 +116,18 @@ export default {
       }
       await this.$store.dispatch('joinCircle')
       this.map.zoomToNode(node)
-    },
-    makeAttendeeAdmin(id) {
-      this.$store.dispatch('addToAdmins', id)
     }
   }
 }
 </script>
 <style>
 /* circlepack overwrite classes */
+svg {
+  cursor: default !important;
+}
+.joined svg {
+  cursor: alias !important;
+}
 g {
   clip-path: none !important;
 }

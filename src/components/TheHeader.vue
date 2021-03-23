@@ -24,10 +24,7 @@
       </b-nav-item-dropdown>
     </b-navbar-nav>
     <b-navbar-nav class="mt-n1 ml-n2">
-      <b-nav-item
-        v-if="$store.state.gathering && $store.state.gathering.name"
-        :href="`#${$store.state.gathering.name}`"
-      >
+      <b-nav-item v-if="$store.state.gathering && $store.state.gathering.name">
         <b-icon-arrow-right-short scale="1.5" variant="white" />
         <strong
           v-if="$store.state.gathering"
@@ -36,11 +33,7 @@
           {{ $store.state.gathering.name }}
         </strong>
       </b-nav-item>
-      <b-nav-item
-        v-if="room"
-        :href="`#${$store.state.gathering.name}/${room}`"
-        class="ml-n2"
-      >
+      <b-nav-item v-if="room" class="ml-n2">
         <b-icon-arrow-right-short scale="1.5" variant="white" />
         <strong class="text-white ml-1 text-nowrap">
           {{ room }}
@@ -62,7 +55,8 @@ export default {
   },
   methods: {
     leave() {
-      this.$store.commit('SET_GATHERING', null)
+      this.$store.dispatch('leaveCircle')
+      this.$store.dispatch('leaveGathering')
       window.location = '/'
     }
   }

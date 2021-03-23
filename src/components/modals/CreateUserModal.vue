@@ -59,17 +59,6 @@
           trim
         />
       </b-form-group>
-      <b-form-group
-        v-if="$store.state.gathering"
-        label-for="password-input"
-        class="pt-2 mr-1 text-white"
-      >
-        <b-form-input
-          type="password"
-          v-model="password"
-          placeholder="Enter gathering password"
-        />
-      </b-form-group>
     </form>
   </BaseModal>
 </template>
@@ -85,8 +74,7 @@ export default {
     return {
       modalId: 'create-user-modal',
       user: new User(),
-      formState: null,
-      password: null
+      formState: null
     }
   },
   computed: {
@@ -106,9 +94,7 @@ export default {
       this.formState = valid && !existing
       return valid && !existing
     },
-    async validatePassword() {
-      return await this.$store.dispatch('checkPassword', this.password)
-    },
+
     resetModal() {
       this.user = new User()
       this.formState = null
@@ -116,17 +102,10 @@ export default {
 
     async handleSubmit() {
       const formValid = await this.checkFormValidity()
-      const passCheck = this.$store.state.gathering.password
-        ? await this.validatePassword()
-        : true
-      if (!formValid && !passCheck) {
-        return
-      }
+      if (!formValid) return
 
       await this.$store.commit('SET_USER', this.clone(this.user))
-      this.$nextTick(() => {
-        this.$bvModal.hide(this.modalId)
-      })
+      if (this.$store.gathering) await this.$store.dispatch('joinGathering')
     }
   }
 }

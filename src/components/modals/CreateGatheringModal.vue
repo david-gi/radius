@@ -42,19 +42,20 @@
       </b-form-group>
       <b-form-group
         v-if="false"
-        label-for="size-input"
+        label-for="maxsize-input"
         class="pt-2 mr-1 text-white"
       >
-        <span>Max attendees (25/main circle): {{ gathering.size }}</span>
+        <span>Max attendees: {{ gathering.maxSize }}</span>
         <b-form-input
-          id="size-input"
+          id="maxsize-input"
           type="range"
-          v-model="gathering.size"
+          v-model="gathering.maxSize"
           min="2"
-          max="50"
+          max="100"
         />
       </b-form-group>
       <b-form-group label-for="circles-input" class="pt-2 mr-1 text-white">
+        Each main circle is limited to {{ $store.state.circleSize }}) attendees.
         <b-form-tags
           placeholder="Add main circles..."
           input-id="circles-input"
@@ -112,8 +113,6 @@ export default {
       }
 
       this.convertCircleTags()
-      this.gathering.admins = []
-      this.gathering.admins[`${this.$store.state.user.name}`] = true
       await this.$store
         .dispatch('createGathering', this.clone(this.gathering))
         .then(() => {

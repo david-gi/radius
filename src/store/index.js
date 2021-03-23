@@ -7,37 +7,41 @@ import firebase from 'firebase'
 Vue.use(Vuex)
 
 //firebase init
-const db = firebase
-  .initializeApp({
-    apiKey: 'AIzaSyCq93DMyAPeJZWVTWA1sF-WZlBB2QXiXsk',
-    authDomain: 'gather-ring-app.firebaseapp.com',
-    databaseURL: 'https://gather-ring-app-default-rtdb.firebaseio.com',
-    projectId: 'gather-ring-app',
-    storageBucket: 'gather-ring-app.appspot.com',
-    messagingSenderId: '825033355241',
-    appId: '1:825033355241:web:2c914888d9ccbf3484a578',
-    measurementId: 'G-B5PDNHE640'
-  })
-  .database()
+const fbase = firebase.initializeApp({
+  apiKey: 'AIzaSyCq93DMyAPeJZWVTWA1sF-WZlBB2QXiXsk',
+  authDomain: 'gather-ring-app.firebaseapp.com',
+  databaseURL: 'https://gather-ring-app-default-rtdb.firebaseio.com',
+  projectId: 'gather-ring-app',
+  storageBucket: 'gather-ring-app.appspot.com',
+  messagingSenderId: '825033355241',
+  appId: '1:825033355241:web:2c914888d9ccbf3484a578',
+  measurementId: 'G-B5PDNHE640'
+})
+const db = fbase.database()
+const cFunc = fbase.functions()
 
 export default new Vuex.Store({
   state: {
+    showSecurity: false,
     route: null,
     loading: true,
     message: null,
+    timer: null,
     circleSize: 25,
     user: null,
     gathering: null,
-    password: '',
+    password: null,
     currentCircle: null
   },
 
   // auto-generate basic mutations
   mutations: {
     ...H.basicMutations([
+      'showSecurity',
       'route',
       'loading',
       'message',
+      'timer',
       'circleSize',
       'user',
       'gathering',
@@ -47,14 +51,30 @@ export default new Vuex.Store({
   },
 
   actions: {
-    async displayMessage({commit}, payload) {
+    async displayMessage({commit, state}, payload) {
+      commit('SET_MESSAGE', null)
+      clearTimeout(state.timer)
+      if (!payload) return
       commit('SET_MESSAGE', payload.msg)
-      setTimeout(() => {
+      const timerRef = setTimeout(() => {
         commit('SET_MESSAGE', null)
       }, payload.time || 5000)
+      commit('SET_TIMER', timerRef)
     },
 
-    async fetchGathering({commit, dispatch}, id) {
+    async fetchGathering({commit, state, dispatch}, id) {
+      const checkSecurity = cFunc.httpsCallable('checkSecurity')
+      const valid = await checkSecurity({id, password: state.password})
+      commit('SET_SHOW_SECURITY', false)
+      if (!valid.data) {
+        dispatch('displayMessage', {
+          msg: 'Please enter the correct password.',
+          time: 6000
+        })
+        commit('SET_SHOW_SECURITY', true)
+        return
+      }
+
       const gatheringRef = db.ref('gatherings/' + id)
       const handler = snapshot => {
         const val = snapshot.val()
@@ -70,9 +90,8 @@ export default new Vuex.Store({
           id,
           val.name,
           val.tagline,
-          val.size,
+          val.maxSize,
           val.password,
-          Object.keys(val.admins),
           H.arrayizeCircles(val.circles)
         )
         commit('SET_GATHERING', gathering)
@@ -84,27 +103,19 @@ export default new Vuex.Store({
       })
     },
 
-    async checkPassword({commit, dispatch, state}, password) {
-      commit('SET_PASSWORD', password)
-      return true
-      // //const valid = call cloud func check
-      // if (password) {
-      //   //TODO:
-      //   dispatch('displayMessage', {msg: 'Wrong password!'})
-      //   return false
-      // }
-      // return true
-    },
-
     async createGathering({commit}, payload) {
       const newRef = db.ref('gatherings').push()
       const id = newRef.key
+      const hasPass = payload.password && payload.password.length > 0
       const gathering = {
         name: payload.name,
         description: payload.description,
-        size: payload.size,
-        password: payload.password,
-        admins: payload.admins
+        maxSize: payload.maxSize,
+        password: hasPass
+      }
+      if (hasPass) {
+        db.ref(`security/${id}`).set(payload.password)
+        commit('SET_PASSWORD', payload.password)
       }
       newRef.set(gathering)
       payload.circles.forEach(c => {
@@ -112,6 +123,28 @@ export default new Vuex.Store({
         newCirclesRef.set(c)
       })
       commit('SET_ROUTE', id)
+    },
+
+    async joinGathering({state}) {
+      const payload = state.user
+      payload.user = state.user.name
+      payload.password = state.password
+      db.ref(`gatherings/${state.gathering.id}/users/${state.user.name}`).set(
+        true
+      )
+    },
+
+    async leaveGathering({commit, state}) {
+      if (state.user) {
+        const ref = db.ref(
+          `gatherings/${state.gathering.id}/users/${state.user.name}`
+        )
+        if (ref) ref.remove()
+        commit('SET_USER', null)
+        commit('SET_GATHERING', null)
+        commit('SET_PASSWORD', null)
+        commit('SET_CURRENT_CIRCLE', null)
+      }
     },
 
     async lookupCircle({state}, name) {
@@ -143,49 +176,42 @@ export default new Vuex.Store({
       dispatch('leaveCircle')
 
       const fullPath =
-        state.gathering.id + state.currentCircle.parentPath + '/circles/'
+        state.gathering.id +
+        (state.currentCircle.parentPath || '') +
+        '/circles/'
       const newRef = db.ref(`gatherings/${fullPath}`).push()
 
+      H.log(payload)
       newRef.set(payload)
       payload.id = newRef.key
-      payload.parentPath = state.currentCircle.parentPath + '/circles/' + payload.id
+      payload.password = state.password
+      payload.parentPath =
+        (state.currentCircle.parentPath || '') + '/circles/' + payload.id
 
       commit('SET_CURRENT_CIRCLE', payload)
       dispatch('joinCircle')
     },
 
-    async addToAdmins({state}, name) {
-      const adminsRef = db.ref(
-        `gatherings/${state.gathering.id}/admins/${name}`
-      )
-      adminsRef.set(true)
-    },
-
     async joinCircle({state}) {
       const circlePath = state.gathering.id + state.currentCircle.parentPath
+      const payload = state.user
+      payload.password = state.password
       db.ref(`gatherings/${circlePath}/attendees/${state.user.name}`).set(
-        state.user
+        payload
       )
     },
 
     async leaveCircle({state}) {
-      if (!state.currentCircle) return
+      if (!state.currentCircle || !state.user) return
       const circlePath = state.gathering.id + state.currentCircle.parentPath
-      H.log(circlePath)
       const attendeeRef = db.ref(
         `gatherings/${circlePath}/attendees/${state.user.name}`
       )
-      attendeeRef.remove()
+      if (attendeeRef) attendeeRef.remove()
     }
   },
 
   getters: {
-    isAdmin: state => {
-      if (!state.user || !state.currentCircle || !state.gathering.admins) {
-        return false
-      }
-      return !!state.gathering.admins.find(a => a.name === state.user.name)
-    },
     currentParent: state => {
       if (!state.currentCircle) {
         return null
@@ -225,17 +251,10 @@ export default new Vuex.Store({
                 state.user.name === attendee.name
                   ? attendee.name + ' [You]'
                   : attendee.name
-              if (state.gathering.admins.find(name => name === attendee.name)) {
-                node.children.push({
-                  name: name,
-                  value: 2
-                })
-              } else {
-                node.children.push({
-                  name: name,
-                  value: 1
-                })
-              }
+              node.children.push({
+                name: name,
+                value: state.user.name === attendee.name ? 2 : 1
+              })
             })
           }
           if (node.children.length < 1) delete node.children

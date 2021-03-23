@@ -1,9 +1,10 @@
 <template>
   <div v-if="loaded" class="p-0 m-0">
     <Background>
-      <CreateUserModal v-if="!hasUser" />
-      <CreateGatheringModal v-if="noGatheringId && hasUser" />
-      <GatheringMap v-if="hasGathering && hasUser" />
+      <SecurityModal v-if="showSecurity" />
+      <CreateUserModal v-if="!hasUser && !showSecurity" />
+      <CreateGatheringModal v-if="noGatheringId && hasUser && !showSecurity" />
+      <GatheringMap v-if="hasGathering && hasUser && !showSecurity" />
     </Background>
     <MessageBox />
     <TheHeader />
@@ -14,6 +15,7 @@
 import TheHeader from '@/components/TheHeader.vue'
 import MessageBox from '@/components/MessageBox.vue'
 import Background from '@/components/Background.vue'
+import SecurityModal from '@/components/modals/SecurityModal.vue'
 import CreateUserModal from '@/components/modals/CreateUserModal.vue'
 import CreateGatheringModal from '@/components/modals/CreateGatheringModal.vue'
 import GatheringMap from '@/components/GatheringMap.vue'
@@ -24,6 +26,7 @@ export default {
     TheHeader,
     MessageBox,
     Background,
+    SecurityModal,
     CreateUserModal,
     CreateGatheringModal,
     GatheringMap
@@ -36,6 +39,9 @@ export default {
   computed: {
     loaded() {
       return !this.$store.state.loading
+    },
+    showSecurity() {
+      return this.$store.state.showSecurity
     },
     hasGathering() {
       return this.$store.state.gathering
@@ -50,9 +56,14 @@ export default {
   mounted() {
     if (window.location.hash) {
       const id = window.location.hash.substring(1)
-      this.$store.dispatch('fetchGathering', id).then(() => {
-        this.$store.commit('SET_LOADING', false)
-      })
+      this.$store
+        .dispatch('fetchGathering', id)
+        .then(() => {
+          this.$store.commit('SET_LOADING', false)
+        })
+        .catch(() => {
+          this.$store.commit('SET_LOADING', false)
+        })
     } else {
       this.$store.commit('SET_LOADING', false)
     }

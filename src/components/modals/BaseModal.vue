@@ -37,6 +37,7 @@ export default {
       this.$emit('on-reset')
     },
     handleOk(bvModalEvt) {
+      this.$store.dispatch('displayMessage', null)
       // Prevent modal from closing
       bvModalEvt.preventDefault()
       // Trigger submit handler

@@ -63,10 +63,16 @@ export default {
       return !attendee || this.isCircle(node)
         ? ''
         : `
-      <img src="${attendee.avatar}" width="100%" class="rounded" />
+      <img
+        src="${attendee.avatar}"
+        width="100%"
+        class="rounded ${attendee.avatar ? '' : 'd-none'}"
+      />
       <div class="text">
         <h5>${attendee.name}</h5>
-        <p>${attendee.scratchpad}</p>
+        <p class="rounded ${attendee.avatar ? '' : 'd-none'}">
+          ${attendee.scratchpad || ''}
+        </p>
       </div>
       `
     }

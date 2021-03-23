@@ -24,19 +24,6 @@
           @keyup="() => (formState = $refs.circleform.checkValidity())"
         />
       </b-form-group>
-      <b-form-group v-if="$store.getters.isAdmin" label-for="allow-input">
-        <b-form-checkbox
-          v-model="circle.allowChildren"
-          name="allow-input"
-          button-variant="secondary"
-          button
-          :value="true"
-          :unchecked-value="false"
-        >
-          <span v-if="circle.allowChildren">Attendees can add circles</span>
-          <span v-else>Only admins can add circles</span>
-        </b-form-checkbox>
-      </b-form-group>
     </form>
   </BaseModal>
 </template>

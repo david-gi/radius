@@ -12,18 +12,16 @@ export class User {
 export class Gathering {
   id = null
   name = ''
-  tagline = ''
-  size = 25
+  description = ''
+  maxSize = 25
   password = null
-  admins = null
   circles = null
-  constructor(_id, _name, _description, _size = 25, _password, _admins, _circles) {
+  constructor(_id, _name, _desc, _maxSize = 25, _password, _circles) {
     this.id = _id
     this.name = _name
-    this.description = _description
-    this.size = _size
+    this.description = _desc
+    this.maxSize = _maxSize
     this.password = _password
-    this.admins = _admins
     this.circles = _circles
   }
 }
@@ -31,13 +29,10 @@ export class Gathering {
 export class Circle {
   id = null
   name = ''
-  allowChildren = true
   attendees = null
   circles = null
   parentPath = null
-  constructor(name, _allowChildren = true) {
+  constructor(name) {
     this.name = name
-    this.allowChildren = _allowChildren
   }
-  path = () => `${this.parentPath}/circles/` + this.id
 }
