@@ -1,6 +1,28 @@
 {
   "rules": {
-    ".read": true,
-    ".write": true
+    "*": {
+    	".read": true,
+    	".write": true
+    },
+    "gatherings": {
+      "$gathering_id": {
+        "name": {
+          ".validate":
+            "newData.isString() && newData.val().length < 40"
+        },
+        "description": {
+          ".validate": 
+            "!newData .exists() || (newData.isString() &&  newData.val().length < 300)" 
+        },
+        "password": {
+          ".validate": 
+            "!newData.exists() || (newData.isString() && newData.val().length < 40)"
+        },
+        "size": { 
+          ".validate":
+          	"newData.isNumber() &&  newData.val() >= 1 && newData.val() <= 100"
+        }
+      }
+    }
   }
 }
