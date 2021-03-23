@@ -34,7 +34,12 @@ export default {
       return results.map(c => {
         const nested = c
         if (nested.attendees) {
-          nested.attendees = Object.values(c.attendees)
+          nested.attendees = Object.values(c.attendees).map((a, i) => {
+            return {
+              name: Object.keys(c.attendees)[i],
+              ...Object.values(c.attendees)
+            }
+          })
         }
         if (nested.circles) {
           nested.circles = recurse(c.circles, c.parentPath)

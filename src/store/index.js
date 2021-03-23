@@ -86,13 +86,14 @@ export default new Vuex.Store({
 
     async checkPassword({commit, dispatch, state}, password) {
       commit('SET_PASSWORD', password)
-      // const gatheringRef = db.ref('gatherings/' + state.gathering.id)
-      const valid = Math.random() > 0.5 ? false : true
-      if (false || !valid) {
-        //TODO:
-        dispatch('displayMessage', 'Wrong password!')
-      }
-      return valid
+      return true
+      // //const valid = call cloud func check
+      // if (password) {
+      //   //TODO:
+      //   dispatch('displayMessage', {msg: 'Wrong password!'})
+      //   return false
+      // }
+      // return true
     },
 
     async createGathering({commit}, payload) {
@@ -138,13 +139,19 @@ export default new Vuex.Store({
       return H.recurseFindCircles(state.gathering.circles, findFunc)
     },
 
-    async addCircle({state, commit}, payload) {
+    async addCircle({state, commit, dispatch}, payload) {
+      dispatch('leaveCircle')
+
       const fullPath =
         state.gathering.id + state.currentCircle.parentPath + '/circles/'
       const newRef = db.ref(`gatherings/${fullPath}`).push()
+
       newRef.set(payload)
       payload.id = newRef.key
+      payload.parentPath = state.currentCircle.parentPath + '/circles/' + payload.id
+
       commit('SET_CURRENT_CIRCLE', payload)
+      dispatch('joinCircle')
     },
 
     async addToAdmins({state}, name) {
@@ -154,19 +161,19 @@ export default new Vuex.Store({
       adminsRef.set(true)
     },
 
-    async joinCircle({state, commit}) {
+    async joinCircle({state}) {
       const circlePath = state.gathering.id + state.currentCircle.parentPath
-      const attendeeRef = db.ref(`gatherings/${circlePath}/attendees`).push()
-      attendeeRef.set(state.user)
-      const u = state.user
-      u.id = attendeeRef.key
-      commit('SET_USER', u)
+      db.ref(`gatherings/${circlePath}/attendees/${state.user.name}`).set(
+        state.user
+      )
     },
 
     async leaveCircle({state}) {
+      if (!state.currentCircle) return
       const circlePath = state.gathering.id + state.currentCircle.parentPath
+      H.log(circlePath)
       const attendeeRef = db.ref(
-        `gatherings/${circlePath}/attendees/${state.user.id}`
+        `gatherings/${circlePath}/attendees/${state.user.name}`
       )
       attendeeRef.remove()
     }
@@ -214,14 +221,18 @@ export default new Vuex.Store({
           }
           if (circle.attendees && typeof circle.attendees !== 'undefined') {
             circle.attendees.forEach(attendee => {
+              const name =
+                state.user.name === attendee.name
+                  ? attendee.name + ' [You]'
+                  : attendee.name
               if (state.gathering.admins.find(name => name === attendee.name)) {
                 node.children.push({
-                  name: attendee.name,
+                  name: name,
                   value: 2
                 })
               } else {
                 node.children.push({
-                  name: attendee.name,
+                  name: name,
                   value: 1
                 })
               }

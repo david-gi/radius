@@ -17,10 +17,9 @@
       >
         <b-form-input
           id="name-input"
-          v-model="gathering.name"
+          v-model.lazy.trim="gathering.name"
           placeholder="Enter a name"
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
-          trim
           required
           autofocus
         />
@@ -31,16 +30,14 @@
           v-model="gathering.description"
           placeholder="Enter a tagline (optional)"
           :formatter="v => (v.length > 300 ? v.substring(0, 300) : v)"
-          trim
         />
       </b-form-group>
       <b-form-group label-for="password-input" class="pt-2 mr-1 text-white">
         <b-form-input
           id="password-input"
-          v-model="gathering.password"
+          v-model.lazy.trim="gathering.password"
           placeholder="Enter a password (optional)"
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
-          trim
         />
       </b-form-group>
       <b-form-group
@@ -48,7 +45,7 @@
         label-for="size-input"
         class="pt-2 mr-1 text-white"
       >
-        <span>Max attendees: {{ gathering.size }}</span>
+        <span>Max attendees (25/main circle): {{ gathering.size }}</span>
         <b-form-input
           id="size-input"
           type="range"

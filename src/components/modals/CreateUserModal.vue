@@ -9,7 +9,12 @@
       <div class="h2 bg-secondary rounded mx-n5 mt-n2 mb-4 px-5 py-4 shadow-md">
         <strong v-if="!$store.state.gathering">Start a Gathering</strong>
         <div v-else>
-          <strong>Join {{ $store.state.gathering.name }}</strong>
+          <strong
+            >Join:
+            <span class="text-success">{{
+              $store.state.gathering.name
+            }}</span></strong
+          >
           <p class="h5 lh-sm mt-2 ">
             <small>{{ $store.state.gathering.description }}</small>
           </p>
@@ -102,7 +107,7 @@ export default {
       return valid && !existing
     },
     async validatePassword() {
-      return this.$store.dispatch('checkPassword', this.password)
+      return await this.$store.dispatch('checkPassword', this.password)
     },
     resetModal() {
       this.user = new User()
@@ -110,9 +115,11 @@ export default {
     },
 
     async handleSubmit() {
-      const fromValid = !(await this.checkFormValidity())
-      const passValid = await this.validatePassword()
-      if (fromValid || passValid) {
+      const formValid = await this.checkFormValidity()
+      const passCheck = this.$store.state.gathering.password
+        ? await this.validatePassword()
+        : true
+      if (!formValid && !passCheck) {
         return
       }
 

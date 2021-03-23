@@ -25,10 +25,12 @@ export default {
     isCircle(node) {
       return node && node.value > 2
     },
-    goToRoot() {
+    async goToRoot() {
       this.map.zoomReset()
-      this.connections = null
-      this.$store.commit('SET_CURRENT_CIRCLE', null)
+      await this.$store.dispatch('leaveCircle').then(() => {
+        this.connections = null
+        this.$store.commit('SET_CURRENT_CIRCLE', null)
+      })
     },
     setColor(node) {
       switch (node.value) {

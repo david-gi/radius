@@ -54,6 +54,10 @@ export default {
     this.initMap()
   },
 
+  async beforeDestroy() {
+    await this.$store.dispatch('leaveCircle')
+  },
+
   methods: {
     nodeClick(node) {
       if (!node) {
@@ -96,7 +100,7 @@ export default {
 
       // eslint-disable-next-line no-constant-condition
       if (
-        !!circle.attendees &&
+        circle.attendees &&
         circle.attendees.length >= this.$store.state.circleSize
       ) {
         this.$store.dispatch('displayMessage', {
@@ -104,8 +108,8 @@ export default {
         })
         return
       }
-
-      this.$store.commit('SET_CURRENT_CIRCLE', circle)
+      await this.$store.dispatch('leaveCircle')
+      await this.$store.commit('SET_CURRENT_CIRCLE', circle)
       this.connections = [{name: node.name}]
       if (this.$store.getters.currentParent) {
         this.connections.push({
@@ -113,6 +117,7 @@ export default {
           listenOnly: true
         })
       }
+      await this.$store.dispatch('joinCircle')
       this.map.zoomToNode(node)
     },
     makeAttendeeAdmin(id) {

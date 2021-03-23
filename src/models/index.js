@@ -34,8 +34,10 @@ export class Circle {
   allowChildren = true
   attendees = null
   circles = null
+  parentPath = null
   constructor(name, _allowChildren = true) {
     this.name = name
     this.allowChildren = _allowChildren
   }
+  path = () => `${this.parentPath}/circles/` + this.id
 }

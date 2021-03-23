@@ -27,7 +27,7 @@ export default {
     }
   },
   mounted() {
-    // this.openOrJoin(this.roomId)
+    this.openOrJoin(this.roomId)
   },
   methods: {
     openOrJoin(roomId) {
