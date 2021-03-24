@@ -11,7 +11,7 @@ exports.checkSecurity = functions.https.onCall((data, context) => {
 });
 
 exports.gatheringOnUpdate = functions.database
-    .ref("/gatherings/*").onUpdate(
+    .ref("/gatherings/{gId}").onUpdate(
         (change, context) => {
           const oldSnap = change.val();
           const snap = change.after;
@@ -47,6 +47,13 @@ exports.gatheringOnUpdate = functions.database
               };
               recurseCount(c);
             });
+
+            console.error("gatheringSize > oldSnap.maxSize:" +
+              gatheringSize > oldSnap.maxSize);
+            console.error("userExists:" + userExists);
+            console.error("circleMaxSize" + circleMaxSize);
+            console.error("circleMaxDepth" + circleMaxDepth);
+
             if (gatheringSize > oldSnap.maxSize ||
               userExists ||
               circleMaxSize ||
