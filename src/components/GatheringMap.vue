@@ -47,31 +47,34 @@ export default {
       deep: true,
       handler() {
         this.refreshChart()
-        setTimeout(() => {
-          this.map.zoomReset()
-          setTimeout(() => {
-            this.currentNodeZoom()
-          }, 10)
-        }, 1000)
       }
     }
   },
 
-  mounted() {
-    this.initMap()
+  created() {
+    window.addEventListener('beforeunload', this.exit)
   },
 
-  async beforeDestroy() {
-    await this.$store.dispatch('leaveCircle')
-    await this.$store.dispatch('leaveGathering')
+  mounted() {
+    this.initMap()
+    window.addEventListener('beforeunload', this.exit)
+  },
+
+  beforeRouteLeave() {
+    this.exit()
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('beforeunload', this.exit)
   },
 
   methods: {
+    exit() {
+      alert()
+      this.$store.dispatch('leaveCircle')
+      this.$store.dispatch('leaveGathering')
+    },
     nodeClick(node) {
-      const that = this
-      this.currentNodeZoom = function() {
-        that.map.zoomToNode(node)
-      }
       if (!node) {
         this.goToRoot()
         return

@@ -6,7 +6,7 @@ export default {
       const mapEl = document.getElementById('Map')
       this.map
         .data(this.nodes)
-        .padding(60)
+        .padding(80)
         .excludeRoot(true)
         .minCircleRadius(10)
         .width(window.width)

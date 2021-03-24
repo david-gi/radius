@@ -86,13 +86,15 @@ export default new Vuex.Store({
           commit('SET_ROUTE', '')
           return
         }
+
         const gathering = new Gathering(
           id,
           val.name,
           val.tagline,
           val.maxSize,
           val.password,
-          H.arrayizeCircles(val.circles)
+          H.arrayizeCircles(val.circles),
+          val.users ? Object.keys(val.users) : []
         )
         commit('SET_GATHERING', gathering)
         commit('SET_ROUTE', gathering.id)
@@ -103,7 +105,7 @@ export default new Vuex.Store({
       })
     },
 
-    async createGathering({commit}, payload) {
+    async createGathering({dispatch, commit}, payload) {
       const newRef = db.ref('gatherings').push()
       const id = newRef.key
       const hasPass = payload.password && payload.password.length > 0
@@ -122,6 +124,7 @@ export default new Vuex.Store({
         const newCirclesRef = db.ref(`gatherings/${id}/circles`).push()
         newCirclesRef.set(c)
       })
+      dispatch('joinGathering')
       commit('SET_ROUTE', id)
     },
 
@@ -130,7 +133,7 @@ export default new Vuex.Store({
       payload.user = state.user.name
       payload.password = state.password
       db.ref(`gatherings/${state.gathering.id}/users/${state.user.name}`).set(
-        true
+        payload
       )
     },
 
@@ -181,7 +184,6 @@ export default new Vuex.Store({
         '/circles/'
       const newRef = db.ref(`gatherings/${fullPath}`).push()
 
-      H.log(payload)
       newRef.set(payload)
       payload.id = newRef.key
       payload.password = state.password

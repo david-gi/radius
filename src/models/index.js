@@ -16,13 +16,15 @@ export class Gathering {
   maxSize = 25
   password = null
   circles = null
-  constructor(_id, _name, _desc, _maxSize = 25, _password, _circles) {
+  users = null
+  constructor(_id, _name, _desc, _maxSize = 25, _password, _circles, _users) {
     this.id = _id
     this.name = _name
     this.description = _desc
     this.maxSize = _maxSize
     this.password = _password
     this.circles = _circles
+    this.users = _users
   }
 }
 
