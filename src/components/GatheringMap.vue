@@ -28,7 +28,8 @@ export default {
   data() {
     return {
       map: new CirclePack(),
-      connections: []
+      connections: [],
+      currentNodeZoom: null
     }
   },
 
@@ -46,6 +47,12 @@ export default {
       deep: true,
       handler() {
         this.refreshChart()
+        setTimeout(() => {
+          this.map.zoomReset()
+          setTimeout(() => {
+            this.currentNodeZoom()
+          }, 10)
+        }, 1000)
       }
     }
   },
@@ -61,6 +68,10 @@ export default {
 
   methods: {
     nodeClick(node) {
+      const that = this
+      this.currentNodeZoom = function() {
+        that.map.zoomToNode(node)
+      }
       if (!node) {
         this.goToRoot()
         return
@@ -85,9 +96,9 @@ export default {
         this.$store.state.currentCircle.parentPath &&
         this.$store.state.currentCircle.parentPath.split('/').length > 6
       ) {
-        this.$store.dispatch('displayMessage', {
-          msg: 'Max circle depth reached (3 max).'
-        })
+        // this.$store.dispatch('displayMessage', {
+        //   msg: 'Max circle depth reached (3 max).'
+        // })
         return
       }
       this.$bvModal.show('create-circle-modal')
@@ -115,7 +126,9 @@ export default {
         })
       }
       await this.$store.dispatch('joinCircle')
-      this.map.zoomToNode(node)
+      // setTimeout(() => {
+      //   this.map.zoomToNode(node)
+      // }, 600)
     }
   }
 }

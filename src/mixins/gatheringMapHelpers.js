@@ -6,7 +6,7 @@ export default {
       const mapEl = document.getElementById('Map')
       this.map
         .data(this.nodes)
-        .padding(80)
+        .padding(60)
         .excludeRoot(true)
         .minCircleRadius(10)
         .width(window.width)
@@ -15,7 +15,6 @@ export default {
         .label(this.setLabel)
         .tooltipTitle(this.setTooltip)
         .tooltipContent(this.setTooltipContent)
-        //.onHover()
         .onClick(this.nodeClick)(mapEl)
       this.$store.commit('SET_LOADING', false)
     },
