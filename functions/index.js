@@ -13,46 +13,47 @@ exports.checkSecurity = functions.https.onCall((data, context) => {
 exports.gatheringOnUpdate = functions.database
     .ref("/gatherings/{gId}").onUpdate(
         (change, context) => {
-          const oldSnap = change.val();
+          const oldSnap = change.before.val();
           const snap = change.after;
           const ref = change.after.ref;
 
           const main = () => {
             // unique user
-            const userExists = Object.keys(oldSnap.users)
+            const userExists = Object.keys(oldSnap.users || {})
                 .find((u) => snap.val().user === u);
 
             // enforce attendee size and circle size & depth
-            let gatheringSize = 0;
+            const gatheringSize = oldSnap.users ? oldSnap.users.length : 0;
             let circleMaxSize = false;
             let circleMaxDepth = false;
-            snap.val().circles.forEach((c) => {
-              const recurseCount = (circle, _count = 0, depth = 1) => {
-                const count = circle.attendees.numChildren() + _count;
-                if (count > 25) {
-                  circleMaxSize = true;
-                  return;
-                }
-                if (depth > 3) {
-                  circleMaxDepth = true;
-                  return;
-                }
-                gatheringSize += count;
 
-                if (circle.circles) {
-                  circle.circles.forEach((cc) => {
-                    recurseCount(cc, count, depth + 1);
-                  });
-                }
-              };
+            const recurseCount = (circle, _count = 0, depth = 1) => {
+              const count = Object.keys(circle.attendees || {}).length + _count;
+              if (count > 25) {
+                circleMaxSize = true;
+                return;
+              }
+              if (depth > 3) {
+                circleMaxDepth = true;
+                return;
+              }
+
+              if (circle.circles) {
+                Object.values(circle.circles).forEach((cc) => {
+                  recurseCount(cc, count, depth + 1);
+                });
+              }
+            };
+
+            Object.values(snap.val().circles).forEach((c) => {
               recurseCount(c);
             });
 
-            console.error("gatheringSize > oldSnap.maxSize:" +
-              gatheringSize > oldSnap.maxSize);
-            console.error("userExists:" + userExists);
-            console.error("circleMaxSize" + circleMaxSize);
-            console.error("circleMaxDepth" + circleMaxDepth);
+            // console.error("gatheringSize > oldSnap.maxSize:" +
+            //   gatheringSize > oldSnap.maxSize);
+            // console.error("userExists:" + userExists);
+            // console.error("circleMaxSize" + circleMaxSize);
+            // console.error("circleMaxDepth" + circleMaxDepth);
 
             if (gatheringSize > oldSnap.maxSize ||
               userExists ||
@@ -62,13 +63,13 @@ exports.gatheringOnUpdate = functions.database
             }
 
             // sanitize data
-            delete snap.name;
-            delete snap.user;
-            delete snap.description;
-            delete snap.maxSize;
-            delete snap.password;
+            delete snap.val().name;
+            delete snap.val().user;
+            delete snap.val().description;
+            delete snap.val().maxSize;
+            delete snap.val().password;
 
-            return ref.update(snap);
+            return ref.update(snap.val());
           };
 
           if (oldSnap.password) {

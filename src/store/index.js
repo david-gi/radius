@@ -249,12 +249,8 @@ export default new Vuex.Store({
           }
           if (circle.attendees && typeof circle.attendees !== 'undefined') {
             circle.attendees.forEach(attendee => {
-              const name =
-                state.user.name === attendee.name
-                  ? attendee.name + ' [You]'
-                  : attendee.name
               node.children.push({
-                name: name,
+                name: attendee.name,
                 value: state.user.name === attendee.name ? 2 : 1
               })
             })

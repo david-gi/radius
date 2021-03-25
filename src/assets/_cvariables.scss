@@ -8,7 +8,6 @@ $gray-600: #858796 !default;
 $gray-700: #6e707e !default;
 $gray-800: #4a4453 !default;
 $gray-900: #3a3b45 !default;
-$black: darken(desaturate(#a5fe00, 80%), 40%) !default;
 
 $blue: #3E69E0 !default;
 $indigo: #502bcc !default;
@@ -20,6 +19,7 @@ $yellow: #FFCA00 !default;
 $green: #CEEA1E !default;
 $teal: #45DFB6 !default;
 $cyan: #45a1df !default;
+$black: darken(desaturate($indigo, 80%), 40%) !default;
 
 $primary: $indigo;
 $secondary:	$blue;

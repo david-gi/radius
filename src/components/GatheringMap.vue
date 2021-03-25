@@ -29,7 +29,7 @@ export default {
     return {
       map: new CirclePack(),
       connections: [],
-      currentNodeZoom: null
+      circleDoubleClick: 0
     }
   },
 
@@ -82,10 +82,48 @@ export default {
       this.isCircle(node) ? this.circleClick(node) : this.showUserCard(node)
     },
     showUserCard(node) {
-      console.log(node.name)
       return
+      // const attendee = this.getAttendee(node)
+      // const h = this.$createElement
+      // const hasImg = Boolean(attendee.img)
+      // const vNodesMsg = h('div', {class: ['text-center', 'align-center']}, [
+      //   h('b-img', {
+      //     props: {src: `${attendee.img}`, fluid: ''},
+      //     class: [
+      //       'rounded',
+      //       'border',
+      //       'border-dark',
+      //       'w-100',
+      //       hasImg ? '' : 'd-none'
+      //     ]
+      //   }),
+      //   h('div', {class: ['text-white', 'pt-1']}, [
+      //     h('h5', {}, attendee.name),
+      //     h(
+      //       'p',
+      //       {class: ['rounded', hasImg ? '' : 'd-none']},
+      //       attendee.scratchpad || ''
+      //     )
+      //   ])
+      // ])
+
+      // this.$bvToast.toast([vNodesMsg], {
+      //   title: '',
+      //   variant: ' ',
+      //   isStatus: true,
+      //   toastClass: 'm-0 bg-dark rounded',
+      //   headerClass: 'd-none',
+      //   toaster: 'b-toaster-bottom-right',
+      //   appendToast: true
+      // })
     },
     circleClick(node) {
+      this.map.zoomToNode(node)
+      setTimeout(() => {
+        this.circleDoubleClick = 0
+      }, 500)
+      if (++this.circleDoubleClick < 2) return
+
       if (!this.currentCircle) {
         this.joinCircle(node)
         return

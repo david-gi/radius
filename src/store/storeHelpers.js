@@ -37,7 +37,7 @@ export default {
           nested.attendees = Object.values(c.attendees).map((a, i) => {
             return {
               name: Object.keys(c.attendees)[i],
-              ...Object.values(c.attendees)
+              ...Object.values(c.attendees)[i]
             }
           })
         }

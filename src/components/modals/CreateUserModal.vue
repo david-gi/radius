@@ -31,20 +31,19 @@
       >
         <b-form-input
           id="name-input"
-          v-model="user.name"
+          v-model.trim.lazy="user.name"
           placeholder="Enter your name"
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
-          trim
           required
           autofocus
           @keyup="() => (formState = $refs.userform.checkValidity())"
         />
       </b-form-group>
-      <b-form-group label-for="avatar-input" class="pt-2 mr-1 text-white">
+      <b-form-group label-for="img-input" class="pt-2 mr-1 text-white">
         <b-form-input
-          id="avatar-input"
+          id="img-input"
           type="url"
-          v-model="user.avatar"
+          v-model="user.img"
           placeholder="Picture link (optional)"
           :formatter="v => (v.length > 300 ? v.substring(0, 300) : v)"
           trim
@@ -56,7 +55,6 @@
           v-model="user.scratchpad"
           placeholder="Share your details (optional)"
           :formatter="v => (v.length > 500 ? v.substring(0, 500) : v)"
-          trim
         />
       </b-form-group>
     </form>
