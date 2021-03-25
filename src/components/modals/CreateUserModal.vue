@@ -85,9 +85,10 @@ export default {
   methods: {
     async checkFormValidity() {
       const valid = this.$refs.userform.checkValidity()
-      const existing = this.$store.state.gathering.users.find(
-        n => n === this.user.name
-      )
+      const existing =
+        this.$store.state.gathering &&
+        this.$store.state.gathering.users &&
+        this.$store.state.gathering.users.find(n => n === this.user.name)
       this.formState = valid && !existing
       return valid && !existing
     },
@@ -102,9 +103,11 @@ export default {
       if (!formValid) return
 
       this.$store.commit('SET_USER', this.clone(this.user))
-      setTimeout(() => {
-        this.$store.dispatch('joinGathering')
-      }, 600)
+      if (this.$store.state.gathering) {
+        setTimeout(() => {
+          this.$store.dispatch('joinGathering')
+        }, 600)
+      }
     }
   }
 }

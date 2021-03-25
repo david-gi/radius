@@ -1,10 +1,13 @@
 <template>
-  <div :class="{joined: currentCircle}">
-    <div style="opacity:.95;">
+  <div :class="{joined: currentCircle}" class="faded">
+    <div>
       <div id="Map" />
-      <div v-if="false && connections">
-        <div v-for="con in connections" :key="con.name">
-          <WebRtcConnection :room="con.name" :listen-only="con.listenOnly" />
+      <div v-if="!$store.state.loading && cConnections">
+        <div v-for="con in cConnections" :key="con.name">
+          <WebRtcConnection
+            :room="$store.state.gathering.id + con.name"
+            :listen-only="con.listenOnly"
+          />
         </div>
       </div>
     </div>
@@ -14,7 +17,7 @@
 
 <script>
 import CirclePack from 'circlepack-chart'
-import gatheringMapHelpers from '../mixins/gatheringMapHelpers'
+import coreGatheringMap from '../mixins/coreGatheringMap'
 import WebRtcConnection from '@/components/WebRtcConnection.vue'
 import CreateCircleModal from '@/components/modals/CreateCircleModal.vue'
 
@@ -24,12 +27,12 @@ export default {
     WebRtcConnection,
     CreateCircleModal
   },
-  mixins: [gatheringMapHelpers],
+  mixins: [coreGatheringMap],
   data() {
     return {
       map: new CirclePack(),
-      connections: [],
-      circleDoubleClick: 0
+      connections: null,
+      zoomTimer: null
     }
   },
 
@@ -39,6 +42,9 @@ export default {
     },
     currentCircle() {
       return this.$store.state.currentCircle
+    },
+    cConnections() {
+      return this.connections
     }
   },
 
@@ -70,84 +76,26 @@ export default {
 
   methods: {
     exit() {
-      alert()
-      this.$store.dispatch('leaveCircle')
+      this.$store.dispatch('leaveCurrentCircle')
       this.$store.dispatch('leaveGathering')
     },
+
     nodeClick(node) {
       if (!node) {
-        this.goToRoot()
+        if (this.currentCircle) this.goToRoot()
         return
       }
-      this.isCircle(node) ? this.circleClick(node) : this.showUserCard(node)
-    },
-    showUserCard(node) {
-      return
-      // const attendee = this.getAttendee(node)
-      // const h = this.$createElement
-      // const hasImg = Boolean(attendee.img)
-      // const vNodesMsg = h('div', {class: ['text-center', 'align-center']}, [
-      //   h('b-img', {
-      //     props: {src: `${attendee.img}`, fluid: ''},
-      //     class: [
-      //       'rounded',
-      //       'border',
-      //       'border-dark',
-      //       'w-100',
-      //       hasImg ? '' : 'd-none'
-      //     ]
-      //   }),
-      //   h('div', {class: ['text-white', 'pt-1']}, [
-      //     h('h5', {}, attendee.name),
-      //     h(
-      //       'p',
-      //       {class: ['rounded', hasImg ? '' : 'd-none']},
-      //       attendee.scratchpad || ''
-      //     )
-      //   ])
-      // ])
-
-      // this.$bvToast.toast([vNodesMsg], {
-      //   title: '',
-      //   variant: ' ',
-      //   isStatus: true,
-      //   toastClass: 'm-0 bg-dark rounded',
-      //   headerClass: 'd-none',
-      //   toaster: 'b-toaster-bottom-right',
-      //   appendToast: true
-      // })
-    },
-    circleClick(node) {
-      this.map.zoomToNode(node)
-      setTimeout(() => {
-        this.circleDoubleClick = 0
-      }, 500)
-      if (++this.circleDoubleClick < 2) return
-
-      if (!this.currentCircle) {
-        this.joinCircle(node)
-        return
-      }
-      const isCurrentCircle = this.$store.state.currentCircle.name === node.name
-      isCurrentCircle ? this.createCircle() : this.joinCircle(node)
-    },
-    createCircle() {
       if (
-        this.$store.state.currentCircle &&
-        this.$store.state.currentCircle.parentPath &&
-        this.$store.state.currentCircle.parentPath.split('/').length > 6
+        this.isCircle(node) &&
+        (!this.currentCircle || this.currentCircle.name !== node.name)
       ) {
-        // this.$store.dispatch('displayMessage', {
-        //   msg: 'Max circle depth reached (3 max).'
-        // })
-        return
+        this.map.zoomToNode(node)
+        this.enterCircle(node)
       }
-      this.$bvModal.show('create-circle-modal')
     },
-    async joinCircle(node) {
-      const circle = await this.$store.dispatch('lookupCircle', node.name)
 
-      // eslint-disable-next-line no-constant-condition
+    async enterCircle(node) {
+      const circle = await this.$store.dispatch('lookupCircle', node.name)
       if (
         circle.attendees &&
         circle.attendees.length >= this.$store.state.circleSize
@@ -157,20 +105,34 @@ export default {
         })
         return
       }
-      await this.$store.dispatch('leaveCircle')
-      await this.$store.commit('SET_CURRENT_CIRCLE', circle)
-      this.connections = [{name: node.name}]
-      if (this.$store.getters.currentParent) {
-        this.connections.push({
-          name: this.$store.getters.currentParent.name,
-          listenOnly: true
+
+      this.$store.dispatch('joinCircle', circle).then(() => {
+        this.connections = [{name: node.name, listenOnly: false}]
+        if (node.x && this.$store.getters.currentParent) {
+          this.connections.push({
+            name: this.$store.getters.currentParent.name,
+            listenOnly: true
+          })
+        }
+      })
+    },
+
+    createCircle(e) {
+      e.preventDefault()
+      if (
+        this.$store.state.currentCircle &&
+        this.$store.state.currentCircle.parentPath &&
+        this.$store.state.currentCircle.parentPath.split('/').length > 6
+      ) {
+        this.$store.dispatch('displayMessage', {
+          msg: 'Max circle depth reached (3 max).'
         })
+        return
       }
-      await this.$store.dispatch('joinCircle')
-      // setTimeout(() => {
-      //   this.map.zoomToNode(node)
-      // }, 600)
+      this.$bvModal.show('create-circle-modal')
+      return false
     }
+
   }
 }
 </script>

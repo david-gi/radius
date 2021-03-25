@@ -24,7 +24,7 @@ export default new Vuex.Store({
   state: {
     showSecurity: false,
     route: null,
-    loading: true,
+    loading: false,
     message: null,
     timer: null,
     circleSize: 25,
@@ -53,6 +53,7 @@ export default new Vuex.Store({
   actions: {
     async displayMessage({commit, state}, payload) {
       commit('SET_MESSAGE', null)
+      commit('SET_LOADING', false)
       clearTimeout(state.timer)
       if (!payload) return
       commit('SET_MESSAGE', payload.msg)
@@ -63,6 +64,8 @@ export default new Vuex.Store({
     },
 
     async fetchGathering({commit, state, dispatch}, id) {
+      commit('SET_LOADING', true)
+
       const checkSecurity = cFunc.httpsCallable('checkSecurity')
       const valid = await checkSecurity({id, password: state.password})
       commit('SET_SHOW_SECURITY', false)
@@ -101,11 +104,14 @@ export default new Vuex.Store({
       }
       gatheringRef.get().then(val => {
         handler(val)
+        commit('SET_LOADING', false)
         gatheringRef.on('value', handler)
       })
     },
 
     async createGathering({dispatch, commit}, payload) {
+      commit('SET_LOADING', true)
+
       const newRef = db.ref('gatherings').push()
       const id = newRef.key
       const hasPass = payload.password && payload.password.length > 0
@@ -126,18 +132,26 @@ export default new Vuex.Store({
       })
       dispatch('joinGathering')
       commit('SET_ROUTE', id)
+      commit('SET_LOADING', false)
     },
 
-    async joinGathering({state}) {
+    async joinGathering({state, commit}) {
+      commit('SET_LOADING', true)
+
       const payload = state.user
       payload.user = state.user.name
       payload.password = state.password
       db.ref(`gatherings/${state.gathering.id}/users/${state.user.name}`).set(
         payload
       )
+      setTimeout(() => {
+        commit('SET_LOADING', false)
+      }, 500)
     },
 
     async leaveGathering({commit, state}) {
+      commit('SET_LOADING', true)
+
       if (state.user) {
         const ref = db.ref(
           `gatherings/${state.gathering.id}/users/${state.user.name}`
@@ -148,6 +162,61 @@ export default new Vuex.Store({
         commit('SET_PASSWORD', null)
         commit('SET_CURRENT_CIRCLE', null)
       }
+
+      commit('SET_LOADING', false)
+    },
+
+    async addCircle({state, commit, dispatch}, payload) {
+      commit('SET_LOADING', true)
+
+      try {
+        const fullPath =
+          state.gathering.id +
+          (state.currentCircle.parentPath || '') +
+          '/circles/'
+        const newRef = db.ref(`gatherings/${fullPath}`).push()
+
+        newRef.set(payload)
+        payload.id = newRef.key
+        payload.password = state.password
+        payload.parentPath =
+          (state.currentCircle.parentPath || '') + '/circles/' + payload.id
+
+        dispatch('joinCircle', payload)
+      } catch {
+        commit('SET_LOADING', false)
+      }
+    },
+
+    async joinCircle({state, commit, dispatch}, circle) {
+      try {
+        dispatch('leaveCurrentCircle')
+        commit('SET_LOADING', true)
+
+        const circlePath = state.gathering.id + circle.parentPath
+        const payload = state.user
+        payload.password = state.password
+        db.ref(`gatherings/${circlePath}/attendees/${state.user.name}`).set(
+          payload
+        )
+        commit('SET_CURRENT_CIRCLE', circle)
+      } catch {
+        commit('SET_CURRENT_CIRCLE', null)
+      }
+
+      setTimeout(() => {
+        commit('SET_LOADING', false)
+      }, 2000)
+    },
+
+    async leaveCurrentCircle({state, commit}) {
+      if (!state.currentCircle || !state.user) return
+      const circlePath = state.gathering.id + state.currentCircle.parentPath
+      const attendeeRef = db.ref(
+        `gatherings/${circlePath}/attendees/${state.user.name}`
+      )
+      if (attendeeRef) attendeeRef.remove()
+      commit('SET_CURRENT_CIRCLE', null)
     },
 
     async lookupCircle({state}, name) {
@@ -174,43 +243,6 @@ export default new Vuex.Store({
       }
       return H.recurseFindCircles(state.gathering.circles, findFunc)
     },
-
-    async addCircle({state, commit, dispatch}, payload) {
-      dispatch('leaveCircle')
-
-      const fullPath =
-        state.gathering.id +
-        (state.currentCircle.parentPath || '') +
-        '/circles/'
-      const newRef = db.ref(`gatherings/${fullPath}`).push()
-
-      newRef.set(payload)
-      payload.id = newRef.key
-      payload.password = state.password
-      payload.parentPath =
-        (state.currentCircle.parentPath || '') + '/circles/' + payload.id
-
-      commit('SET_CURRENT_CIRCLE', payload)
-      dispatch('joinCircle')
-    },
-
-    async joinCircle({state}) {
-      const circlePath = state.gathering.id + state.currentCircle.parentPath
-      const payload = state.user
-      payload.password = state.password
-      db.ref(`gatherings/${circlePath}/attendees/${state.user.name}`).set(
-        payload
-      )
-    },
-
-    async leaveCircle({state}) {
-      if (!state.currentCircle || !state.user) return
-      const circlePath = state.gathering.id + state.currentCircle.parentPath
-      const attendeeRef = db.ref(
-        `gatherings/${circlePath}/attendees/${state.user.name}`
-      )
-      if (attendeeRef) attendeeRef.remove()
-    }
   },
 
   getters: {
@@ -251,7 +283,7 @@ export default new Vuex.Store({
             circle.attendees.forEach(attendee => {
               node.children.push({
                 name: attendee.name,
-                value: state.user.name === attendee.name ? 2 : 1
+                value: state.user.name === attendee.name ? 1 : 2
               })
             })
           }

@@ -1,3 +1,5 @@
+import { User, Gathering, Circle } from '../models/index'
+
 export default {
   log: x => console.error('>>>' + JSON.stringify(x)),
 
@@ -35,10 +37,11 @@ export default {
         const nested = c
         if (nested.attendees) {
           nested.attendees = Object.values(c.attendees).map((a, i) => {
-            return {
-              name: Object.keys(c.attendees)[i],
-              ...Object.values(c.attendees)[i]
-            }
+            return new User(
+              Object.keys(c.attendees)[i],
+              Object.values(c.attendees)[i].img,
+              Object.values(c.attendees)[i].scratchpad
+            )
           })
         }
         if (nested.circles) {

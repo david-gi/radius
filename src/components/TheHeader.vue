@@ -40,12 +40,20 @@
         </strong>
       </b-nav-item>
     </b-navbar-nav>
+    <b-nav-text class="ml-auto mr-2">
+      <Loader />
+    </b-nav-text>
   </b-navbar>
 </template>
 
 <script>
+import Loader from '@/components/Loader.vue'
+
 export default {
   name: 'TheHeader',
+  components: {
+    Loader
+  },
   computed: {
     room() {
       return this.$store.state.currentCircle
@@ -55,7 +63,7 @@ export default {
   },
   methods: {
     leave() {
-      this.$store.dispatch('leaveCircle')
+      this.$store.dispatch('leaveCurrentCircle')
       this.$store.dispatch('leaveGathering')
       window.location = '/'
     }

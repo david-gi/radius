@@ -1,6 +1,6 @@
 // Define variable defaults
-$body-bg: #fff;
-$body-color: #111;
+$body-bg: #161616;
+$body-color: #161616;
 
 // Then import Bootstrap an BootstrapVue SCSS files (order is important)
 @import './_cvariables.scss';
@@ -37,6 +37,10 @@ $body-color: #111;
 }
 
 // Custom helper classes
+
+.pointer {
+  cursor: pointer;
+}
 
 .hoverable:hover, .faded {
   opacity: .9;

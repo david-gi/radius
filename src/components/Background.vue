@@ -1,19 +1,14 @@
 <template>
-  <div>
-    <div class="fixed-top zindex-sticky">
-      <slot />
-    </div>
-    <div class="region">
-      <ul class="dots" v-for="x in Array(amount).keys()" :key="'adot-' + x">
-        <li :style="genCircle()" />
-      </ul>
-    </div>
+  <div class="background">
+    <ul class="dots" v-for="x in Array(amount).keys()" :key="'adot-' + x">
+      <li :style="genCircle()" />
+    </ul>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Landing',
+  name: 'Background',
   data() {
     return {
       amount: 12,
@@ -48,7 +43,8 @@ export default {
   padding: 0px;
 }
 
-.region {
+.background {
+  z-index: 1 !important;
   background-color: var(--gray-dark);
   width: 100%;
   height: 100vh;

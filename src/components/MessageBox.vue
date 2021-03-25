@@ -1,13 +1,13 @@
 <template>
   <b-alert
-    v-show="msg"
+    v-show="msgText"
     show
     variant="secondary"
     fade
     class="position-fixed fixed-bottom m-0 rounded-0 text-center"
     style="z-index: 2000;"
   >
-    {{ msg }}
+    {{ msgText }}
   </b-alert>
 </template>
 
@@ -18,7 +18,7 @@ export default {
     return {}
   },
   computed: {
-    msg() {
+    msgText() {
       return this.$store.state.message
     }
   }
