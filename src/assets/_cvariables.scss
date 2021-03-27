@@ -6,7 +6,7 @@ $gray-400: #d1d3e2 !default;
 $gray-500: #b7b9cc !default;
 $gray-600: #858796 !default;
 $gray-700: #6e707e !default;
-$gray-800: #2c2f36 !default;
+$gray-800: #353942 !default;
 $gray-900: #3a3b45 !default;
 
 $blue: #3E69E0 !default;
@@ -27,7 +27,7 @@ $success:	$green;
 $info:	$green;
 $warning:	$orange;
 $danger: $black;
-$light:	lighten($secondary, 35%);
+$light:	lighten($blue, 80%);
 $dark:	$black;
 $theme-colors:
   (

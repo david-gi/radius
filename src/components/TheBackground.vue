@@ -46,6 +46,9 @@ export default {
 .background {
   z-index: 1 !important;
   background-color: var(--gray-dark);
+  background: radial-gradient(circle, rgba(80,43,204,.1) 0%, rgba(62,105,224,.1) 73%);
+  background-blend-mode: soft-light;
+  background-size: cover;
   width: 100%;
   height: 100vh;
 }
@@ -69,14 +72,14 @@ export default {
 }
 @keyframes rise {
   0% {
-    transform: perspective(500px) translate3d(0, -100px, 0);
+    transform: translate(0, -100px);
     opacity: 0;
   }
   80% {
-    opacity: 0.8;
+    opacity: 0.7;
   }
   100% {
-    transform: perspective(500px) translate3d(0, -1200px, 200px);
+    transform: translate(0, -1500px);
     opacity: 0;
   }
 }

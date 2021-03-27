@@ -182,7 +182,7 @@ g {
   height: fit-content;
   max-height: 60%;
   padding: 24px !important;
-  background: #1f191ecc;
+  background: #181317cc;
   border-radius: 8px !important;
 }
 .circlepack-tooltip .tooltip-title {
