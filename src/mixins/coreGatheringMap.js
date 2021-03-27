@@ -40,7 +40,7 @@ export default {
       this.refreshTimer = setTimeout(() => {
         this.map.data(this.nodes)
         this.applyCssMods()
-      }, 1000)
+      }, 500)
     },
 
     isCircle(node) {
@@ -49,6 +49,7 @@ export default {
 
     goToRoot() {
       this.map.zoomReset()
+      this.applyCssMods()
       this.$store.dispatch('leaveCurrentCircle').then(() => {
         this.connections = []
       })
@@ -122,6 +123,7 @@ export default {
               const circleSvg =
                 svgLabel.parentElement.parentElement.parentElement
                   .firstElementChild
+              const circleSvgHtml = document.getElementById(circleSvg.id)
               circleSvg.style.stroke = 'var(--dark)'
               circleSvg.style.fillOpacity = 1
               svgLabel.style.fillOpacity = 1
@@ -133,15 +135,16 @@ export default {
               })
 
               if (circleNodeData) {
-                const el = document.getElementById(circleSvg.id)
-                el.removeEventListener('contextmenu', this.createCircle)
+                // eslint-disable-next-line prettier/prettier
+                circleSvgHtml.removeEventListener('contextmenu', this.createCircle)
                 // eslint-disable-next-line prettier/prettier
                 if (this.currentCircle && svgLabel.textContent === this.currentCircle.name) {
                   // attach create circle right-click event
-                  el.addEventListener('contextmenu', this.createCircle)
+                  // eslint-disable-next-line prettier/prettier
+                  circleSvgHtml.addEventListener('contextmenu', this.createCircle)
                   // reset zoom from node updates
                   setTimeout(() => {
-                    el.dispatchEvent(new Event('click'))
+                    circleSvgHtml.dispatchEvent(new Event('click'))
                   }, 500)
                   circleSvg.style.stroke = 'var(--green)'
                 }
@@ -150,31 +153,40 @@ export default {
 
               // Process Attendee Circles
               if (!circleNodeData) {
+                setTimeout(() => {
+                  this.$store
+                    .dispatch('lookupAttendee', svgLabel.textContent)
+                    .then(attendeeNodeData => {
+                      if (attendeeNodeData && attendeeNodeData.img) {
+                        const img = document.createElementNS(
+                          'http://www.w3.org/2000/svg',
+                          'image'
+                        )
+                        const fitImg = () => {
+                          const circleDiameter =
+                            circleSvg.getBBox({stroke: true}).height + 8
+                          img.setAttribute('x', -(circleDiameter / 2))
+                          img.setAttribute('y', -(circleDiameter / 2))
+                          img.setAttribute('height', circleDiameter)
+                        }
+                        fitImg()
+                        img.setAttribute('href', attendeeNodeData.img)
+                        img.setAttribute(
+                          'clip-path',
+                          `${clipPathEl.getAttribute('clip-path')}`
+                        )
 
-                this.$store
-                  .dispatch('lookupAttendee', svgLabel.textContent)
-                  .then(attendeeNodeData => {
-                    if (attendeeNodeData && attendeeNodeData.img) {
-                      const img = document.createElementNS(
-                        'http://www.w3.org/2000/svg',
-                        'image'
-                      )
-                      img.setAttribute('x', '-90')
-                      img.setAttribute('y', '-90')
-                      img.setAttribute('height', '180')
-                      img.setAttribute('href', attendeeNodeData.img)
-                      img.setAttribute(
-                        'clip-path',
-                        `${clipPathEl.getAttribute('clip-path')}`
-                      )
-
-                      svgLabel.style.fillOpacity = 0
-                      clipPathEl.parentElement.append(img)
-                    }
-                  })
+                        svgLabel.style.fillOpacity = 0
+                        clipPathEl.parentElement.append(img)
+                        setTimeout(() => {
+                        fitImg()
+                        }, 800)
+                      }
+                    })
+                })
               }
             })
-        }, 3000)
+        }, 4000)
       })
     }
   }

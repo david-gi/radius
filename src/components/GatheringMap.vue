@@ -82,7 +82,7 @@ export default {
     },
 
     nodeClick(node) {
-      if (++this.debounceCount > 1) {
+      if (++this.debounceCount > 1 || this.$store.state.loading) {
         clearTimeout(this.debounceTimer)
         this.debounceTimer = setTimeout(() => {
           this.debounceCount = 0
