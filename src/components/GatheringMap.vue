@@ -2,7 +2,7 @@
   <div :class="{joined: currentCircle}" class="faded">
     <div>
       <div id="Map" />
-      <div v-if="!$store.state.loading && cConnections">
+      <div v-if="!$store.state.loading && !cConnections">
         <div v-for="con in cConnections" :key="con.name">
           <WebRtcConnection
             :room="$store.state.gathering.id + con.name"
@@ -32,7 +32,8 @@ export default {
     return {
       map: new CirclePack(),
       connections: null,
-      zoomTimer: null
+      debounceCount: null,
+      debounceTimer: null
     }
   },
 
@@ -81,6 +82,13 @@ export default {
     },
 
     nodeClick(node) {
+      if (++this.debounceCount > 1) {
+        clearTimeout(this.debounceTimer)
+        this.debounceTimer = setTimeout(() => {
+          this.debounceCount = 0
+        }, 500)
+        return
+      }
       if (!node) {
         if (this.currentCircle) this.goToRoot()
         return
@@ -120,9 +128,9 @@ export default {
     createCircle(e) {
       e.preventDefault()
       if (
-        this.$store.state.currentCircle &&
-        this.$store.state.currentCircle.parentPath &&
-        this.$store.state.currentCircle.parentPath.split('/').length > 6
+        this.currentCircle &&
+        this.currentCircle.parentPath &&
+        this.currentCircle.parentPath.split('/').length > 6
       ) {
         this.$store.dispatch('displayMessage', {
           msg: 'Max circle depth reached (3 max).'
@@ -148,11 +156,9 @@ g {
   clip-path: none !important;
 }
 .circlepack-viz circle {
-  stroke-width: 0.2rem !important;
-  stroke: #1a1e14;
-}
-.circlepack-viz circle:hover {
-  stroke: #ceea1e;
+  stroke-width: 0.4rem !important;
+  stroke: var(--dark);
+  stroke-opacity: 1;
 }
 .circlepack-viz .label-container {
   margin-top: -120px !important;

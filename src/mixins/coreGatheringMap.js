@@ -1,7 +1,8 @@
 export default {
   data() {
     return {
-      refreshTimer: null
+      refreshTimer: null,
+      cssModTimer: null
     }
   },
 
@@ -28,48 +29,6 @@ export default {
       this.$store.commit('SET_LOADING', false)
     },
 
-    applyCssMods() {
-      setTimeout(() => {
-        const userName = this.$store.state.user.name
-        const svgNodes = document.querySelectorAll('svg g text')
-        Array.from(svgNodes).forEach(label => {
-          this.$store
-            .dispatch('lookupCircle', label.textContent)
-            .then(isCircle => {
-              const circleEl =
-                label.parentElement.parentElement.parentElement
-                  .firstElementChild
-              circleEl.style = ''
-
-              if (isCircle) {
-                const el = document.getElementById(circleEl.id)
-                el.removeEventListener('contextmenu', this.createCircle)
-                if (
-                  this.$store.state.currentCircle &&
-                  label.textContent === this.$store.state.currentCircle.name
-                ) {
-                  el.addEventListener('contextmenu', this.createCircle)
-                  setTimeout(() => {
-                    el.dispatchEvent(new Event('click'))
-                  }, 500)
-                  el.style = 'stroke: var(--green); stroke-opacity: 1;'
-                }
-                return
-              }
-
-              if (userName === label.textContent) {
-                circleEl.style = `stroke: var(--yellow); stroke-opacity: 1;`
-              } else {
-                // const attendee = this.findAttendee({name: label.textContent})
-                // const img = document.createElement('img')
-                // img.setAttribute('src', `${attendee.img}`)
-                // label.append(img)
-              }
-            })
-        }, 400)
-      })
-    },
-
     resizeChart() {
       const topEl = document.getElementById('top')
       this.map.width(topEl.clientWidth).height(topEl.clientHeight)
@@ -81,7 +40,7 @@ export default {
       this.refreshTimer = setTimeout(() => {
         this.map.data(this.nodes)
         this.applyCssMods()
-      }, 400)
+      }, 1000)
     },
 
     isCircle(node) {
@@ -90,7 +49,6 @@ export default {
 
     goToRoot() {
       this.map.zoomReset()
-      this.closeAllUserCards()
       this.$store.dispatch('leaveCurrentCircle').then(() => {
         this.connections = []
       })
@@ -125,25 +83,99 @@ export default {
     },
 
     setLabel(node) {
-      return node.name
+      if (!node || !node.name) return
+      return this.sanitize(node.name)
     },
 
     setTooltip(node) {
-      return this.isCircle(node) ? `<u>${node.name || ''}</u>` : node.name || ''
+      if (!node || !node.name) return
+      return this.isCircle(node)
+        ? `<u>${this.sanitize(node.name) || ''}</u>`
+        : this.sanitize(node.name) || ''
     },
 
     setTooltipContent(node) {
-      if (!node) return
+      if (!node || !node.name) return
       if (this.isCircle(node)) {
-        return node.name === this.currentCircle.name
+        return this.currentCircle && node.name === this.currentCircle.name
           ? 'Right-click to add an inner circle'
           : 'Click to join circle'
       } else {
         const user = this.findAttendee(node)
         return user
-          ? `<p class='text-wrap mt-2 mb-n1'>${user.scratchpad || ''}</p>`
+          ? `<p class='text-wrap mt-2 mb-n1'>
+              ${this.sanitize(user.scratchpad) || ''}
+            </p>`
           : ''
       }
+    },
+
+    applyCssMods() {
+      clearTimeout(this.cssModTimer)
+      this.cssModTimer = setTimeout(() => {
+        const svgLabels = document.querySelectorAll('svg g text')
+        Array.from(svgLabels).forEach(svgLabel => {
+          // Process Gathering Circles
+          this.$store
+            .dispatch('lookupCircle', svgLabel.textContent)
+            .then(circleNodeData => {
+              const circleSvg =
+                svgLabel.parentElement.parentElement.parentElement
+                  .firstElementChild
+              circleSvg.style.stroke = 'var(--dark)'
+              circleSvg.style.fillOpacity = 1
+              svgLabel.style.fillOpacity = 1
+              const clipPathEl = svgLabel.parentElement.parentElement
+              clipPathEl.parentElement.children.forEach(c => {
+                if (c.tagName === 'image') {
+                  c.remove()
+                }
+              })
+
+              if (circleNodeData) {
+                const el = document.getElementById(circleSvg.id)
+                el.removeEventListener('contextmenu', this.createCircle)
+                // eslint-disable-next-line prettier/prettier
+                if (this.currentCircle && svgLabel.textContent === this.currentCircle.name) {
+                  // attach create circle right-click event
+                  el.addEventListener('contextmenu', this.createCircle)
+                  // reset zoom from node updates
+                  setTimeout(() => {
+                    el.dispatchEvent(new Event('click'))
+                  }, 500)
+                  circleSvg.style.stroke = 'var(--green)'
+                }
+                return
+              }
+
+              // Process Attendee Circles
+              if (!circleNodeData) {
+
+                this.$store
+                  .dispatch('lookupAttendee', svgLabel.textContent)
+                  .then(attendeeNodeData => {
+                    if (attendeeNodeData && attendeeNodeData.img) {
+                      const img = document.createElementNS(
+                        'http://www.w3.org/2000/svg',
+                        'image'
+                      )
+                      img.setAttribute('x', '-90')
+                      img.setAttribute('y', '-90')
+                      img.setAttribute('height', '180')
+                      img.setAttribute('href', attendeeNodeData.img)
+                      img.setAttribute(
+                        'clip-path',
+                        `${clipPathEl.getAttribute('clip-path')}`
+                      )
+
+                      svgLabel.style.fillOpacity = 0
+                      clipPathEl.parentElement.append(img)
+                    }
+                  })
+              }
+            })
+        }, 3000)
+      })
     }
   }
 }

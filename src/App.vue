@@ -15,18 +15,18 @@
             />
             <GatheringMap v-if="hasGathering && hasUser && !showSecurity" />
           </b-col>
-          <b-col id="bottom" cols="12" class="fixed-bottom">
-            <div
-              v-for="user in currentAttendees.concat(currentAttendees).concat(currentAttendees).concat(currentAttendees)"
-              :key="'uc-' + user.name"
-              class="d-inline-block"
-            >
-              <UserCard :user="user" />
-            </div>
-          </b-col>
         </b-row>
+        <div v-if="false" id="bottom" class="fixed-bottom">
+          <div
+            v-for="user in currentAttendees"
+            :key="'uc-' + user.name"
+            class="d-inline-block"
+          >
+            <UserCard :user="user" />
+          </div>
+        </div>
       </b-container>
-      <Background />
+      <TheBackground />
       <input
         id="clipboard-input"
         type="text"
@@ -34,16 +34,16 @@
         style="z-index:-1; opacity:0;"
       />
     </div>
-    <MessageBox />
+    <TheMessageBox />
     <TheHeader />
   </div>
 </template>
 
 <script>
 import TheHeader from '@/components/TheHeader.vue'
-import MessageBox from '@/components/MessageBox.vue'
+import TheMessageBox from '@/components/TheMessageBox.vue'
 import UserCard from '@/components/UserCard.vue'
-import Background from '@/components/Background.vue'
+import TheBackground from '@/components/TheBackground.vue'
 import SecurityModal from '@/components/modals/SecurityModal.vue'
 import CreateUserModal from '@/components/modals/CreateUserModal.vue'
 import CreateGatheringModal from '@/components/modals/CreateGatheringModal.vue'
@@ -53,9 +53,9 @@ export default {
   name: 'App',
   components: {
     TheHeader,
-    MessageBox,
+    TheMessageBox,
     UserCard,
-    Background,
+    TheBackground,
     SecurityModal,
     CreateUserModal,
     CreateGatheringModal,
@@ -94,9 +94,9 @@ export default {
       this.$store.dispatch('fetchGathering', id)
     }
     window.addEventListener('hashchange', this.handeHashChange)
-    window.addEventListener('contextmenu', e => {
-      e.preventDefault()
-    })
+    // window.addEventListener('contextmenu', e => {
+    //   e.preventDefault()
+    // })
   },
   beforeDestroy() {
     window.removeEventListener('hashchange', this.handeHashChange)
@@ -117,19 +117,3 @@ export default {
   }
 }
 </script>
-<style>
-#bottom {
-  overflow-y: hidden;
-  overflow-x: auto;
-  max-height: 20.3vh;
-  animation: pan 20s alternate-reverse infinite;
-}
-@keyframes pan {
-  from {
-    margin-left: 0;
-  }
-  to {
-    margin-left: 100%;
-  }
-}
-</style>

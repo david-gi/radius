@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  name: 'MessageBox',
+  name: 'TheMessageBox',
   data() {
     return {}
   },

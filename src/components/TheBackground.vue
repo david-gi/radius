@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  name: 'Background',
+  name: 'TheBackground',
   data() {
     return {
       amount: 12,

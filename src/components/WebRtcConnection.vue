@@ -79,7 +79,7 @@ export default {
       // }
       this.connection.onstream = this.onstream
       //this.connection.onstreamended = this.onstreamended
-
+      //this.connection.connectSocket(function() { alert('socket') })
       //this.connection.openOrJoin(roomId) //, this.joined)
       this.loadOff()
     },

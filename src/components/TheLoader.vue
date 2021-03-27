@@ -7,7 +7,7 @@
 
 <script>
 export default {
-  name: 'Loader',
+  name: 'TheLoader',
   computed: {
     loading() {
       return this.$store.state.loading

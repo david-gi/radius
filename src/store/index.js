@@ -283,7 +283,7 @@ export default new Vuex.Store({
             circle.attendees.forEach(attendee => {
               node.children.push({
                 name: attendee.name,
-                value: state.user.name === attendee.name ? 1 : 2
+                value: 2
               })
             })
           }

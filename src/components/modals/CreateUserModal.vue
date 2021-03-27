@@ -5,7 +5,11 @@
     @on-reset="resetModal"
     @on-submit="handleSubmit"
   >
-    <form ref="userform" @submit.stop.prevent="handleSubmit">
+    <form
+      ref="userform"
+      @submit.stop.prevent="handleSubmit"
+      @keyup.enter="handleSubmit"
+    >
       <div class="h2 bg-secondary rounded mx-n5 mt-n2 mb-4 px-5 py-4 shadow-md">
         <strong v-if="!$store.state.gathering">Start a Gathering</strong>
         <div v-else>

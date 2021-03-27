@@ -41,18 +41,18 @@
       </b-nav-item>
     </b-navbar-nav>
     <b-nav-text class="ml-auto mr-2">
-      <Loader />
+      <TheLoader />
     </b-nav-text>
   </b-navbar>
 </template>
 
 <script>
-import Loader from '@/components/Loader.vue'
+import TheLoader from '@/components/TheLoader.vue'
 
 export default {
   name: 'TheHeader',
   components: {
-    Loader
+    TheLoader
   },
   computed: {
     room() {
