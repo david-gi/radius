@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {User, Gathering, Circle} from '../models/index'
+import {Gathering} from '../models/index'
 import H from './storeHelpers'
 import firebase from 'firebase'
 
@@ -96,7 +96,7 @@ export default new Vuex.Store({
           val.tagline,
           val.maxSize,
           val.password,
-          H.arrayizeCircles(val.circles),
+          val.circles ? H.arrayizeCircles(val.circles) : [],
           val.users ? Object.keys(val.users) : []
         )
         commit('SET_GATHERING', gathering)
@@ -222,9 +222,9 @@ export default new Vuex.Store({
     async lookupCircle({state}, name) {
       if (!name || !state.gathering) return null
       const findFunc = arr => {
-        return arr.find(circle => circle.name === name)
+        return arr ? arr.find(circle => circle.name === name) : false
       }
-      return H.recurseFindCircles(state.gathering.circles, findFunc)
+      return H.recurseFindCircles(state.gathering.circles || [], findFunc)
     },
 
     async lookupAttendee({state}, name) {
@@ -232,7 +232,7 @@ export default new Vuex.Store({
       const findFunc = arr => {
         let result = null
         arr.forEach(circle => {
-          if (!result) {
+          if (!result && circle && circle.attendees) {
             const found = circle.attendees.find(a => a.name === name)
             if (found) {
               result = found
@@ -241,8 +241,8 @@ export default new Vuex.Store({
         })
         return result
       }
-      return H.recurseFindCircles(state.gathering.circles, findFunc)
-    },
+      return H.recurseFindCircles(state.gathering.circles || [], findFunc)
+    }
   },
 
   getters: {

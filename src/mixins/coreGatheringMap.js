@@ -116,29 +116,32 @@ export default {
       this.cssModTimer = setTimeout(() => {
         const svgLabels = document.querySelectorAll('svg g text')
         Array.from(svgLabels).forEach(svgLabel => {
+          const circleSvg =
+            svgLabel.parentElement.parentElement.parentElement.firstElementChild
+          const circleSvgHtml = document.getElementById(circleSvg.id)
+          circleSvg.style.stroke = 'var(--dark)'
+          circleSvg.style.fillOpacity = 1
+          svgLabel.style.fillOpacity = 1
+          const clipPathEl = svgLabel.parentElement.parentElement
+          clipPathEl.parentElement.children.forEach(c => {
+            if (c.tagName === 'image') {
+              c.remove()
+            }
+          })
+
           // Process Gathering Circles
           this.$store
             .dispatch('lookupCircle', svgLabel.textContent)
             .then(circleNodeData => {
-              const circleSvg =
-                svgLabel.parentElement.parentElement.parentElement
-                  .firstElementChild
-              const circleSvgHtml = document.getElementById(circleSvg.id)
-              circleSvg.style.stroke = 'var(--dark)'
-              circleSvg.style.fillOpacity = 1
-              svgLabel.style.fillOpacity = 1
-              const clipPathEl = svgLabel.parentElement.parentElement
-              clipPathEl.parentElement.children.forEach(c => {
-                if (c.tagName === 'image') {
-                  c.remove()
-                }
-              })
-
               if (circleNodeData) {
                 // eslint-disable-next-line prettier/prettier
                 circleSvgHtml.removeEventListener('contextmenu', this.createCircle)
-                // eslint-disable-next-line prettier/prettier
-                if (this.currentCircle && svgLabel.textContent === this.currentCircle.name) {
+                circleSvgHtml.removeEventListener('contextmenu', this.goToRoot)
+                const isCurrentCircle =
+                  this.currentCircle &&
+                  svgLabel.textContent === this.currentCircle.name
+                if (isCurrentCircle) {
+                  circleSvg.style.stroke = 'var(--green)'
                   // attach create circle right-click event
                   // eslint-disable-next-line prettier/prettier
                   circleSvgHtml.addEventListener('contextmenu', this.createCircle)
@@ -146,44 +149,44 @@ export default {
                   setTimeout(() => {
                     circleSvgHtml.dispatchEvent(new Event('click'))
                   }, 500)
-                  circleSvg.style.stroke = 'var(--green)'
+                } else {
+                  circleSvgHtml.addEventListener('contextmenu', this.goToRoot)
                 }
                 return
               }
 
               // Process Attendee Circles
               if (!circleNodeData) {
-                setTimeout(() => {
-                  this.$store
-                    .dispatch('lookupAttendee', svgLabel.textContent)
-                    .then(attendeeNodeData => {
-                      if (attendeeNodeData && attendeeNodeData.img) {
-                        const img = document.createElementNS(
-                          'http://www.w3.org/2000/svg',
-                          'image'
-                        )
-                        const fitImg = () => {
-                          const circleDiameter =
-                            circleSvg.getBBox({stroke: true}).height + 8
-                          img.setAttribute('x', -(circleDiameter / 2))
-                          img.setAttribute('y', -(circleDiameter / 2))
-                          img.setAttribute('height', circleDiameter)
-                        }
-                        fitImg()
-                        img.setAttribute('href', attendeeNodeData.img)
-                        img.setAttribute(
-                          'clip-path',
-                          `${clipPathEl.getAttribute('clip-path')}`
-                        )
-
-                        svgLabel.style.fillOpacity = 0
-                        clipPathEl.parentElement.append(img)
-                        setTimeout(() => {
-                        fitImg()
-                        }, 800)
+                this.$store
+                  .dispatch('lookupAttendee', svgLabel.textContent)
+                  .then(attendeeNodeData => {
+                    if (attendeeNodeData && attendeeNodeData.img) {
+                      const img = document.createElementNS(
+                        'http://www.w3.org/2000/svg',
+                        'image'
+                      )
+                      const fitImg = () => {
+                        const circleDiameter =
+                          circleSvg.getBBox({stroke: true}).height + 8
+                        img.setAttribute('x', -(circleDiameter / 2))
+                        img.setAttribute('y', -(circleDiameter / 2))
+                        img.setAttribute('height', circleDiameter)
+                        img.setAttribute('style', 'cursor: pointer')
                       }
-                    })
-                })
+                      img.setAttribute('href', attendeeNodeData.img)
+                      img.setAttribute(
+                        'clip-path',
+                        `${clipPathEl.getAttribute('clip-path')}`
+                      )
+                      fitImg()
+
+                      svgLabel.style.fillOpacity = 0
+                      clipPathEl.parentElement.append(img)
+                      setTimeout(() => {
+                        fitImg()
+                      }, 800)
+                    }
+                  })
               }
             })
         }, 4000)

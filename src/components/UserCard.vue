@@ -31,7 +31,7 @@ export default {
   name: 'UserCard',
   props: {
     user: User
-  },
+  }
 }
 </script>
 <style>

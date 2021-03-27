@@ -59,12 +59,12 @@ export default {
   },
 
   created() {
+    window.addEventListener('resize', this.resizeChart)
     window.addEventListener('beforeunload', this.exit)
   },
 
   mounted() {
     this.initMap()
-    window.addEventListener('beforeunload', this.exit)
   },
 
   beforeRouteLeave() {
@@ -72,6 +72,7 @@ export default {
   },
 
   beforeDestroy() {
+    window.removeEventListener('resize', this.resizeChart)
     window.removeEventListener('beforeunload', this.exit)
   },
 
@@ -97,8 +98,10 @@ export default {
         this.isCircle(node) &&
         (!this.currentCircle || this.currentCircle.name !== node.name)
       ) {
-        this.map.zoomToNode(node)
         this.enterCircle(node)
+        setTimeout(() => {
+          this.map.zoomToNode(node)
+        }, 1500)
       }
     },
 
@@ -140,7 +143,6 @@ export default {
       this.$bvModal.show('create-circle-modal')
       return false
     }
-
   }
 }
 </script>

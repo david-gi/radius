@@ -94,9 +94,9 @@ export default {
       this.$store.dispatch('fetchGathering', id)
     }
     window.addEventListener('hashchange', this.handeHashChange)
-    // window.addEventListener('contextmenu', e => {
-    //   e.preventDefault()
-    // })
+    window.addEventListener('contextmenu', e => {
+      e.preventDefault()
+    })
   },
   beforeDestroy() {
     window.removeEventListener('hashchange', this.handeHashChange)

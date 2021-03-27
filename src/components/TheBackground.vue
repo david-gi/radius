@@ -63,12 +63,11 @@ export default {
   position: absolute;
   display: block;
   list-style: none;
-  animation: animate 60s linear infinite;
   bottom: -150px;
   border-radius: 100%;
+  animation: rise 60s linear infinite;
 }
-
-@keyframes animate {
+@keyframes rise {
   0% {
     transform: perspective(500px) translate3d(0, -100px, 0);
     opacity: 0;
