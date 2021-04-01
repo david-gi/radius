@@ -84,7 +84,7 @@ export default new Vuex.Store({
         if (!val) {
           dispatch('displayMessage', {
             msg: 'Gathering was not found.',
-            time: 8000
+            time: 12000
           })
           commit('SET_ROUTE', '')
           return
@@ -104,7 +104,7 @@ export default new Vuex.Store({
       }
       gatheringRef.get().then(val => {
         handler(val)
-        commit('SET_LOADING', false)
+        setTimeout(() => { commit('SET_LOADING', false) }, 800)
         gatheringRef.on('value', handler)
       })
     },
@@ -132,7 +132,6 @@ export default new Vuex.Store({
       })
       dispatch('joinGathering')
       commit('SET_ROUTE', id)
-      commit('SET_LOADING', false)
     },
 
     async joinGathering({state, commit}) {
@@ -144,9 +143,6 @@ export default new Vuex.Store({
       db.ref(`gatherings/${state.gathering.id}/users/${state.user.name}`).set(
         payload
       )
-      setTimeout(() => {
-        commit('SET_LOADING', false)
-      }, 500)
     },
 
     async leaveGathering({commit, state}) {

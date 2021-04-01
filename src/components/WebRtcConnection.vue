@@ -24,18 +24,17 @@ export default {
   },
   data() {
     return {
-      V: null,
+      V: this,
       connection: new RTCMultiConnection()
     }
   },
   mounted() {
-    this.thisRef = this
     this.startConnection(this.room)
     window.addEventListener('beforeunload', this.leave)
   },
-  destroyed() {
-    window.removeEventListener('beforeunload', this.leave)
+  beforeDestroy() {
     this.leave()
+    window.removeEventListener('beforeunload', this.leave)
   },
 
   methods: {
@@ -70,58 +69,33 @@ export default {
         }
       ]
 
-      // this.connection.onopen = event => {
-      //   // this.connection.send(event.userid)
-      // }
-
-      // this.connection.onmessage = event => {
-      //   //alert(event.userid + ' said: ' + event.data)
-      // }
       this.connection.onstream = this.onstream
-      //this.connection.onstreamended = this.onstreamended
-      //this.connection.connectSocket(function() { alert('socket') })
-      //this.connection.openOrJoin(roomId) //, this.joined)
+      this.connection.onstreamended = this.onstreamended
+      this.connection.openOrJoin(roomId)
       this.loadOff()
     },
 
-    joined(isRoomCreated, roomid, error) {
-      this.loadOff()
-      //if (this.connection.isInitiator === true)
-      if (error) this.msg(error)
-    },
+    onstream: function(event) {
+      this.V.connection.audiosContainer = document.getElementById('top')
+      const mediaElement = event.mediaElement
+      mediaElement.removeAttribute('controls')
+      mediaElement.setAttribute('autoplay', true)
+      mediaElement.setAttribute('muted', false)
+      mediaElement.setAttribute('volume', this.listenOnly ? 50 : 100)
 
-    onstream: event => {
-      document.firstChild().prepend(event.mediaElement)
-      //this.connection.audiosContainer = document.getElementById('bottom')
-      //var width = parseInt(this.connection.audiosContainer.clientWidth / 2) - 20
-      var mediaElement = this.getHTMLMediaElement(event.mediaElement, {
-        title: event.userid,
-        buttons: [],
-        width: 120,
-        showOnMouseEnter: false
-      })
-
-      // this.V.connection.audiosContainer.appendChild(mediaElement)
-      document.firstChild().prepend(mediaElement)
-
-      setTimeout(function() {
-        mediaElement.media.play()
-      }, 3000)
+      this.V.connection.audiosContainer.appendChild(mediaElement)
 
       mediaElement.id = event.streamid
     },
 
     onstreamended: event => {
       var mediaElement = document.getElementById(event.streamid)
-      if (mediaElement) {
-        mediaElement.parentNode.removeChild(mediaElement)
-      }
+      if (mediaElement) mediaElement.remove()
     },
 
     leave() {
       if (this.connection) {
         this.connection.leave()
-        this.connection = null
       }
     }
   }

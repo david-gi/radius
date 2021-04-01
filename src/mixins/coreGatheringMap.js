@@ -8,7 +8,6 @@ export default {
 
   methods: {
     initMap() {
-      this.$store.commit('SET_LOADING', true)
       // Setup map
       const mapEl = document.getElementById('Map')
       const topEl = document.getElementById('top')
@@ -26,21 +25,22 @@ export default {
         .onHover(this.showUserCard)
         .onClick(this.nodeClick)(mapEl)
       this.applyCssMods()
-      this.$store.commit('SET_LOADING', false)
     },
 
     resizeChart() {
       const topEl = document.getElementById('top')
-      this.map.width(topEl.clientWidth).height(topEl.clientHeight)
+      this.map
+        .width(topEl.clientWidth || '100vw')
+        .height(topEl.clientHeight || '100vh')
+      this.map.zoomReset()
     },
 
     refreshChart() {
-      this.resizeChart()
       clearTimeout(this.refreshTimer)
       this.refreshTimer = setTimeout(() => {
         this.map.data(this.nodes)
         this.applyCssMods()
-      }, 500)
+      }, 1000)
     },
 
     isCircle(node) {
@@ -52,6 +52,9 @@ export default {
       this.applyCssMods()
       this.$store.dispatch('leaveCurrentCircle').then(() => {
         this.connections = []
+        document.getElementsByTagName('audio').forEach(a => {
+          a.remove()
+        })
       })
     },
 
@@ -112,8 +115,10 @@ export default {
     },
 
     applyCssMods() {
+      this.loadOn()
       clearTimeout(this.cssModTimer)
       this.cssModTimer = setTimeout(() => {
+        let finishedCount = 0
         const svgLabels = document.querySelectorAll('svg g text')
         Array.from(svgLabels).forEach(svgLabel => {
           const circleSvg =
@@ -129,6 +134,12 @@ export default {
             }
           })
 
+          if (++finishedCount === svgLabels.length) {
+            setTimeout(() => {
+              this.loadOff()
+            }, 2000)
+          }
+
           // Process Gathering Circles
           this.$store
             .dispatch('lookupCircle', svgLabel.textContent)
@@ -141,14 +152,12 @@ export default {
                   this.currentCircle &&
                   svgLabel.textContent === this.currentCircle.name
                 if (isCurrentCircle) {
+                  // reset zoom from node updates
+                  circleSvgHtml.dispatchEvent(new Event('click'))
                   circleSvg.style.stroke = 'var(--green)'
                   // attach create circle right-click event
                   // eslint-disable-next-line prettier/prettier
                   circleSvgHtml.addEventListener('contextmenu', this.createCircle)
-                  // reset zoom from node updates
-                  setTimeout(() => {
-                    circleSvgHtml.dispatchEvent(new Event('click'))
-                  }, 500)
                 } else {
                   circleSvgHtml.addEventListener('contextmenu', this.goToRoot)
                 }
@@ -167,11 +176,14 @@ export default {
                       )
                       const fitImg = () => {
                         const circleDiameter =
-                          circleSvg.getBBox({stroke: true}).height + 8
+                          circleSvg.getBBox({stroke: true}).height + 2
                         img.setAttribute('x', -(circleDiameter / 2))
                         img.setAttribute('y', -(circleDiameter / 2))
                         img.setAttribute('height', circleDiameter)
-                        img.setAttribute('style', 'cursor: pointer')
+                        img.setAttribute(
+                          'style',
+                          'cursor: pointer; pointer-events: none;'
+                        )
                       }
                       img.setAttribute('href', attendeeNodeData.img)
                       img.setAttribute(
@@ -180,17 +192,16 @@ export default {
                       )
                       fitImg()
 
-                      svgLabel.style.fillOpacity = 0
                       clipPathEl.parentElement.append(img)
                       setTimeout(() => {
                         fitImg()
-                      }, 800)
+                      }, 500)
                     }
                   })
               }
             })
-        }, 4000)
-      })
+        })
+      }, 2000)
     }
   }
 }

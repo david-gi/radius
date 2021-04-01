@@ -2,7 +2,7 @@
   <div :class="{joined: currentCircle}" class="faded">
     <div>
       <div id="Map" />
-      <div v-if="!$store.state.loading && !cConnections">
+      <div v-if="!$store.state.loading && cConnections">
         <div v-for="con in cConnections" :key="con.name">
           <WebRtcConnection
             :room="$store.state.gathering.id + con.name"
@@ -32,8 +32,7 @@ export default {
     return {
       map: new CirclePack(),
       connections: null,
-      debounceCount: null,
-      debounceTimer: null
+      debounceCount: 0
     }
   },
 
@@ -83,11 +82,13 @@ export default {
     },
 
     nodeClick(node) {
-      if (++this.debounceCount > 1 || this.$store.state.loading) {
-        clearTimeout(this.debounceTimer)
-        this.debounceTimer = setTimeout(() => {
+      if (this.$store.state.loading) return
+      if (node) this.map.zoomToNode(node)
+
+      if (++this.debounceCount > 1) {
+        setTimeout(() => {
           this.debounceCount = 0
-        }, 500)
+        }, 200)
         return
       }
       if (!node) {
@@ -99,9 +100,6 @@ export default {
         (!this.currentCircle || this.currentCircle.name !== node.name)
       ) {
         this.enterCircle(node)
-        setTimeout(() => {
-          this.map.zoomToNode(node)
-        }, 1500)
       }
     },
 
@@ -118,6 +116,9 @@ export default {
       }
 
       this.$store.dispatch('joinCircle', circle).then(() => {
+        document.getElementsByTagName('audio').forEach(a => {
+          a.remove()
+        })
         this.connections = [{name: node.name, listenOnly: false}]
         if (node.x && this.$store.getters.currentParent) {
           this.connections.push({
@@ -158,7 +159,7 @@ g {
   clip-path: none !important;
 }
 .circlepack-viz circle {
-  stroke-width: 0.4rem !important;
+  stroke-width: .6rem !important;
   stroke: var(--dark);
   stroke-opacity: 1;
 }

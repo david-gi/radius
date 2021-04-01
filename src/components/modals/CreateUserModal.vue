@@ -64,18 +64,6 @@
       </b-form-group>
     </form>
   </BaseModal>
-  <BaseModal modal-id="loadingModal" :no-footer="true" v-else>
-    <div class="pb-3">
-      <div class="h5 text-truncate pt-1 ml-2">
-        Loading gathering...
-        <b-spinner
-          variant="info"
-          label="Loading..."
-          class="mr-3 float-right d-none d-sm-block"
-        />
-      </div>
-    </div>
-  </BaseModal>
 </template>
 
 <script>

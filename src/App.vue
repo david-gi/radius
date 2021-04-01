@@ -1,42 +1,55 @@
 <template>
-  <div class="p-0 m-0" :class="{ghosted: !loaded}">
-    <div>
-      <b-container fluid class="p-0 m-0">
-        <b-row
-          no-gutters
-          class="zindex-sticky fixed-top h-100 w-100 p-0 m-0"
-          align-v="stretch"
+  <b-overlay
+    class="p-0 m-0"
+    :show="!loaded"
+    rounded="sm"
+    variant="dark"
+    opacity="0.2"
+    spinner-variant="info"
+    z-index="9999"
+  >
+    <template #overlay>
+      <div class="h1" style="transform: scale(2)">
+        <b-spinner variant="secondary" class="position-absolute" type="grow" />
+        <b-spinner variant="info" class="position-absolute" />
+        <b-spinner variant="primary" small class="m-2 position-absolute" />
+      </div>
+    </template>
+    <b-container fluid class="p-0 m-0">
+      <b-row
+        no-gutters
+        class="fixed-top h-100 w-100 p-0 m-0 zindex-sticky"
+        align-v="stretch"
+      >
+        <b-col id="top" cols="12">
+          <GatheringMap v-if="hasGathering && hasUser && !showSecurity" />
+        </b-col>
+      </b-row>
+      <div v-if="false" id="bottom" class="fixed-bottom">
+        <div
+          v-for="user in currentAttendees"
+          :key="'uc-' + user.name"
+          class="d-inline-block"
         >
-          <b-col id="top" cols="12">
-            <SecurityModal v-if="showSecurity" />
-            <CreateUserModal v-if="!hasUser && !showSecurity" />
-            <CreateGatheringModal
-              v-if="noGatheringId && hasUser && !showSecurity"
-            />
-            <GatheringMap v-if="hasGathering && hasUser && !showSecurity" />
-          </b-col>
-        </b-row>
-        <div v-if="false" id="bottom" class="fixed-bottom">
-          <div
-            v-for="user in currentAttendees"
-            :key="'uc-' + user.name"
-            class="d-inline-block"
-          >
-            <UserCard :user="user" />
-          </div>
+          <UserCard :user="user" />
         </div>
-      </b-container>
-      <TheBackground />
-      <input
-        id="clipboard-input"
-        type="text"
-        class="fixed-bottom"
-        style="z-index:-1; opacity:0;"
-      />
-    </div>
-    <TheMessageBox />
+      </div>
+    </b-container>
     <TheHeader />
-  </div>
+    <TheBackground />
+
+    <SecurityModal v-if="showSecurity" />
+    <CreateUserModal v-if="!hasUser && !showSecurity" />
+    <CreateGatheringModal v-if="hasUser && noGatheringId && !showSecurity" />
+    <TheMessageBox />
+
+    <input
+      id="clipboard-input"
+      type="text"
+      class="fixed-bottom"
+      style="z-index:-1; opacity:0;"
+    />
+  </b-overlay>
 </template>
 
 <script>
