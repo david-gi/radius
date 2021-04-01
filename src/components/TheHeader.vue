@@ -10,13 +10,13 @@
         <!-- Using 'button-content' slot -->
         <template #button-content>
           <img
-            alt="Mingle.io"
-            title="Mingle.io"
-            src="../assets/logo.png"
+            alt="Concentric.io"
+            title="Concentric.io"
+            src="../assets/logo.svg"
             class="hoverable"
-            width="55"
+            width="40"
           />
-          <strong class="text-white h5 pl-2 shadow-text"> Mingle<small>.io</small></strong>
+          <strong class="text-white h5 pl-3 shadow-text">circletalk</strong>
         </template>
         <b-dropdown-item variant="info" @click="leave">
           Leave
