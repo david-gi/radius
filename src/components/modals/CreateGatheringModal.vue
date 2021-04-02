@@ -6,19 +6,22 @@
     @on-submit="handleSubmit"
   >
     <form ref="gatheringform" @submit.stop.prevent="handleSubmit">
-      <h3 class="mt-n2">
-        Gathering details
+      <div class="h2 bg-secondary rounded mx-n5 mt-n2 mb-4 px-5 py-4 shadow-md">
+        <strong>Start a Gathering</strong>
+      </div>
+      <h3 class="h5 mt-n2">
+        Setup a Gathering for Others to Join
       </h3>
       <b-form-group
         label-for="name-input"
         class="pt-2 mr-1 text-white"
-        invalid-feedback="Name is required"
+        invalid-feedback="Title is required"
         :state="formState"
       >
         <b-form-input
           id="name-input"
           v-model.lazy.trim="gathering.name"
-          placeholder="Enter a name"
+          placeholder="Enter a title"
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
           required
           autofocus

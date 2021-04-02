@@ -68,7 +68,6 @@ export default new Vuex.Store({
 
       const checkSecurity = cFunc.httpsCallable('checkSecurity')
       const valid = await checkSecurity({id, password: state.password})
-      commit('SET_SHOW_SECURITY', false)
       if (!valid.data) {
         dispatch('displayMessage', {
           msg: 'Please enter the correct password.',
@@ -77,6 +76,7 @@ export default new Vuex.Store({
         commit('SET_SHOW_SECURITY', true)
         return
       }
+      commit('SET_SHOW_SECURITY', false)
 
       const gatheringRef = db.ref('gatherings/' + id)
       const handler = snapshot => {
@@ -93,7 +93,7 @@ export default new Vuex.Store({
         const gathering = new Gathering(
           id,
           val.name,
-          val.tagline,
+          val.description,
           val.maxSize,
           val.password,
           val.circles ? H.arrayizeCircles(val.circles) : [],
@@ -104,12 +104,14 @@ export default new Vuex.Store({
       }
       gatheringRef.get().then(val => {
         handler(val)
-        setTimeout(() => { commit('SET_LOADING', false) }, 800)
+        setTimeout(() => {
+          commit('SET_LOADING', false)
+        }, 800)
         gatheringRef.on('value', handler)
       })
     },
 
-    async createGathering({dispatch, commit}, payload) {
+    async createGathering({commit}, payload) {
       commit('SET_LOADING', true)
 
       const newRef = db.ref('gatherings').push()
@@ -117,9 +119,9 @@ export default new Vuex.Store({
       const hasPass = payload.password && payload.password.length > 0
       const gathering = {
         name: payload.name,
-        description: payload.description,
+        description: payload.description || '',
         maxSize: payload.maxSize,
-        password: hasPass
+        password: Boolean(hasPass)
       }
       if (hasPass) {
         db.ref(`security/${id}`).set(payload.password)
@@ -130,19 +132,15 @@ export default new Vuex.Store({
         const newCirclesRef = db.ref(`gatherings/${id}/circles`).push()
         newCirclesRef.set(c)
       })
-      dispatch('joinGathering')
       commit('SET_ROUTE', id)
     },
 
     async joinGathering({state, commit}) {
       commit('SET_LOADING', true)
 
-      const payload = state.user
-      payload.user = state.user.name
-      payload.password = state.password
-      db.ref(`gatherings/${state.gathering.id}/users/${state.user.name}`).set(
-        payload
-      )
+      db.ref(`gatherings/${state.gathering.id}/users/${state.user.name}`).set({
+        user: state.user.name
+      })
     },
 
     async leaveGathering({commit, state}) {
@@ -190,11 +188,10 @@ export default new Vuex.Store({
         commit('SET_LOADING', true)
 
         const circlePath = state.gathering.id + circle.parentPath
-        const payload = state.user
-        payload.password = state.password
-        db.ref(`gatherings/${circlePath}/attendees/${state.user.name}`).set(
-          payload
-        )
+        db.ref(`gatherings/${circlePath}/attendees/${state.user.name}`).set({
+          user: state.user.name,
+          password: state.password
+        })
         commit('SET_CURRENT_CIRCLE', circle)
       } catch {
         commit('SET_CURRENT_CIRCLE', null)

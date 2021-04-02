@@ -76,9 +76,9 @@ export default {
   },
 
   methods: {
-    exit() {
-      this.$store.dispatch('leaveCurrentCircle')
-      this.$store.dispatch('leaveGathering')
+    async exit() {
+      await this.$store.dispatch('leaveCurrentCircle')
+      await this.$store.dispatch('leaveGathering')
     },
 
     nodeClick(node) {
@@ -96,8 +96,8 @@ export default {
         return
       }
       if (
-        this.isCircle(node) &&
-        (!this.currentCircle || this.currentCircle.name !== node.name)
+        this.isCircle(node) //&&
+        //(!this.currentCircle || this.currentCircle.name !== node.name)
       ) {
         this.enterCircle(node)
       }

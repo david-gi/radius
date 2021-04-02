@@ -39,7 +39,7 @@ export default {
       clearTimeout(this.refreshTimer)
       this.refreshTimer = setTimeout(() => {
         this.map.data(this.nodes)
-        this.applyCssMods()
+        this.applyCssMods(false)
       }, 1000)
     },
 
@@ -114,8 +114,8 @@ export default {
       }
     },
 
-    applyCssMods() {
-      this.loadOn()
+    applyCssMods(showLoading = true) {
+      if (showLoading) this.loadOn()
       clearTimeout(this.cssModTimer)
       this.cssModTimer = setTimeout(() => {
         let finishedCount = 0
@@ -153,8 +153,10 @@ export default {
                   svgLabel.textContent === this.currentCircle.name
                 if (isCurrentCircle) {
                   // reset zoom from node updates
-                  circleSvgHtml.dispatchEvent(new Event('click'))
-                  circleSvg.style.stroke = 'var(--green)'
+                  // circleSvgHtml.dispatchEvent(new Event('click'))
+                  setTimeout(() => {
+                    circleSvg.style.stroke = 'var(--green)'
+                  }, 1000)
                   // attach create circle right-click event
                   // eslint-disable-next-line prettier/prettier
                   circleSvgHtml.addEventListener('contextmenu', this.createCircle)

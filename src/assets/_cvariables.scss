@@ -60,9 +60,20 @@ $input-focus-border-color: transparent !default;
 $input-focus-bg: saturate($secondary, 25%) !default;
 $input-placeholder-color: $light !default;
 
+$dropdown-bg:                    $dark !default;
+$dropdown-border:                $info !default;
+$dropdown-fallback-border:       $info !default;
+$dropdown-divider-bg:            $info !default;
+$dropdown-link-color:            $info !default;
+$dropdown-link-hover-color:      $info !default;
+$dropdown-link-hover-bg:         $dark !default;
+$dropdown-link-active-color:     $info !default;
+$dropdown-link-active-bg:        darken($primary, 25%) !default;
+$dropdown-link-disabled-color:   $gray-500 !default;
+$dropdown-header-color:          $gray-500 !default;
+
 $custom-range-track-height:         .5rem !default;
 $custom-range-track-bg:             $secondary !default;
-
 $custom-range-thumb-width:                   1.1rem !default;
 $custom-range-thumb-bg:                      $info !default;
 $custom-range-thumb-active-bg:               saturate($primary, 10%) !default;

@@ -41,6 +41,9 @@ $body-color: #161616;
 .pointer {
   cursor: pointer;
 }
+.busy {
+  cursor: progress;
+}
 
 .hoverable:hover, .faded {
   opacity: .8;

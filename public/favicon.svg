@@ -12,9 +12,9 @@
       <polygon points="60,60 0,60 -30,0 30,-60 80,0 25,30 80,70" fill-rule="nonzero" />
     </clipPath>
   </defs>
-  <g transform="rotate(25, 30, 30)">
-    <circle cx="30" cy="30" r="25" fill="#3E69E0" />
+  <g>
+    <circle cx="30" cy="30" r="25" fill="#502bcc" />
     <circle clip-path="url(#x)" cx="30" cy="30" r="30" fill="#b4ea1e" />
-    <circle clip-path="url(#x)" cx="30" cy="30" r="20" fill="#502bcc" />
+    <circle clip-path="url(#x)" cx="30" cy="30" r="20" fill="#3E69E0" />
   </g>
 </svg>

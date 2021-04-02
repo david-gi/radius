@@ -1,6 +1,6 @@
 <template>
   <b-overlay
-    class="p-0 m-0"
+    class="p-0 m-0 busy"
     :show="!loaded"
     rounded="sm"
     variant="dark"
@@ -10,9 +10,9 @@
   >
     <template #overlay>
       <div class="h1" style="transform: scale(2)">
-        <b-spinner variant="secondary" class="position-absolute" type="grow" />
+        <b-spinner variant="primary" class="position-absolute" type="grow" />
         <b-spinner variant="info" class="position-absolute" />
-        <b-spinner variant="primary" small class="m-2 position-absolute" />
+        <b-spinner variant="secondary" small class="m-2 position-absolute" />
       </div>
     </template>
     <b-container fluid class="p-0 m-0">
@@ -38,9 +38,13 @@
     <TheHeader />
     <TheBackground />
 
-    <SecurityModal v-if="showSecurity" />
-    <CreateUserModal v-if="!hasUser && !showSecurity" />
-    <CreateGatheringModal v-if="hasUser && noGatheringId && !showSecurity" />
+    <SecurityModal v-if="loaded && showSecurity" />
+    <CreateUserModal
+      v-if="loaded && !noGatheringId && !hasUser && !showSecurity"
+    />
+    <CreateGatheringModal
+      v-if="loaded && noGatheringId && !hasUser && !showSecurity"
+    />
     <TheMessageBox />
 
     <input

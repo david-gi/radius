@@ -5,7 +5,7 @@
         :disabled="!$store.state.gathering"
         no-caret
         class="user-select-none"
-        menu-class="border-info bg-dark ml-2 user-select-none"
+        menu-class="ml-2 user-select-none"
       >
         <!-- Using 'button-content' slot -->
         <template #button-content>
@@ -19,7 +19,7 @@
           <strong class="text-white h5 pl-3 shadow-text">circletalk</strong>
         </template>
         <b-dropdown-item variant="info" @click="leave">
-          Leave
+          Leave Gathering
         </b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
@@ -71,9 +71,9 @@ export default {
     }
   },
   methods: {
-    leave() {
-      this.$store.dispatch('leaveCurrentCircle')
-      this.$store.dispatch('leaveGathering')
+    async leave() {
+      await this.$store.dispatch('leaveCurrentCircle')
+      await this.$store.dispatch('leaveGathering')
       window.location = '/'
     }
   }
