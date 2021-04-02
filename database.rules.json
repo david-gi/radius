@@ -1,25 +1,53 @@
 {
   "rules": {
-    ".read": true,
-    ".write": true,
     "security": {
+      ".write": "!data.exists() && newData.exists()",
       ".read": false
     },
     "gatherings": {
       "$gathering_id": {
+        ".read": true,
+        ".write": true,
         "name": {
           ".validate":
             "newData.isString() && newData.val().length < 40"
         },
         "description": {
           ".validate": 
-            "!newData .exists() || (newData.isString() &&  newData.val().length < 300)" 
+            "!newData.exists() || (newData.isString() &&  newData.val().length < 300)" 
         },
         "maxSize": { 
           ".validate":
-          	"newData.isNumber() &&  newData.val() >= 1 && newData.val() <= 100"
-        }
+            "newData.isNumber() &&  newData.val() >= 1 && newData.val() <= 100"
+        },
+        "password": { 
+          ".validate": "newData.exists()"
+        },
+        "circles": {
+          ".read": true,
+          ".write": true,
+          "$circle": {
+            ".read": true,
+            ".write": true
+          }
+        },
+        "users": {
+            "$user_id": {
+              ".read": true,
+              ".write": true,
+              "user": {
+                ".validate":
+                  "newData.isString() && newData.val().length < 40"
+              },
+              "$other": { ".validate": false }
+            }
+        },
+        "$other": { ".validate": false }
       }
+    },
+    "$other": {
+      ".read": false,
+      ".write": false
     }
   }
 }
