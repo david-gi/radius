@@ -22,7 +22,7 @@ export default {
         .label(this.setLabel)
         .tooltipTitle(this.setTooltip)
         .tooltipContent(this.setTooltipContent)
-        .onHover(this.showUserCard)
+        //.onHover()
         .onClick(this.nodeClick)(mapEl)
       this.applyCssMods()
     },
@@ -45,6 +45,17 @@ export default {
 
     isCircle(node) {
       return node && node.value > 2
+    },
+
+    goToNode(node) {
+      const zoomModel = {
+        __dataNode: {
+          r: node.__dataNode.r + 20,
+          x: node.__dataNode.x,
+          y: node.__dataNode.y
+        }
+      }
+      this.map.zoomToNode(zoomModel)
     },
 
     goToRoot() {
@@ -103,7 +114,7 @@ export default {
       if (this.isCircle(node)) {
         return this.currentCircle && node.name === this.currentCircle.name
           ? 'Right-click to add an inner circle'
-          : 'Click to join circle'
+          : 'Double-click to join circle'
       } else {
         const user = this.findAttendee(node)
         return user
@@ -153,10 +164,10 @@ export default {
                   svgLabel.textContent === this.currentCircle.name
                 if (isCurrentCircle) {
                   // reset zoom from node updates
-                  // circleSvgHtml.dispatchEvent(new Event('click'))
+                  circleSvgHtml.dispatchEvent(new Event('click'))
                   setTimeout(() => {
                     circleSvg.style.stroke = 'var(--green)'
-                  }, 1000)
+                  }, 100)
                   // attach create circle right-click event
                   // eslint-disable-next-line prettier/prettier
                   circleSvgHtml.addEventListener('contextmenu', this.createCircle)
@@ -203,7 +214,39 @@ export default {
               }
             })
         })
-      }, 2000)
+      }, 1000)
+    },
+
+    zoomToNode: function(d = {}) {
+      const state = this.map
+      const node = d.__dataNode
+      if (node) {
+        const ZOOM_REL_PADDING = 0.12
+
+        const k = Math.max(
+          1,
+          (Math.min(state.width, state.height) / (node.r * 2)) *
+            (1 - ZOOM_REL_PADDING)
+        )
+
+        const tr = {
+          k,
+          x: -Math.max(
+            0,
+            Math.min(
+              state.width * (1 - 1 / k), // Don't pan out of chart boundaries
+              node.x - state.width / k / 2 // Center circle in view
+            )
+          ),
+          y: -Math.max(
+            0,
+            Math.min(state.height * (1 - 1 / k), node.y - state.height / k / 2)
+          )
+        }
+
+        state.zoom.zoomTo(tr, 400)
+      }
+      return this
     }
   }
 }

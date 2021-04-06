@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import {Gathering} from '../models/index'
 import H from './storeHelpers'
 import firebase from 'firebase'
-import fbaseConfig from '../fbaseConfig.js'
+import fbaseConfig from '../../fbaseConfig.js'
 
 Vue.use(Vuex)
 

@@ -83,21 +83,20 @@ export default {
 
     nodeClick(node) {
       if (this.$store.state.loading) return
-      if (node) this.map.zoomToNode(node)
-
-      if (++this.debounceCount > 1) {
+      if (++this.debounceCount < 2) {
+        if (node) {
+          this.goToNode(node)
+        } else {
+          if (this.currentCircle) this.goToRoot()
+        }
         setTimeout(() => {
           this.debounceCount = 0
         }, 200)
         return
       }
-      if (!node) {
-        if (this.currentCircle) this.goToRoot()
-        return
-      }
       if (
-        this.isCircle(node) //&&
-        //(!this.currentCircle || this.currentCircle.name !== node.name)
+        this.isCircle(node) &&
+        (!this.currentCircle || this.currentCircle.name !== node.name)
       ) {
         this.enterCircle(node)
       }
@@ -159,7 +158,7 @@ g {
   clip-path: none !important;
 }
 .circlepack-viz circle {
-  stroke-width: .6rem !important;
+  stroke-width: 0.6rem !important;
   stroke: var(--dark);
   stroke-opacity: 1;
 }
