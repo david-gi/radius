@@ -1,5 +1,5 @@
 <template>
-  <div :class="{joined: currentCircle}" class="faded">
+  <div class="faded">
     <div>
       <div id="Map" />
       <div v-if="!$store.state.loading && cConnections">
@@ -12,6 +12,12 @@
       </div>
     </div>
     <CreateCircleModal @updated="refreshChart" />
+    <TheToolbar
+      @leave-circle="this.goToRoot"
+      @reset-zoom="this.map.zoomReset"
+      @circle-zoom="this.zoomToCurrent"
+      @add-circle="this.createCircle"
+    />
   </div>
 </template>
 
@@ -19,12 +25,14 @@
 import CirclePack from 'circlepack-chart'
 import coreGatheringMap from '../mixins/coreGatheringMap'
 import WebRtcConnection from '@/components/WebRtcConnection.vue'
+import TheToolbar from '@/components/TheToolbar.vue'
 import CreateCircleModal from '@/components/modals/CreateCircleModal.vue'
 
 export default {
   name: 'GatheringMap',
   components: {
     WebRtcConnection,
+    TheToolbar,
     CreateCircleModal
   },
   mixins: [coreGatheringMap],
@@ -87,7 +95,7 @@ export default {
         if (node) {
           this.goToNode(node)
         } else {
-          if (this.currentCircle) this.goToRoot()
+          this.goToRoot()
         }
         setTimeout(() => {
           this.debounceCount = 0
@@ -129,7 +137,7 @@ export default {
     },
 
     createCircle(e) {
-      e.preventDefault()
+      if (e) e.preventDefault()
       if (
         this.currentCircle &&
         this.currentCircle.parentPath &&
@@ -149,10 +157,7 @@ export default {
 <style>
 /* circlepack overwrite classes */
 svg {
-  cursor: default !important;
-}
-.joined svg {
-  cursor: alias !important;
+  cursor: pointer !important;
 }
 g {
   clip-path: none !important;

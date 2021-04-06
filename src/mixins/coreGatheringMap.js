@@ -2,7 +2,8 @@ export default {
   data() {
     return {
       refreshTimer: null,
-      cssModTimer: null
+      cssModTimer: null,
+      circleHightlightColor: 'var(--green)'
     }
   },
 
@@ -113,8 +114,8 @@ export default {
       if (!node || !node.name) return
       if (this.isCircle(node)) {
         return this.currentCircle && node.name === this.currentCircle.name
-          ? 'Right-click to add an inner circle'
-          : 'Click to zoom<br> Double-click to join'
+          ? 'Right-click to add an inner circle.'
+          : 'Click to zoom.<br> Double-click to join.'
       } else {
         const user = this.findAttendee(node)
         return user
@@ -123,6 +124,14 @@ export default {
             </p>`
           : ''
       }
+    },
+
+    zoomToCurrent() {
+      const circleSvgs = document.querySelectorAll('svg g circle')
+      const currentNode = Array.from(circleSvgs).find(
+        c => c.style.stroke === this.circleHightlightColor
+      )
+      if (currentNode) currentNode.dispatchEvent(new Event('click'))
     },
 
     applyCssMods(showLoading = true) {
@@ -158,7 +167,6 @@ export default {
               if (circleNodeData) {
                 // eslint-disable-next-line prettier/prettier
                 circleSvgHtml.removeEventListener('contextmenu', this.createCircle)
-                circleSvgHtml.removeEventListener('contextmenu', this.goToRoot)
                 const isCurrentCircle =
                   this.currentCircle &&
                   svgLabel.textContent === this.currentCircle.name
@@ -166,13 +174,11 @@ export default {
                   // reset zoom from node updates
                   circleSvgHtml.dispatchEvent(new Event('click'))
                   setTimeout(() => {
-                    circleSvg.style.stroke = 'var(--green)'
+                    circleSvg.style.stroke = this.circleHightlightColor
                   }, 100)
                   // attach create circle right-click event
                   // eslint-disable-next-line prettier/prettier
                   circleSvgHtml.addEventListener('contextmenu', this.createCircle)
-                } else {
-                  circleSvgHtml.addEventListener('contextmenu', this.goToRoot)
                 }
                 return
               }

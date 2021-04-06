@@ -152,7 +152,7 @@ export default new Vuex.Store({
       commit('SET_LOADING', false)
     },
 
-    async addCircle({state, commit, dispatch}, payload) {
+    async addCircle({state, commit}, payload) {
       commit('SET_LOADING', true)
 
       try {
@@ -168,7 +168,6 @@ export default new Vuex.Store({
         payload.parentPath =
           (state.currentCircle.parentPath || '') + '/circles/' + payload.id
 
-        dispatch('joinCircle', payload)
       } catch {
         commit('SET_LOADING', false)
       }

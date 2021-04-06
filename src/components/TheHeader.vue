@@ -1,5 +1,5 @@
 <template>
-  <b-navbar variant=" " class="fixed-top zindex-fixed m-0 p-0">
+  <b-navbar variant=" " class="fixed-top zindex-fixed m-0 p-0 pt-1">
     <b-navbar-nav>
       <b-nav-item-dropdown
         :disabled="!$store.state.gathering"
@@ -13,40 +13,42 @@
             alt="Concentric.io"
             title="Concentric.io"
             src="../assets/logo.svg"
-            class="hoverable"
+            class="hoverable mt-n1"
             width="40"
           />
-          <strong class="text-white h5 pl-3 shadow-text">circletalk</strong>
+          <strong class="text-white h4 pl-1 shadow-text">circletalk</strong>
         </template>
         <b-dropdown-item variant="info" @click="leave">
-          Leave Gathering
+          Start a new Gathering
         </b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
-    <b-navbar-nav class="mt-n1 ml-n2 shadow-text">
-      <b-nav-item v-if="$store.state.gathering && $store.state.gathering.name">
-        <b-icon-arrow-right-short scale="1.5" variant="white" />
+    <b-navbar-nav class="mt-n2 shadow-text d-inline">
+      <b-nav-text
+        v-if="$store.state.gathering && $store.state.gathering.name"
+        class="p-0"
+      >
         <strong
           v-if="$store.state.gathering"
-          class="text-white ml-1 text-nowrap"
+          class="text-white mx-2 text-nowrap"
         >
-          {{ $store.state.gathering.name }}
+          #{{ $store.state.gathering.name }}
         </strong>
-      </b-nav-item>
-      <b-nav-item v-if="parentRoom" class="ml-n2">
-        <b-icon-arrow-right-short scale="1.5" variant="white" />
-        <strong class="text-white ml-1 text-nowrap">
-          {{ parentRoom }}
-        </strong>
-      </b-nav-item>
-      <b-nav-item v-if="room" class="ml-n2">
-        <b-icon-arrow-right-short scale="1.5" variant="white" />
-        <strong class="text-white ml-1 text-nowrap">
+      </b-nav-text>
+      <b-nav-text v-if="room" class="p-0" title="Talking/Listening">
+        <strong class="text-info mx-1 text-nowrap">
+          <b-icon-mic-fill scale=".8" variant="info" class="mr-n1" />
           {{ room }}
         </strong>
-      </b-nav-item>
+      </b-nav-text>
+      <b-nav-text v-if="parentRoom" class="p-0" title="Listening only">
+        <strong class="text-warning ml-1 text-nowrap">
+          <b-icon-music-note scale=".8" variant="warning" class="mr-n2" />
+          {{ parentRoom }}
+        </strong>
+      </b-nav-text>
     </b-navbar-nav>
-    <b-nav-text class="ml-auto mr-2">
+    <b-nav-text>
       <TheLoader />
     </b-nav-text>
   </b-navbar>
@@ -67,13 +69,13 @@ export default {
         : null
     },
     parentRoom() {
-      return this.$store.getters.currentParent ? this.$store.getters.currentParent.name : null
+      return this.$store.getters.currentParent
+        ? this.$store.getters.currentParent.name
+        : null
     }
   },
   methods: {
     async leave() {
-      await this.$store.dispatch('leaveCurrentCircle')
-      await this.$store.dispatch('leaveGathering')
       window.location = '/'
     }
   }

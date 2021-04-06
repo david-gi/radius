@@ -128,8 +128,12 @@ export default {
     }
   },
   methods: {
-    handeHashChange() {
-      if (!window.location.hash) return
+    async handeHashChange() {
+      if (!window.location.hash) {
+        await this.$store.dispatch('leaveCurrentCircle')
+        await this.$store.dispatch('leaveGathering')
+        return
+      }
       this.$store.dispatch('fetchGathering', window.location.hash.substring(1))
     }
   }
