@@ -114,7 +114,7 @@ export default {
       if (this.isCircle(node)) {
         return this.currentCircle && node.name === this.currentCircle.name
           ? 'Right-click to add an inner circle'
-          : 'Double-click to join circle'
+          : 'Click to zoom<br> Double-click to join'
       } else {
         const user = this.findAttendee(node)
         return user

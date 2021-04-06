@@ -95,7 +95,10 @@ export default {
 
     leave() {
       if (this.connection) {
-        this.connection.leave()
+        this.connection.attachStreams.forEach(function(localStream) {
+          localStream.stop()
+        })
+        this.connection.closeSocket()
       }
     }
   }

@@ -1,6 +1,7 @@
 <template>
   <b-overlay
-    class="p-0 m-0 busy"
+    class="p-0 m-0"
+    :class="{'cursor-busy': !loaded}"
     :show="!loaded"
     rounded="sm"
     variant="dark"
