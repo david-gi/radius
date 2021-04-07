@@ -10,9 +10,9 @@
 
 <script>
 export default {
-  name: 'TheLoader',
+  name: 'DoubleStageButton',
   props: {
-    callback: () => {},
+    callback: Function,
     btnText: String,
     classes: String
   },

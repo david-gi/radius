@@ -167,7 +167,6 @@ export default new Vuex.Store({
         payload.password = state.password
         payload.parentPath =
           (state.currentCircle.parentPath || '') + '/circles/' + payload.id
-
       } catch {
         commit('SET_LOADING', false)
       }

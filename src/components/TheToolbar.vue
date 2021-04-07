@@ -26,7 +26,7 @@
     </b-col>
     <b-col v-if="currentCircle" cols="auto" class="mx-1 mb-2">
       <b-button class="w-100" @click="handleZooming">
-        {{ this.zoomReset ? 'Zoom to Circle' : 'Map View' }}
+        {{ this.zoomReset ? 'Circle View' : 'Map View' }}
       </b-button>
     </b-col>
   </b-row>
@@ -59,6 +59,14 @@ export default {
       }
     }
   },
+  mounted() {
+    window.addEventListener('wheel', this.onZoom)
+    window.addEventListener('gestureend', this.onPinch)
+  },
+  beforeDestroy() {
+    window.removeEventListener('wheel', this.onZoom)
+    window.removeEventListener('gestureend', this.onPinch)
+  },
   methods: {
     leaveGathering() {
       window.location = '/'
@@ -71,6 +79,15 @@ export default {
     leaveCircle() {
       this.$emit('leave-circle')
       this.zoomReset = false
+    },
+    zoomResetTrue() {
+      this.zoomReset = true
+    },
+    onZoom() {
+      this.zoomResetTrue()
+    },
+    onPinch(e) {
+      if (e.scale != 1.0) this.zoomResetTrue()
     },
     handleZooming() {
       if (!this.zoomReset) {

@@ -17,19 +17,25 @@ exports.checkSecurity = functions.https.onCall((data, context) => {
 
 exports.expireGatherings = functions.pubsub
     .schedule("every 120 minutes").onRun((context) => {
-      functions.logger.log("Removing empty gatherings...");
-      functions.database.ref("/gatherings")
-          .once("value", (snapshot) => {
-            snapshot.forEach((childSnapshot) => {
-              const childKey = childSnapshot.key;
-              const childData = childSnapshot.val();
-              if (!childData.users || childData.users.length < 1) {
-                functions.database.ref("/gatherings/" + childKey).remove();
-                functions.database.ref("/security/" + childKey).remove();
+      try {
+        functions.logger.log("Removing empty gatherings...");
+        db.ref("gatherings").once("value", (snapshot) => {
+          snapshot.forEach((childSnapshot) => {
+            const childKey = childSnapshot.key;
+            const childData = childSnapshot.val();
+            if (!childData.users || childData.users.length < 1) {
+              db.ref("gatherings/" + childKey).remove();
+              if (childData.password) {
+                db.ref("security/" + childKey).remove();
               }
-            });
+            }
           });
-      return null;
+        });
+        return null;
+      } catch (ex) {
+        functions.logger.log(ex);
+        return null;
+      }
     });
 
 exports.gatheringOnDelete = functions.database
@@ -116,7 +122,7 @@ exports.gatheringOnUpdate = functions.database
               return main();
             }
           } catch (ex) {
-            functions.logger.log(JSON.stringify(ex));
+            functions.logger.log(ex);
             return ex;
           }
         });
