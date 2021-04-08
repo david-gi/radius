@@ -9,9 +9,9 @@
       <div class="h2 bg-secondary rounded mx-n5 mt-n2 mb-4 px-5 py-4 shadow-md">
         <strong>Start a Gathering</strong>
       </div>
-      <h3 class="h5 mt-n2">
-        Setup a Gathering for Others to Join
-      </h3>
+      <div class="h5 mt-n2">
+        Gathering details
+      </div>
       <b-form-group
         label-for="name-input"
         class="pt-2 mr-1 text-white"
@@ -21,7 +21,7 @@
         <b-form-input
           id="name-input"
           v-model.lazy.trim="gathering.name"
-          placeholder="Enter a title"
+          placeholder="Title"
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
           required
           autofocus
@@ -31,7 +31,7 @@
         <b-form-input
           id="description-input"
           v-model="gathering.description"
-          placeholder="Enter a tagline (optional)"
+          placeholder="Tagline (optional)"
           :formatter="v => (v.length > 300 ? v.substring(0, 300) : v)"
         />
       </b-form-group>
@@ -39,7 +39,7 @@
         <b-form-input
           id="password-input"
           v-model.lazy.trim="gathering.password"
-          placeholder="Enter a password (optional)"
+          placeholder="Password (optional)"
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
         />
       </b-form-group>
@@ -57,10 +57,10 @@
           max="100"
         />
       </b-form-group>
+      <div class="h5 mb-2">Setup initial circles</div>
       <b-form-group label-for="circles-input" class="pt-2 mr-1 text-white">
-        Each main circle is limited to {{ $store.state.circleSize }}) attendees.
         <b-form-tags
-          placeholder="Add main circles..."
+          placeholder="Add a circle..."
           input-id="circles-input"
           v-model="circles"
           tag-class="bg-primary"

@@ -37,7 +37,7 @@
         <b-form-input
           id="name-input"
           v-model.trim.lazy="user.name"
-          placeholder="Enter your name"
+          placeholder="Your Name"
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
           required
           autofocus
@@ -49,7 +49,7 @@
           id="img-input"
           type="url"
           v-model="user.img"
-          placeholder="Picture link (optional)"
+          placeholder="Photo link (optional)"
           :formatter="v => (v.length > 300 ? v.substring(0, 300) : v)"
           trim
         />
@@ -58,7 +58,7 @@
         <b-form-textarea
           id="scratchpad-input"
           v-model="user.scratchpad"
-          placeholder="Share your details (optional)"
+          placeholder="Additional info (optional)"
           :formatter="v => (v.length > 500 ? v.substring(0, 500) : v)"
         />
       </b-form-group>
