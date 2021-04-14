@@ -6,6 +6,10 @@
     @on-submit="handleSubmit"
   >
     <form ref="gatheringform" @submit.stop.prevent="handleSubmit">
+      <div class="mt-n3 mb-4">
+        <h1 class="h3 m-0 mb-n1 text-info d-inline-block">circletalk</h1>
+        <div>gather • mingle • connect</div>
+      </div>
       <div class="h2 bg-secondary rounded mx-n5 mt-n2 mb-4 px-5 py-4 shadow-md">
         <strong>Start a Gathering</strong>
       </div>

@@ -16,7 +16,8 @@
         <b-spinner variant="secondary" small class="m-2 position-absolute" />
       </div>
     </template>
-    <b-container fluid class="p-0 m-0">
+
+    <b-container id="MainContent" fluid class="p-0 m-0">
       <b-row
         no-gutters
         class="fixed-top h-100 w-100 p-0 m-0 zindex-sticky"
@@ -36,7 +37,9 @@
         </div>
       </div>
     </b-container>
+
     <TheHeader />
+
     <TheBackground />
 
     <SecurityModal v-if="loaded && showSecurity" />

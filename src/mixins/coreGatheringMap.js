@@ -145,6 +145,7 @@ export default {
             svgLabel.parentElement.parentElement.parentElement.firstElementChild
           const circleSvgHtml = document.getElementById(circleSvg.id)
           circleSvg.style.stroke = 'var(--dark)'
+          circleSvg.style.filter = 'none'
           circleSvg.style.fillOpacity = 1
           svgLabel.style.fillOpacity = 1
           const clipPathEl = svgLabel.parentElement.parentElement
@@ -160,7 +161,7 @@ export default {
             }, 2000)
           }
 
-          // Process Gathering Circles
+          // Process Gathering Circle Nodes
           this.$store
             .dispatch('lookupCircle', svgLabel.textContent)
             .then(circleNodeData => {
@@ -175,6 +176,8 @@ export default {
                   circleSvgHtml.dispatchEvent(new Event('click'))
                   setTimeout(() => {
                     circleSvg.style.stroke = this.circleHightlightColor
+                    circleSvg.style.filter =
+                      'drop-shadow(0 0 12px var(--green))'
                   }, 100)
                   // attach create circle right-click event
                   // eslint-disable-next-line prettier/prettier
@@ -183,7 +186,7 @@ export default {
                 return
               }
 
-              // Process Attendee Circles
+              // Process Attendee Circle Nodes
               if (!circleNodeData) {
                 this.$store
                   .dispatch('lookupAttendee', svgLabel.textContent)
@@ -221,38 +224,6 @@ export default {
             })
         })
       }, 1000)
-    },
-
-    zoomToNode: function(d = {}) {
-      const state = this.map
-      const node = d.__dataNode
-      if (node) {
-        const ZOOM_REL_PADDING = 0.12
-
-        const k = Math.max(
-          1,
-          (Math.min(state.width, state.height) / (node.r * 2)) *
-            (1 - ZOOM_REL_PADDING)
-        )
-
-        const tr = {
-          k,
-          x: -Math.max(
-            0,
-            Math.min(
-              state.width * (1 - 1 / k), // Don't pan out of chart boundaries
-              node.x - state.width / k / 2 // Center circle in view
-            )
-          ),
-          y: -Math.max(
-            0,
-            Math.min(state.height * (1 - 1 / k), node.y - state.height / k / 2)
-          )
-        }
-
-        state.zoom.zoomTo(tr, 400)
-      }
-      return this
     }
   }
 }

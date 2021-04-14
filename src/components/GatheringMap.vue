@@ -136,8 +136,7 @@ export default {
       })
     },
 
-    createCircle(e) {
-      if (e) e.preventDefault()
+    createCircle() {
       if (
         this.currentCircle &&
         this.currentCircle.parentPath &&
@@ -183,7 +182,7 @@ g {
 .circlepack-tooltip {
   font-size: 1rem;
   margin-top: 3px;
-  width: max-content;
+  min-width: fit-content;
   height: fit-content;
   max-height: 60%;
   padding: 24px !important;
@@ -192,8 +191,8 @@ g {
 }
 .circlepack-tooltip .tooltip-title {
   font-size: 1.5rem;
-  width: max-content;
   margin: 0;
+  padding: 0;
 }
 .chart-tooltip .text {
   padding-top: 8px;

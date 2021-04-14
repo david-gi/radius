@@ -10,7 +10,7 @@
     body-text-variant="white"
     body-class="px-4 pt-4 pb-0"
     modal-class="my-5 py-5"
-    content-class="bg-primary shadow-lg p-2"
+    content-class="bg-primary shadow-md p-2"
     footer-class="border-0 mt-0 pr-4 pb-4 pt-0"
     :hide-footer="noFooter"
     centered

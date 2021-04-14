@@ -6,7 +6,12 @@
     @on-submit="handleSubmit"
   >
     <form ref="circleform" @submit.stop.prevent="handleSubmit">
-      <h3 class="mt-n2">Add a Circle</h3>
+      <div class="h5 text-info mt-n2">
+        {{ $store.state.currentCircle.name }}
+      </div>
+      <h3>
+        Add a Circle
+      </h3>
       <b-form-group
         label-for="name-input"
         class="pt-2 mr-1 text-white"

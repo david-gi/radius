@@ -1,29 +1,20 @@
 <template>
   <b-navbar variant=" " class="fixed-top zindex-fixed m-0 p-0 pt-1">
     <b-navbar-nav>
-      <b-nav-item-dropdown
-        :disabled="!$store.state.gathering"
-        no-caret
-        class="user-select-none"
-        menu-class="ml-2 user-select-none"
-      >
-        <!-- Using 'button-content' slot -->
-        <template #button-content>
-          <img
-            alt="Concentric.io"
-            title="Concentric.io"
-            src="../assets/logo.svg"
-            class="hoverable mt-n1"
-            width="40"
-          />
-          <strong class="text-white h4 pl-1 shadow-text">circletalk</strong>
-        </template>
-        <b-dropdown-item variant="info" @click="leave">
-          Start a new Gathering
-        </b-dropdown-item>
-      </b-nav-item-dropdown>
+      <b-nav-item href="/" class="mt-n1 pl-1 user-select-none">
+        <img
+          alt="circletalk"
+          title="circletalk"
+          src="../assets/logo.svg"
+          width="40"
+          class="mt-1"
+        />
+        <strong class="text-white h4 align-middle shadow-text">
+          circletalk
+        </strong>
+      </b-nav-item>
     </b-navbar-nav>
-    <b-navbar-nav class="mt-n2 shadow-text d-inline">
+    <b-navbar-nav class="shadow-text d-inline">
       <b-nav-text
         v-if="$store.state.gathering && $store.state.gathering.name"
         class="p-0"
