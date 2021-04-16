@@ -9,6 +9,11 @@ $body-color: #161616;
 
 // Bootstrap overwrites
 
+.modal {
+  padding-top: 4em;
+  padding-bottom: 4em;
+}
+
 .dropdown-toggle:focus{
   box-shadow: none !important;
   border: none;

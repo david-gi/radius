@@ -39,7 +39,7 @@
     </b-container>
 
     <TheHeader />
-
+    <DonateCorner v-if="loaded && hasUser && !showSecurity" />
     <TheBackground />
 
     <SecurityModal v-if="loaded && showSecurity" />
@@ -50,7 +50,6 @@
       v-if="loaded && noGatheringId && !hasUser && !showSecurity"
     />
     <TheMessageBox />
-
     <input
       id="clipboard-input"
       type="text"
@@ -61,6 +60,7 @@
 </template>
 
 <script>
+import DonateCorner from '@/components/DonateCorner.vue'
 import TheHeader from '@/components/TheHeader.vue'
 import TheMessageBox from '@/components/TheMessageBox.vue'
 import UserCard from '@/components/UserCard.vue'
@@ -73,6 +73,7 @@ import GatheringMap from '@/components/GatheringMap.vue'
 export default {
   name: 'App',
   components: {
+    DonateCorner,
     TheHeader,
     TheMessageBox,
     UserCard,

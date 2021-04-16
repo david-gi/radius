@@ -1,7 +1,7 @@
 <template>
-  <b-navbar variant=" " class="fixed-top zindex-fixed m-0 p-0 pt-1">
+  <b-navbar variant=" " class="fixed-top m-0 p-0 pt-1">
     <b-navbar-nav>
-      <b-nav-item href="/" class="mt-n1 pl-1 user-select-none">
+      <b-nav-item href="/" class="mt-n1 pl-1 user-select-none text-nowrap">
         <img
           alt="circletalk"
           title="circletalk"
@@ -14,7 +14,7 @@
         </strong>
       </b-nav-item>
     </b-navbar-nav>
-    <b-navbar-nav class="shadow-text d-inline">
+    <b-navbar-nav class="shadow-text d-none d-sm-inline">
       <b-nav-text
         v-if="$store.state.gathering && $store.state.gathering.name"
         class="p-0"
