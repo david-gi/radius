@@ -12,6 +12,7 @@
         <strong class="text-white h4 align-middle shadow-text">
           circletalk
         </strong>
+        <small class="text-success align-bottom ml-n3 d-inline-block mb-n1">beta</small>
       </b-nav-item>
     </b-navbar-nav>
     <b-navbar-nav class="shadow-text d-none d-sm-inline">

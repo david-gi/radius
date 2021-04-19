@@ -94,8 +94,6 @@ export default {
       if (++this.debounceCount < 2) {
         if (node) {
           this.goToNode(node)
-        } else {
-          this.goToRoot()
         }
         setTimeout(() => {
           this.debounceCount = 0

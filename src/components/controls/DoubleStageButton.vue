@@ -1,10 +1,11 @@
 <template>
   <b-button
-    :variant="clickCount ? 'primary' : 'secondary'"
+    :variant="clickCount ? 'warning' : 'secondary'"
     :class="classes"
     @click="handleClick"
+    :title="btnTitle"
   >
-    {{ clickCount ? btnText + '?' : btnText }}
+    <slot />
   </b-button>
 </template>
 
@@ -13,7 +14,7 @@ export default {
   name: 'DoubleStageButton',
   props: {
     callback: Function,
-    btnText: String,
+    btnTitle: String,
     classes: String
   },
   data() {
@@ -26,6 +27,12 @@ export default {
     handleClick() {
       clearTimeout(this.timer)
       if (this.clickCount++ > 0) this.callback()
+      else {
+        this.$store.dispatch('displayMessage', {
+          msg: this.btnTitle + '?',
+          time: 2200
+        })
+      }
       this.timer = setTimeout(() => {
         this.clickCount = 0
       }, 1600)
