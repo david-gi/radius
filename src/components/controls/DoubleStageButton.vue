@@ -26,8 +26,13 @@ export default {
   methods: {
     handleClick() {
       clearTimeout(this.timer)
-      if (this.clickCount++ > 0) this.callback()
-      else {
+      if (this.clickCount++ > 0) {
+        this.$store.dispatch('displayMessage', {
+          msg: '',
+          time: 10
+        })
+        this.callback()
+      } else {
         this.$store.dispatch('displayMessage', {
           msg: this.btnTitle + '?',
           time: 2200

@@ -11,6 +11,7 @@ Vue.use(Vuex)
 const fbase = firebase.initializeApp(fbaseConfig)
 const db = fbase.database()
 const cFunc = fbase.functions()
+const storage = fbase.storage()
 
 export default new Vuex.Store({
   state: {
@@ -176,9 +177,26 @@ export default new Vuex.Store({
       try {
         dispatch('leaveCurrentCircle')
         commit('SET_LOADING', true)
+        try {
+          if (state.user.img) {
+            const ref = storage.ref(
+              `${state.gathering.id}/${state.user.name}.jpg`
+            )
+            try {
+              state.user.img = await ref.getDownloadURL()
+            } catch (e) {
+              console.log(e)
+            }
+            await ref.putString(state.user.img, 'data_url')
+            state.user.img = await ref.getDownloadURL()
+          }
+        } catch (e) {
+          console.error(e)
+        }
 
         const circlePath = state.gathering.id + circle.parentPath
         db.ref(`gatherings/${circlePath}/attendees/${state.user.name}`).set({
+          ...state.user,
           user: state.user.name,
           password: state.password
         })

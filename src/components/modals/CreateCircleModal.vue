@@ -7,7 +7,7 @@
   >
     <form ref="circleform" @submit.stop.prevent="handleSubmit">
       <div class="h5 text-info mt-n2">
-        {{ $store.state.currentCircle.name }}
+        {{ $store.state.currentCircle ? $store.state.currentCircle.name : '' }}
       </div>
       <h3>
         Add a Circle

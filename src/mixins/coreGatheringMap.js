@@ -25,7 +25,7 @@ export default {
         .tooltipContent(this.setTooltipContent)
         //.onHover()
         .onClick(this.nodeClick)(mapEl)
-      this.applyCssMods()
+      this.applyStyling()
     },
 
     resizeChart() {
@@ -40,7 +40,7 @@ export default {
       clearTimeout(this.refreshTimer)
       this.refreshTimer = setTimeout(() => {
         this.map.data(this.nodes)
-        this.applyCssMods(false)
+        this.applyStyling(false)
       }, 1000)
     },
 
@@ -61,7 +61,7 @@ export default {
 
     goToRoot() {
       this.map.zoomReset()
-      this.applyCssMods()
+      this.applyStyling()
       this.$store.dispatch('leaveCurrentCircle').then(() => {
         this.connections = []
         document.getElementsByTagName('audio').forEach(a => {
@@ -134,7 +134,7 @@ export default {
       if (currentNode) currentNode.dispatchEvent(new Event('click'))
     },
 
-    applyCssMods(showLoading = true) {
+    applyStyling(showLoading = true) {
       if (showLoading) this.loadOn()
       clearTimeout(this.cssModTimer)
       this.cssModTimer = setTimeout(() => {
@@ -184,41 +184,46 @@ export default {
                   circleSvgHtml.addEventListener('contextmenu', this.createCircle)
                 }
                 return
-              }
-
-              // Process Attendee Circle Nodes
-              if (!circleNodeData) {
+              } else {
+                // Process Attendee Circle Nodes
                 this.$store
                   .dispatch('lookupAttendee', svgLabel.textContent)
                   .then(attendeeNodeData => {
-                    if (attendeeNodeData && attendeeNodeData.img) {
-                      const img = document.createElementNS(
-                        'http://www.w3.org/2000/svg',
-                        'image'
-                      )
-                      const fitImg = () => {
-                        const circleDiameter =
-                          circleSvg.getBBox({stroke: true}).height + 2
-                        img.setAttribute('x', -(circleDiameter / 2))
-                        img.setAttribute('y', -(circleDiameter / 2))
-                        img.setAttribute('height', circleDiameter)
-                        img.setAttribute(
-                          'style',
-                          'cursor: pointer; pointer-events: none;'
-                        )
-                      }
-                      img.setAttribute('href', attendeeNodeData.img)
-                      img.setAttribute(
-                        'clip-path',
-                        `${clipPathEl.getAttribute('clip-path')}`
-                      )
-                      fitImg()
-
-                      clipPathEl.parentElement.append(img)
-                      setTimeout(() => {
-                        fitImg()
-                      }, 500)
+                    let attendee = attendeeNodeData
+                    if (!attendee) {
+                      const currentUser = this.$store.state.user
+                      if (currentUser.name === svgLabel.textContent) {
+                        attendee = currentUser
+                      } else return
                     }
+
+                    const imgUrl = attendee ? attendee.img : ''
+                    const img = document.createElementNS(
+                      'http://www.w3.org/2000/svg',
+                      'image'
+                    )
+                    const fitImg = () => {
+                      const circleDiameter =
+                        circleSvg.getBBox({stroke: true}).height + 2
+                      img.setAttribute('x', -(circleDiameter / 2))
+                      img.setAttribute('y', -(circleDiameter / 2))
+                      img.setAttribute('height', circleDiameter)
+                      img.setAttribute(
+                        'style',
+                        'cursor: pointer; pointer-events: none;'
+                      )
+                    }
+                    img.setAttribute('href', imgUrl)
+                    img.setAttribute(
+                      'clip-path',
+                      `${clipPathEl.getAttribute('clip-path')}`
+                    )
+                    fitImg()
+
+                    clipPathEl.parentElement.append(img)
+                    setTimeout(() => {
+                      fitImg()
+                    }, 500)
                   })
               }
             })

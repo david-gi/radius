@@ -2,9 +2,9 @@
   <b-alert
     v-show="msgText"
     show
-    variant="secondary"
+    variant=" "
     fade
-    class="position-fixed fixed-bottom m-0 rounded-0 text-center"
+    class="position-fixed fixed-bottom m-0 rounded-0 text-center bg-dark text-info"
     style="z-index: 1000;"
   >
     {{ msgText }}
