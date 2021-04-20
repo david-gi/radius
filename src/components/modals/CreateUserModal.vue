@@ -28,6 +28,9 @@
       <h3 class="mt-n2">
         Fill out your Name Tag
       </h3>
+      <b-form-group label-for="img-input" class="pt-2 mr-1">
+        <UserSnapshot v-model="user.img" />
+      </b-form-group>
       <b-form-group
         label-for="name-input"
         class="pt-2 mr-1 text-white"
@@ -42,16 +45,6 @@
           required
           autofocus
           @keyup="() => (formState = $refs.userform.checkValidity())"
-        />
-      </b-form-group>
-      <b-form-group label-for="img-input" class="pt-2 mr-1 text-white">
-        <b-form-input
-          id="img-input"
-          type="url"
-          v-model="user.img"
-          placeholder="Photo link (optional)"
-          :formatter="v => (v.length > 300 ? v.substring(0, 300) : v)"
-          trim
         />
       </b-form-group>
       <b-form-group label-for="scratchpad-input" class="pt-2 mr-1 text-white">
@@ -69,10 +62,11 @@
 <script>
 import {User} from '../../models/index'
 import BaseModal from './BaseModal.vue'
+import UserSnapshot from '../controls/UserSnapshot'
 
 export default {
   name: 'CreateUserModal',
-  components: {BaseModal},
+  components: {BaseModal, UserSnapshot},
   data() {
     return {
       modalId: 'create-user-modal',
