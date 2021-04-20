@@ -1,6 +1,8 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const db = admin.initializeApp().database();
+const {Storage} = require("@google-cloud/storage");
+const gcs = new Storage();
 
 exports.checkSecurity = functions.https.onCall((data, context) => {
   try {
@@ -28,6 +30,7 @@ exports.expireGatherings = functions.pubsub
               if (childData.password) {
                 db.ref("security/" + childKey).remove();
               }
+              gcs.bucket(childKey).delete();
             }
           });
         });
