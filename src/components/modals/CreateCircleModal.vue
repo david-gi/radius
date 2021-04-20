@@ -21,11 +21,12 @@
         <b-form-input
           id="name-input"
           v-model="circle.name"
-          placeholder="Enter a name"
+          placeholder="Circle name"
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
           trim
           required
           autofocus
+          @keypress="this.formatIdInput"
           @keyup="() => (formState = $refs.circleform.checkValidity())"
         />
       </b-form-group>

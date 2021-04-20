@@ -40,10 +40,11 @@
         <b-form-input
           id="name-input"
           v-model.trim.lazy="user.name"
-          placeholder="Your Name"
-          :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
+          placeholder="Nickname"
+          :formatter="v => (v.length > 40 ? this.v.substring(0, 40) : v)"
           required
           autofocus
+          @keypress="this.formatIdInput"
           @keyup="() => (formState = $refs.userform.checkValidity())"
         />
       </b-form-group>

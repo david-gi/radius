@@ -29,6 +29,7 @@
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
           required
           autofocus
+          @keypress="this.formatIdInput"
         />
       </b-form-group>
       <b-form-group label-for="description-input" class="pt-2 mr-1 text-white">

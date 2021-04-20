@@ -31,6 +31,13 @@ export default {
     },
     loadOff() {
       this.$store.commit('SET_LOADING', false)
+    },
+    formatIdInput(e) {
+      const char = String.fromCharCode(e.keyCode)
+      // eslint-disable-next-line no-useless-escape
+      const patt = /[A-Z|a-z|0-9|\-|_|.]/
+      if (patt.test(char)) return true
+      else e.preventDefault()
     }
   }
 }
