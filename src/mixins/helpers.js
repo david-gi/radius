@@ -14,14 +14,10 @@ export default {
       return x ? x.replace(antiXss, '') : ''
     },
     copyToClip(t) {
-      const inp = document.getElementById('clipboard-input')
-      inp.value = t
-      inp.select()
-      inp.setSelectionRange(0, 99999)
-      document.execCommand('copy')
+      navigator.clipboard.writeText(t)
       setTimeout(() => {
         this.$root.$emit('bv::hide::tooltip')
-      }, 1000)
+      }, 1200)
     },
     msg(m) {
       this.$store.dispatch('displayMessage', {msg: m})

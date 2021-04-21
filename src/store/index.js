@@ -77,7 +77,7 @@ export default new Vuex.Store({
         if (!val) {
           dispatch('displayMessage', {
             msg: 'Gathering was not found.',
-            time: 2000
+            time: 8000
           })
           commit('SET_ROUTE', '')
           return

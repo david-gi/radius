@@ -8,6 +8,7 @@
     opacity="0.2"
     spinner-variant="info"
     z-index="9999"
+    v-cloak
   >
     <template #overlay>
       <div class="h1" style="transform: scale(2)">

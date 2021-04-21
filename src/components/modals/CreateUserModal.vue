@@ -27,6 +27,21 @@
           </p>
         </div>
       </div>
+
+      <div
+        class="p-3 mt-n1 mb-4 mr-1 bg-dark faded rounded"
+        v-b-tooltip.click.v-info
+        title="Copied!"
+        @click="copyToClip(`circletalk.ca/#${$store.state.gathering.id}`)"
+      >
+        <strong class="h5">Gathering Link:</strong>
+        <small class="float-right">copy</small>
+        <br />
+        <span class="text-info">
+          circletalk.ca/#{{ $store.state.gathering.id }}
+        </span>
+      </div>
+
       <h4 class="mt-n2">
         Your Name Tag
       </h4>
@@ -58,7 +73,8 @@
           :formatter="v => (v.length > 500 ? v.substring(0, 500) : v)"
         />
       </b-form-group>
-      <b-link class="text-white text-nowrap faded d-block mb-3 pl-1" href="/">
+
+      <b-link class="text-white text-nowrap faded d-block pl-3" href="/">
         Or start a new gathering
         <b-icon-arrow-right-short scale="1.5" />
       </b-link>
