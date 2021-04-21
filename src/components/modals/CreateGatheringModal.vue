@@ -6,15 +6,13 @@
     @on-submit="handleSubmit"
   >
     <form ref="gatheringform" @submit.stop.prevent="handleSubmit">
-      <div class="mt-n3 mb-4">
-        <h1 class="h3 m-0 mb-n1 text-info d-inline-block">circletalk</h1>
-        <div>gather • mingle • connect</div>
-      </div>
       <div class="h2 bg-secondary rounded mx-n5 mt-n2 mb-4 px-5 py-4 shadow-md">
-        <strong>Start a Gathering</strong>
+        <div class="align-top text-infox mr-2">circletalk</div>
+        <div class="h5 mt-n1 text-info">gather • mingle • connect</div>
+
       </div>
-      <div class="h5 mt-n2">
-        Gathering details
+      <div class="h4 mt-n2">
+        Start a Gathering
       </div>
       <b-form-group
         label-for="name-input"
@@ -26,7 +24,7 @@
           id="name-input"
           v-model.lazy.trim="gathering.name"
           placeholder="Title"
-          :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
+          :formatter="v => (v.length > 23 ? v.substring(0, 23) : v)"
           required
           autofocus
           @keypress="this.formatIdInput"
@@ -36,7 +34,7 @@
         <b-form-input
           id="description-input"
           v-model="gathering.description"
-          placeholder="Tagline (optional)"
+          placeholder="Tagline"
           :formatter="v => (v.length > 300 ? v.substring(0, 300) : v)"
         />
       </b-form-group>
@@ -44,7 +42,7 @@
         <b-form-input
           id="password-input"
           v-model.lazy.trim="gathering.password"
-          placeholder="Password (optional)"
+          placeholder="Password"
           :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
         />
       </b-form-group>
@@ -62,16 +60,53 @@
           max="100"
         />
       </b-form-group>
-      <div class="h5 mb-2">Setup initial circles</div>
+      <div class="h5 mb-0">Setup starter circles</div>
       <b-form-group label-for="circles-input" class="pt-2 mr-1 text-white">
         <b-form-tags
-          placeholder="Add a circle..."
+          placeholder="Enter a circle name..."
           input-id="circles-input"
           v-model="circles"
           tag-class="bg-primary"
           input-class="bg-white"
           add-button-variant="primary"
-        />
+        >
+          <template
+            v-slot="{tags, inputId, placeholder, disabled, addTag, removeTag}"
+          >
+            <div
+              v-for="tag in tags"
+              :key="tag"
+              :title="`Tag: ${tag}`"
+              class="rounded bg-primary py-2 pl-3 my-2"
+            >
+              <span>{{ tag }}</span>
+              <b-button
+                size="sm"
+                variant=" "
+                class="py-1 pr-0 pl-2 float-right"
+                @click="removeTag(tag)"
+              >
+                <b-icon-x variant="white align-top mr-1" />
+              </b-button>
+            </div>
+            <b-input-group>
+              <b-form-input
+                v-model="newTag"
+                :id="inputId"
+                :placeholder="placeholder"
+                @keypress="e => formatIdInput(e)"
+              ></b-form-input>
+              <b-button
+                @click="() => { addTag(newTag); newTag = ''; }"
+                :disabled="disabled"
+                variant="primary"
+                size="sm"
+              >
+                Add
+              </b-button>
+            </b-input-group>
+          </template>
+        </b-form-tags>
       </b-form-group>
     </form>
   </BaseModal>
@@ -89,12 +124,9 @@ export default {
       modalId: 'create-gathering-modal',
       gathering: new Gathering(),
       circles: ['Main', 'Info'],
+      newTag: '',
       formState: null
     }
-  },
-  circles() {
-    this.convertCircleTags()
-    this.$store.commit('SET_GATHERING', this.clone(this.gathering))
   },
   methods: {
     convertCircleTags() {

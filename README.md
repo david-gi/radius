@@ -1,5 +1,5 @@
-# client: Radius.io - Gather | Mingle | Connect
-Social audio conferencing with an interactive map that allows you to talk with people within your radius.
+# client: circletalk.ca - Gather | Mingle | Connect
+Social audio conferencing reimagined, with an interactive map and area of effect.
 
 ## Project setup
 ```

@@ -1,14 +1,12 @@
 <template>
-  <b-alert
+  <div
     v-show="msgText"
-    show
-    variant=" "
-    fade
-    class="position-fixed fixed-bottom m-0 rounded-0 text-center bg-dark text-info"
-    style="z-index: 1000;"
+    class="fixed-bottom m-0 p-2 text-center bg-warning text-black faded"
+    :class="{'mb-5': inGathering}"
+    style="z-index:3000"
   >
-    {{ msgText }}
-  </b-alert>
+    <strong>{{ msgText }}</strong>
+  </div>
 </template>
 
 <script>
@@ -20,6 +18,9 @@ export default {
   computed: {
     msgText() {
       return this.$store.state.message
+    },
+    inGathering() {
+      return this.$store.state.gathering && this.$store.state.user
     }
   }
 }

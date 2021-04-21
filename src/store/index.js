@@ -52,7 +52,7 @@ export default new Vuex.Store({
       commit('SET_MESSAGE', payload.msg)
       const timerRef = setTimeout(() => {
         commit('SET_MESSAGE', null)
-      }, payload.time || 5000)
+      }, payload.time || 25000)
       commit('SET_TIMER', timerRef)
     },
 
@@ -77,7 +77,7 @@ export default new Vuex.Store({
         if (!val) {
           dispatch('displayMessage', {
             msg: 'Gathering was not found.',
-            time: 12000
+            time: 2000
           })
           commit('SET_ROUTE', '')
           return
@@ -105,35 +105,55 @@ export default new Vuex.Store({
     },
 
     async createGathering({commit}, payload) {
-      commit('SET_LOADING', true)
+      try {
+        commit('SET_LOADING', true)
 
-      const newRef = db.ref('gatherings').push()
-      const id = newRef.key
-      const hasPass = payload.password && payload.password.length > 0
-      const gathering = {
-        name: payload.name,
-        description: payload.description || '',
-        maxSize: payload.maxSize,
-        password: Boolean(hasPass)
+        const newRef = db.ref('gatherings').push()
+        const id = newRef.key
+        const hasPass = payload.password && payload.password.length > 0
+        const gathering = {
+          name: payload.name,
+          description: payload.description || '',
+          maxSize: payload.maxSize,
+          password: Boolean(hasPass)
+        }
+        if (hasPass) {
+          db.ref(`security/${id}`).set(payload.password)
+          commit('SET_PASSWORD', payload.password)
+        }
+        newRef.set(gathering)
+
+        payload.circles.forEach(c => {
+          const newCirclesRef = db.ref(`gatherings/${id}/circles`).push()
+          newCirclesRef.set(c)
+          H.log(newCirclesRef.key)
+        })
+        commit('SET_ROUTE', id)
+      } catch (ex) {
+        commit('SET_LOADING', false)
+        console.error(ex)
+        this.dispatch('displayMessage', {
+          msg: 'Sorry, there was an issue, please try again.'
+        })
       }
-      if (hasPass) {
-        db.ref(`security/${id}`).set(payload.password)
-        commit('SET_PASSWORD', payload.password)
-      }
-      newRef.set(gathering)
-      payload.circles.forEach(c => {
-        const newCirclesRef = db.ref(`gatherings/${id}/circles`).push()
-        newCirclesRef.set(c)
-      })
-      commit('SET_ROUTE', id)
     },
 
     async joinGathering({state, commit}) {
-      commit('SET_LOADING', true)
+      try {
+        commit('SET_LOADING', true)
 
-      db.ref(`gatherings/${state.gathering.id}/users/${state.user.name}`).set({
-        user: state.user.name
-      })
+        await db
+          .ref(`gatherings/${state.gathering.id}/users/${state.user.name}`)
+          .set({
+            user: state.user.name
+          })
+      } catch (ex) {
+        commit('SET_LOADING', false)
+        console.error(ex)
+        this.dispatch('displayMessage', {
+          msg: 'Sorry, there was an issue, please try again.'
+        })
+      }
     },
 
     async leaveGathering({commit, state}) {

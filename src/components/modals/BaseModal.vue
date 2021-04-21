@@ -1,6 +1,7 @@
 <template>
   <b-modal
     :id="modalId"
+    v-cloak
     hide-header
     header-bg-variant="primary"
     footer-bg-variant="primary"

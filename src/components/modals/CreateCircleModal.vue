@@ -6,7 +6,7 @@
     @on-submit="handleSubmit"
   >
     <form ref="circleform" @submit.stop.prevent="handleSubmit">
-      <div class="h5 text-info mt-n2">
+      <div class="h5 text-info mt-n2 text-truncate">
         {{ $store.state.currentCircle ? $store.state.currentCircle.name : '' }}
       </div>
       <h3>
@@ -22,7 +22,7 @@
           id="name-input"
           v-model="circle.name"
           placeholder="Circle name"
-          :formatter="v => (v.length > 40 ? v.substring(0, 40) : v)"
+          :formatter="v => (v.length > 23 ? v.substring(0, 23) : v)"
           trim
           required
           autofocus

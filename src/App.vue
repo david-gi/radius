@@ -42,6 +42,7 @@
     <DonateCorner v-if="loaded && hasUser && !showSecurity" />
     <TheBackground />
 
+    <TheMessageBox />
     <SecurityModal v-if="loaded && showSecurity" />
     <CreateUserModal
       v-if="loaded && !noGatheringId && !hasUser && !showSecurity"
@@ -49,7 +50,6 @@
     <CreateGatheringModal
       v-if="loaded && noGatheringId && !hasUser && !showSecurity"
     />
-    <TheMessageBox />
     <input
       id="clipboard-input"
       type="text"
