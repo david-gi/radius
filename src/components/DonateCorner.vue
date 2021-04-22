@@ -1,5 +1,5 @@
 <template>
-  <div id="DonateCorner" class="fixed-top p-3">
+  <div v-cloak id="DonateCorner" class="fixed-top p-3">
     <div class="float-right">
       <form
         action="https://www.paypal.com/donate"
@@ -15,13 +15,6 @@
           name="submit"
           title="Support the developer and help out with server fees"
           alt="Support the developer and help out with server fees"
-        />
-        <img
-          alt=""
-          border="0"
-          src="https://www.paypal.com/en_CA/i/scr/pixel.gif"
-          width="1"
-          height="1"
         />
       </form>
     </div>

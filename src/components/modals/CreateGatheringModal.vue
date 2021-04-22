@@ -6,10 +6,79 @@
     @on-submit="handleSubmit"
   >
     <form ref="gatheringform" @submit.stop.prevent="handleSubmit">
-      <div class="h2 bg-secondary rounded mx-n5 mt-n2 mb-4 px-5 py-4 shadow-md">
-        <div class="align-top text-infox mr-2">circletalk</div>
-        <div class="h5 mt-n1 text-info">gather • mingle • connect</div>
-
+      <div class="bg-secondary rounded mx-n5 mt-n2 mb-4 px-5 py-4 shadow-md">
+        <h1 class="h2 align-top text-infox mr-2">circletalk</h1>
+        <h3 class="h5 mt-n1 text-info">gather • mingle • connect</h3>
+        <h2 class="h6">
+          Free and simple audio conferencing!
+          <br />
+          Listen to the gathering, talk within circles.
+          <br />
+          <small class="faded">
+            <a
+              target="_blank"
+              href="https://en.wikipedia.org/wiki/Privacy_by_design#Foundational_principles"
+              class="text-white"
+            >
+              <abbr title="Learn about privacy by design [wikipedia]">
+                Privacy by Design
+              </abbr>
+            </a>
+            - No Sign Up - Ethical Freeware
+          </small>
+          <br />
+          <div
+            id="intro"
+            v-if="expanded"
+            class="font-weight-normal responsive-font-size mt-3"
+          >
+            <strong class="text-warning">
+              Innovative voice conferencing that puts privacy first.
+            </strong>
+            <ul>
+              <li>End-to-end encryption with zero middlemen</li>
+              <li>Peer-to-peer with zero media proxying</li>
+              <li>Created & run by a single developer</li>
+              <li>No data profiteering of any kind</li>
+              <li>No data permanence</li>
+              <li>No data harvesting</li>
+              <li>No user tracking</li>
+            </ul>
+            <strong class="text-warning">
+              How does it work?
+            </strong>
+            <ol>
+              <li>
+                Start a gathering or join by link
+              </li>
+              <li>Fill out your name tag</li>
+              <li>
+                Double-<span class="d-none d-sm-inline">click</span>
+                <span class="d-inline d-sm-none">tap</span> to join a circle's
+                conversation
+              </li>
+              <li>
+                Add an inner circle
+                <ul class="p-0 pl-3">
+                  <li>
+                    Talk inside an inner circle while still hearing its
+                    containing circle
+                  </li>
+                  <li>Add another circle for private conversations</li>
+                </ul>
+              </li>
+              <li>Your data is deleted when you leave</li>
+              <li>Gathering data is deleted once everyone leaves</li>
+            </ol>
+          </div>
+        </h2>
+        <small
+          v-if="!expanded"
+          class="font-weight-bold text-info pointer faded"
+          @click="expanded = true"
+        >
+          <u class="pr-1">Find out more</u>
+        </small>
       </div>
       <div class="h4 mt-n2">
         Start a Gathering
@@ -60,53 +129,9 @@
           max="100"
         />
       </b-form-group>
-      <div class="h5 mb-0">Setup starter circles</div>
+      <div class="h6 mb-0">Setup event topics</div>
       <b-form-group label-for="circles-input" class="pt-2 mr-1 text-white">
-        <b-form-tags
-          placeholder="Enter a circle name..."
-          input-id="circles-input"
-          v-model="circles"
-          tag-class="bg-primary"
-          input-class="bg-white"
-          add-button-variant="primary"
-        >
-          <template
-            v-slot="{tags, inputId, placeholder, disabled, addTag, removeTag}"
-          >
-            <div
-              v-for="tag in tags"
-              :key="tag"
-              :title="`Tag: ${tag}`"
-              class="rounded bg-primary py-2 pl-3 my-2"
-            >
-              <span>{{ tag }}</span>
-              <b-button
-                size="sm"
-                variant=" "
-                class="py-1 pr-0 pl-2 float-right"
-                @click="removeTag(tag)"
-              >
-                <b-icon-x variant="white align-top mr-1" />
-              </b-button>
-            </div>
-            <b-input-group>
-              <b-form-input
-                v-model="newTag"
-                :id="inputId"
-                :placeholder="placeholder"
-                @keypress="e => formatIdInput(e)"
-              ></b-form-input>
-              <b-button
-                @click="() => { addTag(newTag); newTag = ''; }"
-                :disabled="disabled"
-                variant="primary"
-                size="sm"
-              >
-                Add
-              </b-button>
-            </b-input-group>
-          </template>
-        </b-form-tags>
+        <TopicTagpicker v-model="circles" />
       </b-form-group>
     </form>
   </BaseModal>
@@ -115,16 +140,17 @@
 <script>
 import {Circle, Gathering} from '../../models/index'
 import BaseModal from './BaseModal.vue'
+import TopicTagpicker from '../controls/TopicTagpicker.vue'
 
 export default {
   name: 'CreateGatheringModal',
-  components: {BaseModal},
+  components: {BaseModal, TopicTagpicker},
   data() {
     return {
       modalId: 'create-gathering-modal',
+      expanded: false,
       gathering: new Gathering(),
-      circles: ['Main', 'Info'],
-      newTag: '',
+      circles: ['General'],
       formState: null
     }
   },
@@ -143,7 +169,7 @@ export default {
     },
     resetModal() {
       this.gathering = new Gathering()
-      this.circles = ['Main', 'Info']
+      this.circles = ['General']
       this.formState = null
     },
 

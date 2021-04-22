@@ -41,6 +41,16 @@ $body-color: #161616;
   width: 100%;
 }
 
+ul {
+  padding-left: 1.3em !important;
+}
+ol {
+  padding-left: 1.2em !important;
+}
+li {
+  padding: 0.2rem 0;
+}
+
 // Custom helper classes
 
 .pointer {
@@ -56,4 +66,17 @@ $body-color: #161616;
 
 .shadow-text {
   text-shadow: 0 2px 4px #000000;
+}
+.invisible-scroll {
+  overflow-y: scroll;
+  -ms-overflow-style: none; 
+  scrollbar-width: none;
+} 
+.invisible-scroll::-webkit-scrollbar {
+ display: none;
+}
+@media (max-width: 380px) {
+  .responsive-font-size {
+    font-size: .8em;
+  }
 }
