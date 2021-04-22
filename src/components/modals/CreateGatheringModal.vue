@@ -27,58 +27,8 @@
             - No Sign Up - Ethical Freeware
           </small>
           <br />
-          <div
-            id="intro"
-            v-if="expanded"
-            class="font-weight-normal responsive-font-size mt-3"
-          >
-            <strong class="text-warning">
-              Innovative voice conferencing that puts privacy first.
-            </strong>
-            <ul>
-              <li>End-to-end encryption with zero middlemen</li>
-              <li>Peer-to-peer with zero media proxying</li>
-              <li>Created & run by a single developer</li>
-              <li>No data profiteering of any kind</li>
-              <li>No data permanence</li>
-              <li>No data harvesting</li>
-              <li>No user tracking</li>
-            </ul>
-            <strong class="text-warning">
-              How does it work?
-            </strong>
-            <ol>
-              <li>
-                Start a gathering or join by link
-              </li>
-              <li>Fill out your name tag</li>
-              <li>
-                Double-<span class="d-none d-sm-inline">click</span>
-                <span class="d-inline d-sm-none">tap</span> to join a circle's
-                conversation
-              </li>
-              <li>
-                Add an inner circle
-                <ul class="p-0 pl-3">
-                  <li>
-                    Talk inside an inner circle while still hearing its
-                    containing circle
-                  </li>
-                  <li>Add another circle for private conversations</li>
-                </ul>
-              </li>
-              <li>Your data is deleted when you leave</li>
-              <li>Gathering data is deleted once everyone leaves</li>
-            </ol>
-          </div>
+          <Intro />
         </h2>
-        <small
-          v-if="!expanded"
-          class="font-weight-bold text-info pointer faded"
-          @click="expanded = true"
-        >
-          <u class="pr-1">Find out more</u>
-        </small>
       </div>
       <div class="h4 mt-n2">
         Start a Gathering
@@ -139,15 +89,15 @@
 <script>
 import {Circle, Gathering} from '../../models/index'
 import BaseModal from './BaseModal.vue'
+import Intro from '../Intro.vue'
 import TopicTagpicker from '../controls/TopicTagpicker.vue'
 
 export default {
   name: 'CreateGatheringModal',
-  components: {BaseModal, TopicTagpicker},
+  components: {BaseModal, Intro, TopicTagpicker},
   data() {
     return {
       modalId: 'create-gathering-modal',
-      expanded: false,
       gathering: new Gathering(),
       circles: ['General'],
       formState: null

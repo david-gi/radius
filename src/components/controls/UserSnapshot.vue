@@ -19,8 +19,8 @@
       class="d-block my-1"
       title="Update your browser"
     />
-    <div v-if="!supported" class="mt-n4 mb-4" title="Update your browser">
-      Camera unavailable
+    <div v-if="!supported" class="mt-n2 mb-4" title="Update your browser">
+      Not available in current browser
     </div>
   </div>
 </template>

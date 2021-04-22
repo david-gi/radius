@@ -23,7 +23,7 @@
             </small>
           </strong>
           <p class="h5 mt-2 ">
-            <small>{{ $store.state.gathering.description }}</small>
+            <small>{{ $store.state.gathering.description }} <Intro /></small>
           </p>
         </div>
       </div>
@@ -84,11 +84,12 @@
 <script>
 import {User} from '../../models/index'
 import BaseModal from './BaseModal.vue'
+import Intro from '../Intro.vue'
 import UserSnapshot from '../controls/UserSnapshot'
 
 export default {
   name: 'CreateUserModal',
-  components: {BaseModal, UserSnapshot},
+  components: {BaseModal, Intro, UserSnapshot},
   data() {
     return {
       modalId: 'create-user-modal',

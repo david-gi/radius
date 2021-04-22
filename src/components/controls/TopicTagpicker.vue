@@ -54,7 +54,7 @@
 
 <script>
 export default {
-  name: 'TheLoader',
+  name: 'TopicTagpicker',
   props: ['value'],
   data() {
     return {
