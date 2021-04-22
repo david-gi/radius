@@ -95,7 +95,6 @@
           placeholder="Title"
           :formatter="v => (v.length > 23 ? v.substring(0, 23) : v)"
           required
-          autofocus
           @keypress="this.formatIdInput"
         />
       </b-form-group>

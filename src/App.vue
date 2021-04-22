@@ -9,6 +9,7 @@
     spinner-variant="info"
     z-index="9999"
     v-cloak
+    style="min-width:300px"
   >
     <template #overlay>
       <div class="h1" style="transform: scale(2)">

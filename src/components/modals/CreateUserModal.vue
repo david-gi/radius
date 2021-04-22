@@ -60,7 +60,6 @@
           placeholder="Nickname"
           :formatter="v => (v.length > 23 ? v.substring(0, 23) : v)"
           required
-          autofocus
           @keypress="this.formatIdInput"
           @keyup="() => (formState = $refs.userform.checkValidity())"
         />
@@ -74,7 +73,7 @@
         />
       </b-form-group>
 
-      <b-link class="text-white text-nowrap faded d-block pl-3" href="/">
+      <b-link class="text-white text-nowrap faded d-block pl-3 pb-2" href="/">
         Or start a new gathering
         <b-icon-arrow-right-short scale="1.5" />
       </b-link>

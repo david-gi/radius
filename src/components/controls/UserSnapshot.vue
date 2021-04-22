@@ -32,12 +32,7 @@ export default {
   data() {
     return {
       selfie: null,
-      supported:
-        (navigator.getUserMedia ||
-          navigator.webkitGetUserMedia ||
-          navigator.mozGetUserMedia ||
-          navigator.msGetUserMedia) &&
-        typeof ImageCapture === 'function',
+      supported: true,
       constraints: {
         facingMode: 'user',
         width: 140,
@@ -61,6 +56,7 @@ export default {
           track.stop()
         })
       } catch (e) {
+        this.supported = false
         console.error(e)
         if (camera) {
           camera.getTracks().forEach(track => {
