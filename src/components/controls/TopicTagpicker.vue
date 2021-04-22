@@ -2,11 +2,10 @@
   <b-form-tags
     placeholder="Enter a topic..."
     input-id="circles-input"
-    v-model="value"
+    v-model="lValue"
     tag-class="bg-primary"
     input-class="bg-white"
     add-button-variant="primary"
-    @change="handleChange"
   >
     <template
       v-slot="{tags, inputId, placeholder, disabled, addTag, removeTag}"
@@ -58,12 +57,16 @@ export default {
   props: ['value'],
   data() {
     return {
+      lValue: this.value,
       newTag: ''
     }
   },
+  updated() {
+    this.handleChange()
+  },
   methods: {
     handleChange() {
-      this.$emit('input', this.value)
+      this.$emit('input', this.lValue)
     }
   }
 }

@@ -109,6 +109,7 @@ export default {
       this.circles.forEach(tag => {
         const tagCircle = new Circle(tag, false)
         this.gathering.circles.push(tagCircle)
+        console.log(tag)
       })
     },
     checkFormValidity() {

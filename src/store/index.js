@@ -123,12 +123,16 @@ export default new Vuex.Store({
         }
         newRef.set(gathering)
 
-        payload.circles.forEach(c => {
+        H.log(payload.circles.length)
+        for (var i = 0; i < payload.circles.length; i++) {
           const newCirclesRef = db.ref(`gatherings/${id}/circles`).push()
-          newCirclesRef.set(c)
-          H.log(newCirclesRef.key)
-        })
-        commit('SET_ROUTE', id)
+          // eslint-disable-next-line no-unused-vars
+          const cId = await newCirclesRef.set(payload.circles[i])
+          H.log(newCirclesRef.Id)
+        }
+        setTimeout(() => {
+          commit('SET_ROUTE', id)
+        }, 5000)
       } catch (ex) {
         commit('SET_LOADING', false)
         console.error(ex)
