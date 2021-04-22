@@ -125,7 +125,7 @@ export default {
           a.remove()
         })
         this.connections = [{name: node.name, listenOnly: false}]
-        if (node.x && this.$store.getters.currentParent) {
+        if (this.$store.getters.currentParent) {
           this.connections.push({
             name: this.$store.getters.currentParent.name,
             listenOnly: true

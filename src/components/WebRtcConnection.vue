@@ -40,7 +40,8 @@ export default {
   methods: {
     startConnection(roomId) {
       this.loadOn()
-      const sUrl = !roomId.x
+      // eslint-disable-next-line no-constant-condition
+      const sUrl = true
         ? 'https://rtcmulticonnection.herokuapp.com:443/'
         : 'http://localhost:9001/'
       this.connection.socketURL = sUrl
