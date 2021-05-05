@@ -67,6 +67,15 @@ li {
 .shadow-text {
   text-shadow: 0 2px 4px #000000;
 }
+
+.loose-letters {
+  letter-spacing: 0.1rem;
+}
+
+.flip-h {
+  transform: scaleX(-1); 
+}
+
 .invisible-scroll {
   overflow-y: scroll;
   -ms-overflow-style: none; 

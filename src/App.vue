@@ -46,6 +46,7 @@
 
     <TheMessageBox />
     <FeedbackModal />
+    <DonateModal />
     <SecurityModal v-if="loaded && showSecurity" />
     <CreateUserModal
       v-if="loaded && !noGatheringId && !hasUser && !showSecurity"
@@ -69,6 +70,7 @@ import TheMessageBox from '@/components/TheMessageBox.vue'
 import UserCard from '@/components/UserCard.vue'
 import TheBackground from '@/components/TheBackground.vue'
 import FeedbackModal from '@/components/modals/FeedbackModal.vue'
+import DonateModal from '@/components/modals/DonateModal.vue'
 import SecurityModal from '@/components/modals/SecurityModal.vue'
 import CreateUserModal from '@/components/modals/CreateUserModal.vue'
 import CreateGatheringModal from '@/components/modals/CreateGatheringModal.vue'
@@ -83,6 +85,7 @@ export default {
     UserCard,
     TheBackground,
     FeedbackModal,
+    DonateModal,
     SecurityModal,
     CreateUserModal,
     CreateGatheringModal,

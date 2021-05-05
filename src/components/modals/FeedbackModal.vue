@@ -1,14 +1,21 @@
 <template>
-  <BaseModal :modal-id="modalId" :noClose="false" @on-submit="handleSubmit">
+  <BaseModal
+    :modal-id="modalId"
+    :no-close="false"
+    :ok-text="'Send'"
+    @on-submit="handleSubmit"
+  >
     <form ref="feedbackform" @submit.stop.prevent="handleSubmit">
       <h3>
-        Send Feedback
+        Send Feedback 📢
       </h3>
+      <br />
+      <h5>Send the developer feedback <small>or just get in touch.</small></h5>
       <b-form-group label-for="msg-input" class="pt-2 mr-1 text-white">
         <b-form-textarea
           id="msg-input"
           v-model="feedbackMsg"
-          placeholder="What seems to be the issue?"
+          placeholder="Got bugs, issues, comments or questions?"
           trim
           required
           autofocus

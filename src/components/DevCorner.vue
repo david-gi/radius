@@ -2,30 +2,23 @@
   <div v-cloak id="DevCorner" class="fixed-top p-3 mr-1">
     <div class="float-right">
       <img
-        src="/rainy.svg"
-        title="Got issues?"
+        src="/contact.svg"
+        title="Send Feedback"
         alt="Feedback"
-        class="pointer hoverable"
+        class="pointer hoverable flip-h mr-n2"
+        height="40px"
+        width="40px"
         @click="openFeebackModal"
       />
-      <form
-        ref="donateForm"
-        action="https://www.paypal.com/donate"
-        method="post"
-        target="_top"
-        class="float-right p-0 m-0 pt-1 pr-2 hoverable"
-        @submit.prevent="handleDonateSubmit"
-      >
-        <input type="hidden" name="hosted_button_id" value="NTGZVPYZWDMKQ" />
-        <input
-          type="image"
-          src="/bmac.svg"
-          border="0"
-          name="submit"
-          title="Support the developer and help out with server fees"
-          alt="Support the developer and help out with server fees"
-        />
-      </form>
+      <img
+        src="/contribute.svg"
+        title="Support this project"
+        alt="Support this project"
+        class="pointer hoverable"
+        height="40px"
+        width="40px"
+        @click="openDonateModal"
+      />
     </div>
   </div>
 </template>
@@ -42,11 +35,8 @@ export default {
     openFeebackModal() {
       this.$bvModal.show('feedback-modal')
     },
-    handleDonateSubmit() {
-      confirm(
-        'Your support is very much welcomed and appreciated! ☺ \n\n⚠ This will exit your current gathering and redirect you to PayPal.'
-      )
-      this.refs.donateForm.submit()
+    openDonateModal() {
+      this.$bvModal.show('donate-modal')
     }
   }
 }

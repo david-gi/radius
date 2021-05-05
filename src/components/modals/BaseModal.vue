@@ -6,7 +6,7 @@
     header-bg-variant="primary"
     footer-bg-variant="primary"
     ok-variant="info"
-    cancel-variant=" text-white mr-3"
+    cancel-variant=" text-white mr-3 hoverable font-weight-light loose-letters "
     body-bg-variant="primary"
     body-text-variant="white"
     body-class="px-4 pt-4 pb-0"
@@ -15,7 +15,7 @@
     :hide-footer="noFooter"
     centered
     :visible="noClose"
-    :ok-title="noClose ? 'Ready to go!' : 'Add'"
+    :ok-title="okText ? okText : noClose ? 'Ready to go!' : 'Add'"
     :cancel-title="noClose ? '' : 'cancel'"
     :cancel-disabled="noClose"
     :no-close-on-esc="noClose"
@@ -35,6 +35,7 @@ export default {
   props: {
     modalId: {type: String, required: true},
     noClose: {type: Boolean, default: false},
+    okText: {type: String, default: null},
     noFooter: {type: Boolean, default: false}
   },
   methods: {

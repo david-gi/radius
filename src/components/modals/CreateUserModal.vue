@@ -2,7 +2,7 @@
   <BaseModal
     v-if="!$store.state.loading"
     :modal-id="modalId"
-    :noClose="true"
+    :no-close="true"
     @on-reset="resetModal"
     @on-submit="handleSubmit"
   >

@@ -1,7 +1,7 @@
 <template>
   <BaseModal
     :modal-id="modalId"
-    :noClose="false"
+    :no-close="false"
     @on-reset="resetModal"
     @on-submit="handleSubmit"
   >
