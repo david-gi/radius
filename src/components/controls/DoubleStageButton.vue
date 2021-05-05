@@ -1,7 +1,7 @@
 <template>
   <b-button
     :variant="clickCount ? 'warning' : 'secondary'"
-    :class="classes"
+    :class="classes + (clickCount ? 'border border-primary text-primary' : '')"
     @click="handleClick"
     :title="btnTitle"
   >
@@ -34,7 +34,7 @@ export default {
         this.callback()
       } else {
         this.$store.dispatch('displayMessage', {
-          msg: this.btnTitle + '?',
+          msg: this.btnTitle + '? Hit the button again.',
           time: 2200
         })
       }

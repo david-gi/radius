@@ -9,7 +9,7 @@
         Innovative voice conferencing that puts privacy first.
       </strong>
       <ul>
-        <li>End-to-end encryption with zero middlemen</li>
+        <li>End-to-end encryption with no middlemen</li>
         <li>Peer-to-peer with zero media proxying</li>
         <li>Created & run by a single developer</li>
         <li>No data profiteering of any kind</li>

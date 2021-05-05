@@ -19,11 +19,10 @@
               target="_blank"
               href="https://en.wikipedia.org/wiki/Privacy_by_design#Foundational_principles"
               class="text-white"
+              ><abbr title="Learn about privacy by design [wikipedia]"
+                >Privacy by Design</abbr
+              ></a
             >
-              <abbr title="Learn about privacy by design [wikipedia]">
-                Privacy by Design
-              </abbr>
-            </a>
             - No Sign Up - Ethical Freeware
           </small>
           <br />

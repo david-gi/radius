@@ -52,7 +52,7 @@ export default new Vuex.Store({
       commit('SET_MESSAGE', payload.msg)
       const timerRef = setTimeout(() => {
         commit('SET_MESSAGE', null)
-      }, payload.time || 25000)
+      }, payload.time || 2500)
       commit('SET_TIMER', timerRef)
     },
 
@@ -118,10 +118,10 @@ export default new Vuex.Store({
           password: Boolean(hasPass)
         }
         if (hasPass) {
-          db.ref(`security/${id}`).set(payload.password)
+          await db.ref(`security/${id}`).set(payload.password)
           commit('SET_PASSWORD', payload.password)
         }
-        newRef.set(gathering)
+        await newRef.set(gathering)
 
         H.log(payload.circles.length)
         for (var i = 0; i < payload.circles.length; i++) {
@@ -167,7 +167,7 @@ export default new Vuex.Store({
         const ref = db.ref(
           `gatherings/${state.gathering.id}/users/${state.user.name}`
         )
-        if (ref) ref.remove()
+        if (ref) await ref.remove()
         commit('SET_USER', null)
         commit('SET_GATHERING', null)
         commit('SET_PASSWORD', null)
@@ -187,7 +187,7 @@ export default new Vuex.Store({
           '/circles/'
         const newRef = db.ref(`gatherings/${fullPath}`).push()
 
-        newRef.set(payload)
+        await newRef.set(payload)
         payload.id = newRef.key
         payload.password = state.password
         payload.parentPath =
@@ -219,11 +219,13 @@ export default new Vuex.Store({
         }
 
         const circlePath = state.gathering.id + circle.parentPath
-        db.ref(`gatherings/${circlePath}/attendees/${state.user.name}`).set({
-          ...state.user,
-          user: state.user.name,
-          password: state.password
-        })
+        await db
+          .ref(`gatherings/${circlePath}/attendees/${state.user.name}`)
+          .set({
+            ...state.user,
+            user: state.user.name,
+            password: state.password
+          })
         commit('SET_CURRENT_CIRCLE', circle)
       } catch {
         commit('SET_CURRENT_CIRCLE', null)
@@ -267,6 +269,20 @@ export default new Vuex.Store({
         return result
       }
       return H.recurseFindCircles(state.gathering.circles || [], findFunc)
+    },
+
+    async sendFeedback({state}, message) {
+      if (!message || !state.user) return
+      const newRef = db.ref(`feedback`).push()
+      await newRef.set({
+        message,
+        gathering: state.gathering.name,
+        user: state.user.name,
+        date: new Date().toUTCString()
+      })
+      this.dispatch('displayMessage', {
+        msg: 'Thanks for the feedback.'
+      })
     }
   },
 

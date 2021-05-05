@@ -10,7 +10,7 @@
       <DblStageBtn
         btn-title="Exit Gathering"
         :callback="leaveGathering"
-        classess="w-100"
+        classes="w-100"
       >
         <b-icon-x-circle />
       </DblStageBtn>
@@ -19,7 +19,7 @@
       <DblStageBtn
         btn-title="Leave Circle"
         :callback="leaveCircle"
-        classess="w-100"
+        classes="w-100"
       >
         <b-icon-arrow-left-circle />
       </DblStageBtn>

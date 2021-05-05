@@ -41,10 +41,11 @@
     </b-container>
 
     <TheHeader />
-    <DonateCorner v-if="loaded && hasUser && !showSecurity" />
+    <DevCorner v-if="loaded && hasUser && !showSecurity" />
     <TheBackground />
 
     <TheMessageBox />
+    <FeedbackModal />
     <SecurityModal v-if="loaded && showSecurity" />
     <CreateUserModal
       v-if="loaded && !noGatheringId && !hasUser && !showSecurity"
@@ -62,11 +63,12 @@
 </template>
 
 <script>
-import DonateCorner from '@/components/DonateCorner.vue'
+import DevCorner from '@/components/DevCorner.vue'
 import TheHeader from '@/components/TheHeader.vue'
 import TheMessageBox from '@/components/TheMessageBox.vue'
 import UserCard from '@/components/UserCard.vue'
 import TheBackground from '@/components/TheBackground.vue'
+import FeedbackModal from '@/components/modals/FeedbackModal.vue'
 import SecurityModal from '@/components/modals/SecurityModal.vue'
 import CreateUserModal from '@/components/modals/CreateUserModal.vue'
 import CreateGatheringModal from '@/components/modals/CreateGatheringModal.vue'
@@ -75,11 +77,12 @@ import GatheringMap from '@/components/GatheringMap.vue'
 export default {
   name: 'App',
   components: {
-    DonateCorner,
+    DevCorner,
     TheHeader,
     TheMessageBox,
     UserCard,
     TheBackground,
+    FeedbackModal,
     SecurityModal,
     CreateUserModal,
     CreateGatheringModal,
