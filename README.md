@@ -1,5 +1,6 @@
 # client: circletalk.ca - Gather | Mingle | Connect
 Social audio conferencing reimagined, with an interactive map and area of effect.
+![preview img](https://github.com/david-gi/radius/blob/master/sample%20-circletalk.png)
 
 ## Project setup
 ```
